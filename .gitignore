@@ -30,8 +30,9 @@ hs_err_pid*
 build/
 out/
 
-# Ignore Gradle properties
+# Keep the root build defaults in version control.
 gradle.properties
+!/gradle.properties
 
 # Eclipse
 .project

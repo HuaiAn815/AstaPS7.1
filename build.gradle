@@ -53,7 +53,8 @@ spotless {
 
 compileJava {
 	options.encoding = "UTF-8"
-	options.fork = 'true'
+	// Gradle 8.5 worker argument files cannot reliably encode non-ASCII Windows paths.
+	options.fork = !Os.isFamily(Os.FAMILY_WINDOWS)
 	options.forkOptions.with {
 		// ~5,500 generated protocol classes; with 3000m javac stalls in GC.
 		memoryMaximumSize = "6g"
