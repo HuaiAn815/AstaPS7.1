@@ -41,6 +41,30 @@ public final class DefaultAuthenticators {
         return String.format("This account is banned.\nUnban time: %s\nReason: %s", timeStr, reason);
     }
 
+    /**
+     * The password as the player typed it, or null when the client encrypted it (is_crypto) with a
+     * key this server cannot decrypt.
+     */
+    private static String plainPassword(LoginAccountRequestJson data, boolean integrationPassword) {
+        String password = data.password == null ? "" : data.password;
+        // The integration password comes out of the username box, which is never encrypted.
+        if (integrationPassword || !data.is_crypto || password.isEmpty()) return password;
+        try {
+            return RSADecryptionUtil.decrypt(password);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** {@link Account#verifyPassword}, but a password BCrypt refuses counts as wrong, not a 500. */
+    private static boolean verifyPassword(Account account, String password) {
+        try {
+            return account.verifyPassword(password);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     /** Handles the authentication request from the username and password form. */
     public static class PasswordAuthenticator implements Authenticator<LoginResultJson> {
         @Override
@@ -121,20 +145,40 @@ public final class DefaultAuthenticators {
                                             account.getId()));
                 }
             } else if (account != null) {
-                // Lock the entered password as the account password on first login
-                // (covers both newly auto-created accounts and old accounts with an empty password).
-                String rawPassword = requestData.password;
-                if ((account.getPassword() == null || account.getPassword().isEmpty())
-                        && rawPassword != null
-                        && !rawPassword.isEmpty()) {
-                    account.setPassword(
-                            BCrypt.withDefaults().hashToString(10, rawPassword.toCharArray()));
-                    account.save();
+                String rawPassword = plainPassword(requestData, useIntegrationPassword);
+                if (rawPassword == null) {
+                    // The client encrypted the password with a key this server does not hold, so
+                    // it can be neither stored nor checked. Hashing the ciphertext threw (BCrypt
+                    // takes at most 72 bytes) and reached the client as an HTTP 500; the login is
+                    // let through instead, as the private repo does.
+                    successfulLogin = true;
+                    Grasscutter.getLogger()
+                            .info(
+                                    "[Dispatch] Client "
+                                            + address
+                                            + " sent a password this server cannot decrypt; account "
+                                            + account.getId()
+                                            + " logs in without a password check.");
+                } else {
+                    // Lock the entered password as the account password on first login
+                    // (covers both newly auto-created accounts and old accounts with an empty
+                    // password).
+                    if ((account.getPassword() == null || account.getPassword().isEmpty())
+                            && !rawPassword.isEmpty()) {
+                        try {
+                            account.setPassword(
+                                    BCrypt.withDefaults().hashToString(10, rawPassword.toCharArray()));
+                            account.save();
+                        } catch (IllegalArgumentException tooLong) {
+                            // Longer than BCrypt takes: leave the account without a password.
+                        }
+                    }
                 }
                 // Verify the password for accounts that have one set.
-                if (account.getPassword() == null
+                if (successfulLogin
+                        || account.getPassword() == null
                         || account.getPassword().isEmpty()
-                        || account.verifyPassword(rawPassword)) {
+                        || verifyPassword(account, rawPassword)) {
                     successfulLogin = true;
                 } else {
                     responseMessage = translate("messages.dispatch.account.password_error");
