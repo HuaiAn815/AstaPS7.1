@@ -87,6 +87,15 @@ public final class QuestManager extends BasePlayerManager {
         }
     }
 
+    /**
+     * Whether quests actually run: questing on and big-world scripts on. What the client is shown
+     * has to follow this too - an unfinished quest sent while quests cannot progress sits in the
+     * tracker forever, with a "return to quest point" button for its far-away step.
+     */
+    public static boolean isQuestingActive() {
+        return SERVER.game.enableScriptInBigWorld && GAME_OPTIONS.questing.enabled;
+    }
+
     /** Checks if questing can be enabled. */
     public boolean isQuestingEnabled() {
         // Check if scripts are enabled.

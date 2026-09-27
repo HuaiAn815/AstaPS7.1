@@ -16,7 +16,7 @@ public class PacketQuestListNotify extends BasePacket {
         // and sending them back as unfinished is what makes the client replay the opening cutscene
         // - no cutscene setting reaches that, because the client decides it from quest state. New
         // accounts have nothing saved, which is why only old ones were affected.
-        var questingEnabled = emu.grasscutter.config.Configuration.GAME_OPTIONS.questing.enabled;
+        var questingEnabled = emu.grasscutter.game.quest.QuestManager.isQuestingActive();
 
         player
                 .getQuestManager()
