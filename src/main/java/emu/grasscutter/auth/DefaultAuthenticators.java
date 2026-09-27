@@ -159,7 +159,7 @@ public final class DefaultAuthenticators {
                             translate("messages.dispatch.account.login_success", address, account.getId());
                 }
             } else {
-                response.retcode = -201;
+                response.retcode = -3201;
                 response.message = responseMessage;
             }
             Grasscutter.getLogger().info(loggerMessage);
@@ -283,7 +283,7 @@ public final class DefaultAuthenticators {
                             translate("messages.dispatch.account.login_success", address, account.getId());
                 }
             } else {
-                response.retcode = -201;
+                response.retcode = -3201;
                 response.message = responseMessage;
             }
             Grasscutter.getLogger().info(loggerMessage);
@@ -332,7 +332,7 @@ public final class DefaultAuthenticators {
                             translate("messages.dispatch.account.login_token_success", address, requestData.uid);
                 }
             } else {
-                response.retcode = -201;
+                response.retcode = -3201;
                 response.message = translate("messages.dispatch.account.account_cache_error");
 
                 // Log the failure.
@@ -353,11 +353,19 @@ public final class DefaultAuthenticators {
             var requestData = request.getSessionKeyRequest();
             var loginData = request.getSessionKeyData();
             assert requestData != null;
-            assert loginData != null;
 
             boolean successfulLogin;
             String address = Utils.address(request.getContext());
             String loggerMessage;
+
+            // A data field that is not the expected JSON leaves loginData null, which used to throw
+            // and reach the client as an HTTP 500.
+            if (loginData == null) {
+                response.retcode = -3201;
+                response.message = translate("messages.dispatch.account.session_key_error");
+                Grasscutter.getLogger().info("[Combo] login from " + address + " carried no usable data.");
+                return response;
+            }
 
             // Log the combo login attempt for diagnostics.
             String dbKey = "";
@@ -412,7 +420,7 @@ public final class DefaultAuthenticators {
                 }
 
             } else {
-                response.retcode = -201;
+                response.retcode = -3201;
                 response.message = translate("messages.dispatch.account.session_key_error");
 
                 // Log the failure.

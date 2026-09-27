@@ -309,11 +309,21 @@ public final class RegionHandler implements Router {
                 regionData = Utils.base64Encode(effectiveQuery.toByteString().toByteArray());
             }
 
-            var clientVersion = versionName.replaceAll(Pattern.compile("[a-zA-Z]").pattern(), "");
+            // A missing or odd version used to throw here and reach the client as an HTTP 500. Such
+            // a request gets the plain region data, the same as a client too old to encrypt.
+            var clientVersion =
+                    versionName == null
+                            ? ""
+                            : versionName.replaceAll(Pattern.compile("[a-zA-Z]").pattern(), "");
             var versionCode = clientVersion.split("\\.");
-            var versionMajor = Integer.parseInt(versionCode[0]);
-            var versionMinor = Integer.parseInt(versionCode[1]);
-            var versionFix = Integer.parseInt(versionCode[2]);
+            int versionMajor = 0, versionMinor = 0, versionFix = 0;
+            try {
+                versionMajor = Integer.parseInt(versionCode[0]);
+                versionMinor = Integer.parseInt(versionCode[1]);
+                versionFix = Integer.parseInt(versionCode[2]);
+            } catch (RuntimeException ignored) {
+                versionMajor = 0;
+            }
 
             if (versionMajor >= 3
                 || (versionMajor == 2 && versionMinor == 7 && versionFix >= 50)
