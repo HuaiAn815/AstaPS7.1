@@ -27,7 +27,11 @@ final class RegionVersionConfigLoader {
      * is treated as a miss so that the route can keep its existing fallback response.
      */
     static Optional<LoadedRegion> load(String versionName) {
-        return load(FileUtils.getDataPath("version"), versionName);
+        // The data folder wins, then the copy shipped in the jar. Checking only getDataPath would
+        // stop at the data folder whenever it has a version directory at all, so a hotfix shipped
+        // in the jar for a newer client would never be read.
+        return load(FileUtils.getDataPath("version"), versionName)
+                .or(() -> load(FileUtils.getBundledDataPath("version"), versionName));
     }
 
     /** Package-private overload used by tests without depending on the global server config. */
