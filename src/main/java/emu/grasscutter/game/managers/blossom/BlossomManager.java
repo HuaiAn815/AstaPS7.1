@@ -16,6 +16,9 @@ import it.unimi.dsi.fastutil.ints.*;
 import java.util.*;
 
 public class BlossomManager {
+    private static final Set<BlossomType> MISSING_TYPES_REPORTED =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
     private final Scene scene;
     private final List<BlossomActivity> blossomActivities = new ArrayList<>();
     private final List<BlossomActivity> activeChests = new ArrayList<>();
@@ -189,7 +192,16 @@ public class BlossomManager {
                 return dropVecList[worldLevel].getPreviewReward();
             }
         }
-        Grasscutter.getLogger().error("Cannot find blossom type {}", type);
+        // Missing resource rows, so every refresh would log it again (five camps at a time).
+        if (MISSING_TYPES_REPORTED.add(type)) {
+            Grasscutter.getLogger()
+                    .error(
+                            "Cannot find blossom type {} (chest {}) in BlossomRefreshExcelConfigData; its reward preview is skipped",
+                            type,
+                            blossomChestId);
+        } else {
+            Grasscutter.getLogger().debug("Cannot find blossom type {}", type);
+        }
         return null;
     }
 

@@ -80,7 +80,7 @@ public class ActionAvatarSkillStart extends AbilityActionHandler {
                 lastSkirkBurstMs.put(entityId, now);
                 SkirkCunningHelper.onBurstSkillStart(ability.getPlayerOwner(), action.skillID, owner);
             } else {
-                Grasscutter.getLogger().info("SkirkCunning: skip duplicate AvatarSkillStart {}", action.skillID);
+                Grasscutter.getLogger().debug("SkirkCunning: skip duplicate AvatarSkillStart {}", action.skillID);
             }
         }
         if (owner instanceof EntityAvatar avatar) {

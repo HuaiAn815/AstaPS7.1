@@ -239,7 +239,7 @@ public class EntityAvatar extends GameEntity {
 
         val curEnergyProp = GetEnergyProp(this.getAvatar());
         float curEnergy = this.getFightProperty(curEnergyProp);
-        Grasscutter.getLogger().info("EnergyProp: "+curEnergyProp.name());
+        Grasscutter.getLogger().debug("EnergyProp: "+curEnergyProp.name());
 
         this.avatar.setCurrentEnergy(curEnergyProp, 0);
         getPlayer().sendPacket(new PacketAvatarFightPropNotify(this.getAvatar()));

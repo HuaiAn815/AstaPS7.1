@@ -1,6 +1,8 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.quest.GameQuest;
+import emu.grasscutter.game.quest.QuestManager;
+import emu.grasscutter.game.quest.enums.QuestState;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.QuestListUpdateNotifyOuterClass.QuestListUpdateNotify;
 import emu.grasscutter.net.proto.QuestOuterClass.Quest;
@@ -12,8 +14,13 @@ public class PacketQuestListUpdateNotify extends BasePacket {
     public PacketQuestListUpdateNotify(GameQuest quest) {
         super(PacketOpcodes.QuestListUpdateNotify);
 
-        QuestListUpdateNotify proto =
-                QuestListUpdateNotify.newBuilder().addQuestList(quest.toProto()).build();
+        // Quest events still start quests with questing off; keep their unfinished states off the
+        // client, the same as the login quest list does.
+        var builder = QuestListUpdateNotify.newBuilder();
+        if (QuestManager.isQuestingActive() || quest.getState() == QuestState.QUEST_STATE_FINISHED) {
+            builder.addQuestList(quest.toProto());
+        }
+        QuestListUpdateNotify proto = builder.build();
 
         this.setData(proto);
     }

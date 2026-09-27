@@ -40,11 +40,22 @@ import lombok.*;
 import org.jline.reader.*;
 import org.jline.terminal.*;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import org.slf4j.LoggerFactory;
 
 public final class Grasscutter {
     public static final File configFile = new File("./config.json");
-    public static final Reflections reflector = new Reflections("emu.grasscutter");
+    // The generated protocol classes are thousands of classes nothing looks up by reflection, so
+    // they are left out of the startup scan.
+    public static final Reflections reflector =
+            new Reflections(
+                    new ConfigurationBuilder()
+                            .forPackage("emu.grasscutter")
+                            .filterInputsBy(
+                                    new FilterBuilder()
+                                            .includePackage("emu.grasscutter")
+                                            .excludePackage("emu.grasscutter.net.proto")));
     @Getter private static final Logger logger = (Logger) LoggerFactory.getLogger(Grasscutter.class);
 
     @Getter public static ConfigContainer config;
