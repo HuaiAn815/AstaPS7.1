@@ -100,7 +100,7 @@ public final class SkirkCunningBridge {
         float f3 = Math.max(f, f2);
         if (f3 > 0.01f) {
             SkirkCunningBridge.syncBar(player, entityAvatar, f3);
-            Grasscutter.getLogger().info("Skirk onAvatarActive keep cunning=" + f3 + " (nyx=" + f + ", special=" + f2 + ")");
+            Grasscutter.getLogger().debug("Skirk onAvatarActive keep cunning=" + f3 + " (nyx=" + f + ", special=" + f2 + ")");
         }
     }
 
@@ -112,12 +112,12 @@ public final class SkirkCunningBridge {
             return;
         }
         if (n == 11147 && SkirkCunningBridge.shouldIgnore11147(entityAvatar)) {
-            Grasscutter.getLogger().info("Skirk ignore 11147 (seven-flash echo or duplicate hover)");
+            Grasscutter.getLogger().debug("Skirk ignore 11147 (seven-flash echo or duplicate hover)");
             return;
         }
         SkirkCunningBridge.refreshHoverSession(entityAvatar);
         if (!SkirkCunningBridge.markESkillCast(entityAvatar, n)) {
-            Grasscutter.getLogger().info("Skirk E skip merge (skill=" + n + ")");
+            Grasscutter.getLogger().debug("Skirk E skip merge (skill=" + n + ")");
             return;
         }
         long l = System.currentTimeMillis();
@@ -139,7 +139,7 @@ public final class SkirkCunningBridge {
         if (n == 11142 && !SkirkCunningBridge.wasRecentBurstCast(entityAvatar)) {
             TAP_PEAK_CUNNING.put(entityAvatar.getId(), Float.valueOf(f3));
         }
-        Grasscutter.getLogger().info("Skirk E gain now=" + f3 + " (skill=" + n + ", +=" + f2 + ", was=" + f + ", mode=" + SkirkCunningBridge.modeName(n2) + ", drainOnQ=" + (n == 11142 && n2 != 1) + ")");
+        Grasscutter.getLogger().debug("Skirk E gain now=" + f3 + " (skill=" + n + ", +=" + f2 + ", was=" + f + ", mode=" + SkirkCunningBridge.modeName(n2) + ", drainOnQ=" + (n == 11142 && n2 != 1) + ")");
     }
 
     private static void refreshHoverSession(EntityAvatar entityAvatar) {
@@ -149,7 +149,7 @@ public final class SkirkCunningBridge {
         Float f = entityAvatar.getGlobalAbilityValues().get(TRANSFORM_FLAG_KEY);
         if (f == null || f.floatValue() <= 0.01f) {
             E_MODES.put(entityAvatar.getId(), 0);
-            Grasscutter.getLogger().info("Skirk hover session ended (Transform_Flag=0)");
+            Grasscutter.getLogger().debug("Skirk hover session ended (Transform_Flag=0)");
         }
     }
 
@@ -157,23 +157,23 @@ public final class SkirkCunningBridge {
         E_MODES.put(entityAvatar.getId(), 1);
         SkirkCunningBridge.deactivateDrain(entityAvatar);
         SkirkCunningBridge.setBarGv(player, entityAvatar, 1.0f);
-        Grasscutter.getLogger().info("Skirk mode=HOVER (11147), drain disabled for hover session");
+        Grasscutter.getLogger().debug("Skirk mode=HOVER (11147), drain disabled for hover session");
     }
 
     private static void onTapSkillStart(Player player, EntityAvatar entityAvatar, long l) {
         long[] lArray = SkirkCunningBridge.timestamps(entityAvatar);
         lArray[9] = l;
         if (SkirkCunningBridge.wasRecentBurstCast(entityAvatar)) {
-            Grasscutter.getLogger().info("Skirk E tap (burst combo echo, no drain arm)");
+            Grasscutter.getLogger().debug("Skirk E tap (burst combo echo, no drain arm)");
             return;
         }
         if (E_MODES.getOrDefault(entityAvatar.getId(), 0) == 1) {
-            Grasscutter.getLogger().info("Skirk 11142 during hover session, no drain");
+            Grasscutter.getLogger().debug("Skirk 11142 during hover session, no drain");
             return;
         }
         E_MODES.put(entityAvatar.getId(), 0);
         SkirkCunningBridge.deactivateDrain(entityAvatar);
-        Grasscutter.getLogger().info("Skirk tap E: cunning gained, drain waits for Q combo");
+        Grasscutter.getLogger().debug("Skirk tap E: cunning gained, drain waits for Q combo");
     }
 
     private static boolean shouldIgnore11147(EntityAvatar entityAvatar) {
@@ -205,7 +205,7 @@ public final class SkirkCunningBridge {
         long l = System.currentTimeMillis();
         long[] lArray = SkirkCunningBridge.timestamps(entityAvatar);
         if (lArray[8] > 0L && l - lArray[8] < 1200L) {
-            Grasscutter.getLogger().info("Skirk burst debounce skip");
+            Grasscutter.getLogger().debug("Skirk burst debounce skip");
             return;
         }
         int n = E_MODES.getOrDefault(entityAvatar.getId(), 0);
@@ -223,7 +223,7 @@ public final class SkirkCunningBridge {
             }
             SkirkCunningBridge.setBarGv(player, entityAvatar, 2.0f);
             f2 = NyxHelper.clampNyx(entityAvatar, f2 - 50.0f);
-            Grasscutter.getLogger().info("Skirk E\u2192Q burst cost -50 -> " + f2);
+            Grasscutter.getLogger().debug("Skirk E\u2192Q burst cost -50 -> " + f2);
             SkirkCunningBridge.syncBar(player, entityAvatar, f2);
             SkirkCunningBridge.alignNyxGv(entityAvatar, f2);
             E_MODES.put(entityAvatar.getId(), 2);
@@ -232,7 +232,7 @@ public final class SkirkCunningBridge {
             lArray[4] = l - 200L;
             lArray[6] = 0L;
             SkirkCunningBridge.ensureDrainTicker(player, entityAvatar);
-            Grasscutter.getLogger().info("Skirk E\u2192Q combo: seven-flash drain started on Q");
+            Grasscutter.getLogger().debug("Skirk E\u2192Q combo: seven-flash drain started on Q");
         } else if (bl2) {
             SkirkCunningBridge.deactivateDrain(entityAvatar);
             SkirkCunningBridge.stopDrainTicker(entityAvatar.getId());
@@ -241,7 +241,7 @@ public final class SkirkCunningBridge {
                 SkirkCunningBridge.syncBar(player, entityAvatar, f2);
                 SkirkCunningBridge.alignNyxGv(entityAvatar, f2);
             }
-            Grasscutter.getLogger().info("Skirk hover Q (Exhaust): keep cunning=" + f2);
+            Grasscutter.getLogger().debug("Skirk hover Q (Exhaust): keep cunning=" + f2);
         } else {
             SkirkCunningBridge.deactivateDrain(entityAvatar);
             SkirkCunningBridge.stopDrainTicker(entityAvatar.getId());
@@ -250,12 +250,12 @@ public final class SkirkCunningBridge {
             f2 = 0.0f;
             SkirkCunningBridge.syncBar(player, entityAvatar, 0.0f);
             SkirkCunningBridge.alignNyxGv(entityAvatar, 0.0f);
-            Grasscutter.getLogger().info("Skirk solo Q (Extinguish): consume all cunning " + f3 + " -> 0");
+            Grasscutter.getLogger().debug("Skirk solo Q (Extinguish): consume all cunning " + f3 + " -> 0");
         }
         if (!bl3) {
             TAP_PEAK_CUNNING.remove(entityAvatar.getId());
         }
-        Grasscutter.getLogger().info("Skirk burst skill=11145 cunning=" + f2 + " combo=" + bl + " hover=" + bl2 + " comboDrain=" + bl3);
+        Grasscutter.getLogger().debug("Skirk burst skill=11145 cunning=" + f2 + " combo=" + bl + " hover=" + bl2 + " comboDrain=" + bl3);
     }
 
     public static void onClientBurstAttempt(Player player, GameEntity gameEntity) {
@@ -276,34 +276,34 @@ public final class SkirkCunningBridge {
             float f2 = SkirkCunningBridge.effectiveCunning(entityAvatar);
             if (f > 0.0f && SkirkCunningBridge.isBigGain(f)) {
                 if (SkirkCunningBridge.isDrainScheduled(entityAvatar) || SkirkCunningBridge.isDrainActive(entityAvatar)) {
-                    Grasscutter.getLogger().info("Skirk applyDelta block +" + f + " during tap drain (cur=" + f2 + ")");
+                    Grasscutter.getLogger().debug("Skirk applyDelta block +" + f + " during tap drain (cur=" + f2 + ")");
                     return;
                 }
                 if (!SkirkCunningBridge.isAuthorized(entityAvatar)) {
-                    Grasscutter.getLogger().info("Skirk applyDelta block unauthorized +" + f + " (cur=" + f2 + ")");
+                    Grasscutter.getLogger().debug("Skirk applyDelta block unauthorized +" + f + " (cur=" + f2 + ")");
                     return;
                 }
                 if (!SkirkCunningBridge.markBigGain(entityAvatar)) {
-                    Grasscutter.getLogger().info("Skirk applyDelta dedup +" + f);
+                    Grasscutter.getLogger().debug("Skirk applyDelta dedup +" + f);
                     return;
                 }
                 float f3 = NyxHelper.clampNyx(entityAvatar, f2 + f);
                 SkirkCunningBridge.syncBar(player, entityAvatar, f3);
-                Grasscutter.getLogger().info("Skirk invoke gain now=" + f3 + " (+" + f + ", was=" + f2 + ")");
+                Grasscutter.getLogger().debug("Skirk invoke gain now=" + f3 + " (+" + f + ", was=" + f2 + ")");
                 return;
             }
             if (f > 0.0f && f >= 9.5f && f <= 10.5f && SkirkCunningBridge.isAuthorized(entityAvatar) && SkirkCunningBridge.wasRecentBigGain(entityAvatar)) {
-                Grasscutter.getLogger().info("Skirk applyDelta dedup small +" + f);
+                Grasscutter.getLogger().debug("Skirk applyDelta dedup small +" + f);
                 return;
             }
             if (f < 0.0f && (SkirkCunningBridge.isDrainActive(entityAvatar) || SkirkCunningBridge.isDrainScheduled(entityAvatar))) {
-                Grasscutter.getLogger().info("Skirk applyDelta ignore client/ability drain " + f + " (server owns seven-flash ticks, cur=" + f2 + ")");
+                Grasscutter.getLogger().debug("Skirk applyDelta ignore client/ability drain " + f + " (server owns seven-flash ticks, cur=" + f2 + ")");
                 return;
             }
             float f3 = NyxHelper.clampNyx(entityAvatar, f2 + f);
             SkirkCunningBridge.syncBar(player, entityAvatar, f3);
             if (f > 0.0f && f < 35.0f) {
-                Grasscutter.getLogger().info("Skirk rift/small gain now=" + f3 + " (+" + f + ", was=" + f2 + ")");
+                Grasscutter.getLogger().debug("Skirk rift/small gain now=" + f3 + " (+" + f + ", was=" + f2 + ")");
             }
         }
     }
@@ -327,21 +327,21 @@ public final class SkirkCunningBridge {
         float f2 = SkirkCunningBridge.safeNyx(entityAvatar);
         float f3 = SkirkCunningBridge.safeSpecial(entityAvatar);
         if (f < 0.0f && (SkirkCunningBridge.isDrainActive(entityAvatar) || SkirkCunningBridge.isDrainScheduled(entityAvatar))) {
-            Grasscutter.getLogger().info("Skirk NyxAdd ignore drain " + f + " during seven-flash ticks");
+            Grasscutter.getLogger().debug("Skirk NyxAdd ignore drain " + f + " during seven-flash ticks");
             return;
         }
         if (f > 0.0f && SkirkCunningBridge.isBigGain(f)) {
             if (SkirkCunningBridge.isDrainScheduled(entityAvatar) || SkirkCunningBridge.isDrainActive(entityAvatar)) {
-                Grasscutter.getLogger().info("Skirk NyxAdd block +" + f + " during tap drain");
+                Grasscutter.getLogger().debug("Skirk NyxAdd block +" + f + " during tap drain");
                 return;
             }
             if (f3 >= 35.0f && Math.abs(f - f3) <= 1.0f) {
                 SkirkCunningBridge.syncBar(player, entityAvatar, f3);
-                Grasscutter.getLogger().info("Skirk NyxAdd align special=" + f3 + " (delta=" + f + ")");
+                Grasscutter.getLogger().debug("Skirk NyxAdd align special=" + f3 + " (delta=" + f + ")");
                 return;
             }
             if (Math.abs(f2 - f3) <= 1.0f && f3 >= 35.0f) {
-                Grasscutter.getLogger().info("Skirk NyxAdd skip stack (already synced cur=" + f2 + ")");
+                Grasscutter.getLogger().debug("Skirk NyxAdd skip stack (already synced cur=" + f2 + ")");
                 return;
             }
         }
@@ -399,7 +399,7 @@ public final class SkirkCunningBridge {
                 TAP_PEAK_CUNNING.remove(entityAvatar.getId());
                 SkirkCunningBridge.stopDrainTicker(entityAvatar.getId());
             }
-            Grasscutter.getLogger().info("Skirk seven-flash drain tick -> " + f3 + " (-" + f2 + ", was=" + cur + ")");
+            Grasscutter.getLogger().debug("Skirk seven-flash drain tick -> " + f3 + " (-" + f2 + ", was=" + cur + ")");
         }
     }
 
@@ -464,16 +464,16 @@ public final class SkirkCunningBridge {
                     float f5 = NyxHelper.clampNyx(entityAvatar, f4 - 50.0f);
                     SkirkCunningBridge.syncBar(player, entityAvatar, f5);
                     SkirkCunningBridge.alignNyxGv(entityAvatar, f5);
-                    Grasscutter.getLogger().info("Skirk burst cost -50 -> " + f5 + " (was=" + f4 + ")");
+                    Grasscutter.getLogger().debug("Skirk burst cost -50 -> " + f5 + " (was=" + f4 + ")");
                 } else {
                     SkirkCunningBridge.alignNyxGvOnly(player, entityAvatar, 0.0f);
-                    Grasscutter.getLogger().info("Skirk burst nyx gv align 0 (special=" + f3 + ", effective=" + f4 + ")");
+                    Grasscutter.getLogger().debug("Skirk burst nyx gv align 0 (special=" + f3 + ", effective=" + f4 + ")");
                 }
                 return;
             }
             if (f < f4 - 0.01f) {
                 SkirkCunningBridge.syncBar(player, entityAvatar, f);
-                Grasscutter.getLogger().info("Skirk burst cost sync -> " + f + " (was=" + f4 + ")");
+                Grasscutter.getLogger().debug("Skirk burst cost sync -> " + f + " (was=" + f4 + ")");
                 return;
             }
             if (Math.abs(f - f2) < 0.01f && Math.abs(f - f3) < 0.01f) {
@@ -484,24 +484,24 @@ public final class SkirkCunningBridge {
         }
         if (SkirkCunningBridge.isDrainActive(entityAvatar) || SkirkCunningBridge.isDrainScheduled(entityAvatar)) {
             if (f <= 0.01f || f < f3 - 0.01f) {
-                Grasscutter.getLogger().info("Skirk ignore client drain desync (target=" + f + ", nyx=" + f2 + ", special=" + f3 + ")");
+                Grasscutter.getLogger().debug("Skirk ignore client drain desync (target=" + f + ", nyx=" + f2 + ", special=" + f3 + ")");
             } else if (f > f3 + 1.0f && f >= 99.0f) {
-                Grasscutter.getLogger().info("Skirk ignore client cap spike during tap mode (target=" + f + ", special=" + f3 + ")");
+                Grasscutter.getLogger().debug("Skirk ignore client cap spike during tap mode (target=" + f + ", special=" + f3 + ")");
             }
             return;
         }
         if (f <= 0.01f && f4 >= 35.0f) {
-            Grasscutter.getLogger().info("Skirk ignore client zero desync (nyx=" + f2 + ", special=" + f3 + ")");
+            Grasscutter.getLogger().debug("Skirk ignore client zero desync (nyx=" + f2 + ", special=" + f3 + ")");
             return;
         }
         if (f > 0.01f && f < f4 - 0.01f && SkirkCunningBridge.wasRecentBigGain(entityAvatar)) {
-            Grasscutter.getLogger().info("Skirk ignore client nyx drop after E gain (effective=" + f4 + ", target=" + f + ")");
+            Grasscutter.getLogger().debug("Skirk ignore client nyx drop after E gain (effective=" + f4 + ", target=" + f + ")");
             return;
         }
         if (Math.abs(f - f2) < 0.01f && Math.abs(f - f3) < 0.01f) {
             return;
         }
-        Grasscutter.getLogger().info("Skirk client sync target=" + f + " (nyx=" + f2 + ", special=" + f3 + ")");
+        Grasscutter.getLogger().debug("Skirk client sync target=" + f + " (nyx=" + f2 + ", special=" + f3 + ")");
         SkirkCunningBridge.syncBar(player, entityAvatar, f);
     }
 
@@ -541,7 +541,7 @@ public final class SkirkCunningBridge {
                 entityAvatar.getScene().broadcastPacket(packetEntityFightPropChangeReasonNotify);
             }
         }
-        Grasscutter.getLogger().info("Skirk cunning sync now=" + f3);
+        Grasscutter.getLogger().debug("Skirk cunning sync now=" + f3);
     }
 
     private static boolean markESkillCast(EntityAvatar entityAvatar, int n) {

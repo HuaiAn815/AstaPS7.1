@@ -147,7 +147,7 @@ public final class SkirkCunningHelper {
         }
         SkirkCunningHelper.ensureBarCap(gameEntity);
         if (f < -0.01f) {
-            Grasscutter.getLogger().info("SkirkCunning: allow client meta consume {} (cur={})", (Object)Float.valueOf(f), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
+            Grasscutter.getLogger().debug("SkirkCunning: allow client meta consume {} (cur={})", (Object)Float.valueOf(f), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
             return false;
         }
         if (Math.abs(f) < 0.01f) {
@@ -160,7 +160,7 @@ public final class SkirkCunningHelper {
         if (Math.abs(f4) >= 0.05f) {
             gameEntity.addSpecialEnergy(f4);
             SpecialEnergyBarHelper.ensureAndSync(gameEntity);
-            Grasscutter.getLogger().info("SkirkCunning: client meta SET {} -> {} (delta={})", new Object[]{Float.valueOf(f2), Float.valueOf(f3), Float.valueOf(f4)});
+            Grasscutter.getLogger().debug("SkirkCunning: client meta SET {} -> {} (delta={})", new Object[]{Float.valueOf(f2), Float.valueOf(f3), Float.valueOf(f4)});
         }
         SkirkCunningHelper.syncNyxFromSpecial(gameEntity);
         return true;
@@ -198,7 +198,7 @@ public final class SkirkCunningHelper {
         SpecialEnergyBarHelper.ensureAndSync(gameEntity);
         SkirkCunningHelper.syncNyxFromSpecial(gameEntity);
         if (gameEntity instanceof EntityAvatar && (entityAvatar = (EntityAvatar)gameEntity).getPlayer() != null) {
-            Grasscutter.getLogger().info("SkirkCunning: +{} from E (bridge) uid={} cur={}", new Object[]{(int)f, entityAvatar.getPlayer().getUid(), Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY))});
+            Grasscutter.getLogger().debug("SkirkCunning: +{} from E (bridge) uid={} cur={}", new Object[]{(int)f, entityAvatar.getPlayer().getUid(), Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY))});
         }
     }
 
@@ -246,7 +246,7 @@ public final class SkirkCunningHelper {
                 // empty catch block
             }
         }
-        Grasscutter.getLogger().info("SkirkCunning: clear Flash flag only uid={}", (Object)(player != null ? player.getUid() : -1));
+        Grasscutter.getLogger().debug("SkirkCunning: clear Flash flag only uid={}", (Object)(player != null ? player.getUid() : -1));
     }
 
     public static void unlockBurstUi(Player player, GameEntity gameEntity) {
@@ -274,7 +274,7 @@ public final class SkirkCunningHelper {
                 Grasscutter.getLogger().warn("Skirk unlockBurstUi skillInfo failed", throwable);
             }
         }
-        Grasscutter.getLogger().info("SkirkCunning: unlockBurstUi uid={} curSE={}", (Object)player.getUid(), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
+        Grasscutter.getLogger().debug("SkirkCunning: unlockBurstUi uid={} curSE={}", (Object)player.getUid(), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
     }
 
     public static void onBurstSkillStart(Player player, int n, GameEntity gameEntity) {
@@ -293,7 +293,7 @@ public final class SkirkCunningHelper {
         long l = System.currentTimeMillis();
         Long l2 = lastSkillGrantMs.get(n);
         if (l2 != null && l - l2 < 900L) {
-            Grasscutter.getLogger().info("SkirkCunning: skip duplicate E grant within debounce");
+            Grasscutter.getLogger().debug("SkirkCunning: skip duplicate E grant within debounce");
             return;
         }
         lastSkillGrantMs.put(n, l);
@@ -489,7 +489,7 @@ public final class SkirkCunningHelper {
             return;
         }
         SkirkCunningBridge.applyDelta(player, skirk, revive);
-        Grasscutter.getLogger().info(
+        Grasscutter.getLogger().debug(
                 "Skirk pickable absorb +{} ({}) uid={} cur={}",
                 (int) revive,
                 reason,
@@ -543,7 +543,7 @@ public final class SkirkCunningHelper {
             Avatar avatar;
             Long l2 = lastSkillGrantMs.get(n);
             if (l2 != null && l - l2 < 900L) {
-                Grasscutter.getLogger().info("SkirkCunning: skip duplicate base +{} within debounce; cur={}", (Object)Float.valueOf(f), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
+                Grasscutter.getLogger().debug("SkirkCunning: skip duplicate base +{} within debounce; cur={}", (Object)Float.valueOf(f), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
                 SkirkCunningHelper.ensureBarCap(gameEntity);
                 return true;
             }
@@ -562,7 +562,7 @@ public final class SkirkCunningHelper {
                 lastC2GrantMs.put(n, l);
             }
             SkirkCunningHelper.doGrant(gameEntity, f2);
-            Grasscutter.getLogger().info("SkirkCunning: config +{} (base={} c2={}) entity={} cur={}", new Object[]{Float.valueOf(f2), Float.valueOf(f), bl, n, Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY))});
+            Grasscutter.getLogger().debug("SkirkCunning: config +{} (base={} c2={}) entity={} cur={}", new Object[]{Float.valueOf(f2), Float.valueOf(f), bl, n, Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY))});
             return true;
         }
         if (f >= 9.5f && f <= 10.5f) {
@@ -579,13 +579,13 @@ public final class SkirkCunningHelper {
             }
             object = lastC2GrantMs.get(n);
             if (object != null && l - (Long)object < 900L) {
-                Grasscutter.getLogger().info("SkirkCunning: skip duplicate C2 +{} within debounce", (Object)Float.valueOf(f));
+                Grasscutter.getLogger().debug("SkirkCunning: skip duplicate C2 +{} within debounce", (Object)Float.valueOf(f));
                 SkirkCunningHelper.ensureBarCap(gameEntity);
                 return true;
             }
             lastC2GrantMs.put(n, l);
             SkirkCunningHelper.doGrant(gameEntity, f);
-            Grasscutter.getLogger().info("SkirkCunning: config C2 +{} cur={}", (Object)Float.valueOf(f), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
+            Grasscutter.getLogger().debug("SkirkCunning: config C2 +{} cur={}", (Object)Float.valueOf(f), (Object)Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
             return true;
         }
         return false;
@@ -670,7 +670,7 @@ public final class SkirkCunningHelper {
         SkirkCunningHelper.applyModifierOnAdded(abilityManager, ability, gameEntity, "SkirkNew_ElementalBurst_Special_Camera", true);
         SkirkCunningHelper.applyModifierOnAdded(abilityManager, ability, gameEntity, "SkirkNew_ElementalBurst_Special_Buff_Handler", true);
         SkirkCunningHelper.applyModifierOnAdded(abilityManager, ability, gameEntity, "SkirkNew_ElementalBurst_Special_FX_OnTeam", true);
-        Grasscutter.getLogger().info("SkirkCunning: FORCE play burst skill={} uid={} flash={} curSE={}", new Object[]{n, player.getUid(), SkirkCunningHelper.isInSevenPhaseFlash(gameEntity), Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY))});
+        Grasscutter.getLogger().debug("SkirkCunning: FORCE play burst skill={} uid={} flash={} curSE={}", new Object[]{n, player.getUid(), SkirkCunningHelper.isInSevenPhaseFlash(gameEntity), Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY))});
     }
 
     private static Ability findAbility(GameEntity gameEntity, String string) {
@@ -698,7 +698,7 @@ public final class SkirkCunningHelper {
         }
         AbilityModifier abilityModifier = (AbilityModifier)abilityData.modifiers.get(string);
         if (abilityModifier == null) {
-            Grasscutter.getLogger().info("Skirk FORCE missing modifier {}", (Object)string);
+            Grasscutter.getLogger().debug("Skirk FORCE missing modifier {}", (Object)string);
             return;
         }
         try {
@@ -711,7 +711,7 @@ public final class SkirkCunningHelper {
                 }
             }
             gameEntity.onAddAbilityModifier(abilityModifier);
-            Grasscutter.getLogger().info("Skirk FORCE applied modifier {}", (Object)string);
+            Grasscutter.getLogger().debug("Skirk FORCE applied modifier {}", (Object)string);
         }
         catch (Throwable throwable) {
             Grasscutter.getLogger().warn("Skirk FORCE apply {} failed", (Object)string, (Object)throwable);
@@ -730,7 +730,7 @@ public final class SkirkCunningHelper {
             EvtAnimatorParameterInfoOuterClass.EvtAnimatorParameterInfo evtAnimatorParameterInfo = EvtAnimatorParameterInfoOuterClass.EvtAnimatorParameterInfo.newBuilder().setEntityId(gameEntity.getId()).setNameId(Utils.animatorHash((String)string)).setValue(animatorParameterValueInfo).build();
             CombatInvokeEntryOuterClass.CombatInvokeEntry combatInvokeEntry = CombatInvokeEntryOuterClass.CombatInvokeEntry.newBuilder().setCombatData(evtAnimatorParameterInfo.toByteString()).setArgumentTypeValue(6).build();
             gameEntity.getScene().broadcastPacket((BasePacket)new PacketCombatInvocationsNotify(combatInvokeEntry));
-            Grasscutter.getLogger().info("Skirk FORCE animator trigger={} hash={} entity={}", new Object[]{string, Utils.animatorHash((String)string), gameEntity.getId()});
+            Grasscutter.getLogger().debug("Skirk FORCE animator trigger={} hash={} entity={}", new Object[]{string, Utils.animatorHash((String)string), gameEntity.getId()});
         }
         catch (Throwable throwable) {
             Grasscutter.getLogger().warn("Skirk FORCE animator {} failed", (Object)string, (Object)throwable);

@@ -64,7 +64,7 @@ public final class SkirkInvokeLog {
             }
             boolean bl2 = bl = n2 == 0 || n2 == 100899 || string.contains("MODIFIER_DURABILITY") || string.contains("SPECIAL_ENERGY") || string.contains("GLOBAL_FLOAT");
             if (!bl) {
-                Grasscutter.getLogger().info("SkirkInvoke: arg={} typeValue={} localId={} instAbility={} entity={} uid={} curSE={}", string, n, n2, n3, gameEntity.getId(), player.getUid(), Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
+                Grasscutter.getLogger().debug("SkirkInvoke: arg={} typeValue={} localId={} instAbility={} entity={} uid={} curSE={}", string, n, n2, n3, gameEntity.getId(), player.getUid(), Float.valueOf(gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY)));
             }
             if ((n2 == 98923 || n2 == 131691) && string != null && string.contains("NONE")) {
                 float f = gameEntity.getFightProperty(FightProperty.FIGHT_PROP_CUR_SPECIAL_ENERGY);
