@@ -16,7 +16,10 @@ public class PacketGetScenePointRsp extends BasePacket {
     public PacketGetScenePointRsp(Player player, int sceneId) {
         super(PacketOpcodes.GetScenePointRsp);
 
-        GetScenePointRsp.Builder p = GetScenePointRsp.newBuilder().setSceneId(sceneId);
+        // belong_uid names whose points these are; left at 0 the client matched it to nobody and
+        // drew no waypoint or statue at all, unlocked or not.
+        GetScenePointRsp.Builder p =
+                GetScenePointRsp.newBuilder().setSceneId(sceneId).setBelongUid(player.getUid());
 
         LinkedHashSet<Integer> pointIds = new LinkedHashSet<>();
         var perScene = GameData.getScenePointsPerScene();
@@ -48,13 +51,12 @@ public class PacketGetScenePointRsp extends BasePacket {
                     player.isScenePointForceLocked(sceneId, pointId)
                             || !unlockedSet.contains(pointId);
 
+            // A locked point is simply left out of the unlocked list, which the client draws as a
+            // locked waypoint. Putting it on hide_point_list as well took it off the map entirely.
             if (locked) {
-                p.addHidePointList(pointId);
-                p.addUnhidePointList(pointId);
                 lockedCount++;
             } else {
                 p.addUnlockedPointList(pointId);
-                p.addUnhidePointList(pointId);
                 unlockedCount++;
             }
             if (pointId == 7) has7 = unlockedSet.contains(7);
