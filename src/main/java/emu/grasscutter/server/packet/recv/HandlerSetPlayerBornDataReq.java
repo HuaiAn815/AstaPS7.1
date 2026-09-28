@@ -70,6 +70,9 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
             return;
         }
 
+        // The character was just created: start the quests a new account begins with.
+        session.getPlayer().getQuestManager().onPlayerBorn();
+
         // Login done
         session.getPlayer().onLogin();
 

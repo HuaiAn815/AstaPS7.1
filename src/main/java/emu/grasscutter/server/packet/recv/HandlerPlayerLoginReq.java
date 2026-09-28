@@ -43,6 +43,8 @@ public class HandlerPlayerLoginReq extends PacketHandler {
             return;
         }
 
+        boolean newPlayer = player.getAvatars().getAvatarCount() == 0;
+
         if (!(player.getAvatars().getAvatarCount() == 0 && intro.enabled)) {
             // Also repair legacy accounts that have avatars but lost their main-character marker.
             BornDataHelper.ensureMainCharacter(player);
@@ -52,6 +54,11 @@ public class HandlerPlayerLoginReq extends PacketHandler {
             // Keep the configured intro flow above intact. For accounts that skip it, use the
             // patched repair/auto-create path so a missing main character cannot block login.
             createDefaultTraveler(player);
+        }
+
+        // Either path above may just have created the Traveler; that is this account's birth.
+        if (newPlayer && player.getAvatars().getAvatarCount() > 0) {
+            player.getQuestManager().onPlayerBorn();
         }
 
         player.onLogin();
@@ -79,6 +86,7 @@ public class HandlerPlayerLoginReq extends PacketHandler {
                                     .warn("[intro] no character creation after {}s, falling back to the default Traveler.",
                                             seconds);
                             createDefaultTraveler(player);
+                            player.getQuestManager().onPlayerBorn();
                             player.onLogin();
                         },
                         seconds);

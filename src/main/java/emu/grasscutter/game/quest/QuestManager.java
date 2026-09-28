@@ -231,6 +231,17 @@ public final class QuestManager extends BasePlayerManager {
         this.player.sendPacket(new PacketGivingRecordNotify(this.getGivingRecords()));
     }
 
+    /**
+     * Hands a player created just now the quests that have no prerequisite, the first main quest
+     * among them. Nothing else starts that chain: with triggerAllOnLogin off, a new account
+     * otherwise arrives with an empty quest log. Called once, before the first onLogin.
+     */
+    public void onPlayerBorn() {
+        if (this.isQuestingEnabled()) {
+            this.enableQuests();
+        }
+    }
+
     public void onLogin() {
         if (this.isQuestingEnabled()) {
             // The sweep is what fills a fresh quest log at login; see questing.triggerAllOnLogin.
