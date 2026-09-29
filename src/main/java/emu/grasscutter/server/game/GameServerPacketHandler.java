@@ -125,7 +125,10 @@ public final class GameServerPacketHandler {
         try {
             var req =
                     emu.grasscutter.net.proto.CombineReqOuterClass.CombineReq.parseFrom(payload);
-            if (req.getCombineId() <= 0) {
+            // Any unknown packet whose first field is a number parses as a CombineReq. A real one
+            // always crafts at least one item; without this check a waypoint's UnlockTransPointReq
+            // was taken for combineId 6 and answered with a failed CombineRsp.
+            if (req.getCombineId() <= 0 || req.getCombineCount() <= 0) {
                 return false;
             }
             Grasscutter.getLogger()
