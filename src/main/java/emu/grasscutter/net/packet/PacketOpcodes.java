@@ -1344,7 +1344,7 @@ public final class PacketOpcodes {
     // public static final int IBGJNANGLIP = 3419;
     public static final int SceneRouteChangeNotify = 2838;
     public static final int LanternRiteDoFireworksReformReq = 22818;
-    public static final int UnlockTransPointReq = 0; // 7.1 CmdId unknown (7.0: 8813)
+    public static final int UnlockTransPointReq = 9369; // 7.1: {scene_id = 12, point_id = 1}
     public static final int ClientAbilitiesInitFinishCombineRsp2 = 0; // 7.1 CmdId unknown (7.0: 8816)
     // public static final int GJOCENLDHJH = 7935;
     public static final int LanV3RaceSettleNotify = 24845;
