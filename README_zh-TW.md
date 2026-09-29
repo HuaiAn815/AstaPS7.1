@@ -22,7 +22,7 @@
 | Java | 編譯需要 21。原始碼目標是 17，但虛擬執行緒等 21 的 API 是對著 JDK 自身的類別編譯的。 |
 | MongoDB | Community Server，啟動伺服器前必須先跑起來。 |
 | 遊戲客戶端 | 原神 7.1.0 |
-| 資源檔 | 7.1.0 的資源包，解壓到伺服器目錄下的 `resources/`。如果你沒有資源檔，可以透過[該連結](https://1drv.ms/u/c/444d933f3e05a8df/IQCvnLqSDhbvT5UpSZW9cjDMAbK7ThRplKXcqY5dgX27utE?e=lo1Ze4)下載。 |
+| 資源檔 | 7.1.0 的資源包，解壓到伺服器目錄下的 `resources/`。如果你沒有資源檔，可以透過[該連結](https://github.com/MeChen618/AstaPS-Resource)下載。 |
 
 ## 編譯
 
