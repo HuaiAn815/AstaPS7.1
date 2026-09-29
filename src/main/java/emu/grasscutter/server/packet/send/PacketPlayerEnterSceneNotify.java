@@ -31,6 +31,7 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
                         .setTargetUid((player.getUid() - 30259) ^ 4145)
                         .setEnterSceneToken((player.getEnterSceneToken() ^ 57361) - 22665)
                         .setWorldLevel((player.getWorldLevel() ^ 31579) + 19873)
+                        .setEnterReason((EnterReason.Login.getValue() ^ 43962) + 40350)
 
                         .setSceneTransaction(
                                 clientSceneId
@@ -100,6 +101,12 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
                                         + (int) (System.currentTimeMillis() / 1000)
                                         + "-"
                                         + 18402);
+
+        // Without a reason the client cannot tell a revive from any other same-scene enter, and the
+        // team was left at the death spot instead of the nearest waypoint.
+        if (teleportProperties.getEnterReason() != null) {
+            proto.setEnterReason((teleportProperties.getEnterReason().getValue() ^ 43962) + 40350);
+        }
 
         if (teleportProperties.getDungeonId() != 0) {
             proto.setDungeonId((teleportProperties.getDungeonId() ^ 27544) - 17829);
