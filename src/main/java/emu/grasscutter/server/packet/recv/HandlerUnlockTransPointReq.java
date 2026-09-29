@@ -21,6 +21,14 @@ public class HandlerUnlockTransPointReq extends PacketHandler {
                         .getPlayer()
                         .getProgressManager()
                         .unlockTransPoint(req.getSceneId(), req.getPointId(), isStatue);
+        emu.grasscutter.Grasscutter.getLogger()
+                .info(
+                        "UnlockTransPointReq uid={} scene={} point={} statue={} unlocked={}",
+                        session.getPlayer().getUid(),
+                        req.getSceneId(),
+                        req.getPointId(),
+                        isStatue,
+                        unlocked);
         session
                 .getPlayer()
                 .sendPacket(
