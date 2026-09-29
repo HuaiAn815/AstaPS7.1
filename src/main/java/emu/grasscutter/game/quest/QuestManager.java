@@ -231,6 +231,55 @@ public final class QuestManager extends BasePlayerManager {
         this.player.sendPacket(new PacketGivingRecordNotify(this.getGivingRecords()));
     }
 
+    /** The prologue, where the Archon Quest chain begins. */
+    private static final int FIRST_MAIN_QUEST = 351;
+
+    /**
+     * Hands a player created just now the quests that have no prerequisite, and the prologue.
+     * Nothing else starts either: with triggerAllOnLogin off, a new account otherwise arrives with
+     * an empty quest log. Called once, before the first onLogin.
+     */
+    public void onPlayerBorn() {
+        if (this.isQuestingEnabled()) {
+            this.enableQuests();
+            this.startMainQuestIfUnlinked(FIRST_MAIN_QUEST);
+        }
+    }
+
+    /**
+     * Whether a main quest's opening sub quest waits only on "quest 0 is finished".
+     *
+     * <p>The 7.1 resources carry that where the real prerequisite between main quests was lost:
+     * inside a main quest every sub quest waits on the one before it, but the first waits on quest
+     * 0, which no player can finish. Such a main quest has to be started by hand, from the quest
+     * that suggests it next.
+     */
+    private static boolean opensUnlinked(int mainQuestId) {
+        var mainQuestData = GameData.getMainQuestDataMap().get(mainQuestId);
+        if (mainQuestData == null || mainQuestData.getSubQuests() == null) return false;
+
+        var first =
+                Arrays.stream(mainQuestData.getSubQuests())
+                        .min(Comparator.comparingInt(MainQuestData.SubQuestData::getOrder))
+                        .map(sub -> GameData.getQuestDataMap().get(sub.getSubId()))
+                        .orElse(null);
+        if (first == null || first.getAcceptCond().size() != 1) return false;
+
+        var cond = first.getAcceptCond().get(0);
+        return cond.getType() == QuestCond.QUEST_COND_STATE_EQUAL
+                && cond.getParam() != null
+                && cond.getParam().length > 0
+                && cond.getParam()[0] == 0;
+    }
+
+    /** Starts a main quest whose opening can never be met on its own, unless it already began. */
+    public void startMainQuestIfUnlinked(int mainQuestId) {
+        if (this.getMainQuestById(mainQuestId) != null || !opensUnlinked(mainQuestId)) return;
+
+        Grasscutter.getLogger().debug("Starting main quest {} for uid {}", mainQuestId, player.getUid());
+        this.startMainQuest(mainQuestId);
+    }
+
     public void onLogin() {
         if (this.isQuestingEnabled()) {
             // The sweep is what fills a fresh quest log at login; see questing.triggerAllOnLogin.

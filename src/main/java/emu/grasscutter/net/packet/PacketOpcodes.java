@@ -2415,7 +2415,7 @@ public final class PacketOpcodes {
     // public static final int ILEONMGKJOO = 25362;
     // public static final int FBNHJOMHHEC = 22294;
     // public static final int LOOGLBBKMHG = 25414;
-    // public static final int JLECEPJMBIG = 1192;
+    public static final int ExecuteGroupTriggerRsp = 1192; // 7.1 JLECEPJMBIG, matched by structure
     public static final int _TeamMoonPhaseChangeNotify = 29844;
     public static final int _WispCageDeliverItemReq = 28195;
     public static final int PlayerLoginReq = 9282;
