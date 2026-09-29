@@ -442,8 +442,7 @@ public final class OreMiningHelper {
                 && (string.contains("Pile") || string.contains("Stack") || string.contains("Broken"))) {
             return true;
         }
-        if (string.contains("WoodenMaterial")
-                || string.contains("WoodenObject")
+        if (string.contains("WoodenObject")
                 || string.contains("Woodenpile")
                 || string.contains("WoodenBarrel")
                 || string.contains("WoodenBox")) {
