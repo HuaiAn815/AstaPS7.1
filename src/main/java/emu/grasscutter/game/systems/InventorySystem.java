@@ -50,14 +50,12 @@ public class InventorySystem extends BaseGameSystem {
         super(server);
     }
 
-    public static synchronized int checkPlayerAvatarConstellationLevel(Player player, int id) {
-        // Try to accept itemId OR avatarId
-        int avatarId = 0;
+    /** The avatar an id stands for: the avatar id itself, or the avatar a card item grants. 0 if neither. */
+    public static int getAvatarIdFromItem(int id) {
         if (GameData.getAvatarDataMap().containsKey(id)) {
-            avatarId = id;
-        } else {
-            avatarId =
-                    Optional.ofNullable(GameData.getItemDataMap().get(id))
+            return id;
+        }
+        return Optional.ofNullable(GameData.getItemDataMap().get(id))
                             .map(itemData -> itemData.getItemUseActions())
                             .flatMap(
                                     actions ->
@@ -70,7 +68,11 @@ public class InventorySystem extends BaseGameSystem {
                                                                             .getI())
                                                     .findFirst())
                             .orElse(0);
-        }
+    }
+
+    public static synchronized int checkPlayerAvatarConstellationLevel(Player player, int id) {
+        // Try to accept itemId OR avatarId
+        int avatarId = getAvatarIdFromItem(id);
 
         if (avatarId == 0) return -2; // Not an Avatar
 
