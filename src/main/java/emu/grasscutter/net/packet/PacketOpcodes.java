@@ -49,7 +49,7 @@ public final class PacketOpcodes {
     public static final int SceneKickPlayerReq = 0;
     public static final int SkipPlayerGameTimeReq = 0;
     public static final int TheaterLobbySceneJumpReq = 0;
-    public static final int UiSettingInputTypeNotify = 0;
+    public static final int UiSettingInputTypeNotify = 29767;
     public static final int UnlockPersonalLineReq = 5896; // 7.1: one of two {personal_line_id = 13} reqs, see HandlerUnlockPersonalLineReq
     public static final int _UnlockPersonalLineReqAlt = 21679; // 7.1: the other one
     // ============================================
