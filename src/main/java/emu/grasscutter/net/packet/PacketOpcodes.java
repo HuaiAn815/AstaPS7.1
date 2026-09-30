@@ -1610,7 +1610,7 @@ public final class PacketOpcodes {
     public static final int _CustomGalleryTargetNotify = 5247;
     public static final int HomeUpdateFishFarmingInfoRsp = 0; // 7.1 CmdId unknown (7.0: 20797)
     public static final int UpgradeRoguelikeShikigamiReq = 38;
-    public static final int WorldPlayerReviveReq = 0; // 7.1 CmdId unknown (7.0: 20801)
+    public static final int WorldPlayerReviveReq = 5232; // 7.1: empty, confirmed by pressing revive after a team wipe
     // public static final int APHHKODJAFE = 7692;
     // public static final int KJNLPDAOBIL = 26142;
     public static final int AnchorPointOpReq = 23302;
