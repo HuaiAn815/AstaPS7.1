@@ -455,6 +455,13 @@ public final class ResourceLoader {
                 continue;
             }
 
+            // Quest abilities are dynamic too, but only a quest may grant them. Avatar_Columbina_MainQuest
+            // sets a team global value that hides Slot2/Slot5 for every member, so merging it made
+            // Columbina's whole team lose E and Q.
+            if (abilityData.abilityName.contains("Quest")) {
+                continue;
+            }
+
             if (abilityData.abilityName.startsWith("Avatar_" + avatarName)) {
                 if (!mergedAbilities.contains(abilityData.abilityName)) {
                     mergedAbilities.add(abilityData.abilityName);

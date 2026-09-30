@@ -87,6 +87,7 @@ public final class GenericHandler implements Router {
         // had no strings to render and fell back to printing the raw keys.
         javalin.get("/admin/mi18n/plat_oversea/*", new WebStaticVersionResponse());
         javalin.get("/admin/mi18n/plat_os/*", new WebStaticVersionResponse());
+        javalin.get("/admin/mi18n/plat_cn/*", new WebStaticVersionResponse());
 
         this.allRoutes(javalin, "/hk4e_global/account/ma-passport/api/getConfig",
                 new HttpJsonResponse("{\"retcode\":0,\"message\":\"OK\",\"data\":{\"support_reactivate_account\":false,\"enable_ps_bind_account\":false,\"login_mode\":\"account_login\",\"guest_mode\":\"close\",\"realperson_mode\":\"none\",\"safeguard_type\":\"none\",\"apple_login_enabled\":false,\"facebook_login_enabled\":false,\"google_login_enabled\":false,\"twitter_login_enabled\":false}}"));

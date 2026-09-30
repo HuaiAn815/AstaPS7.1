@@ -396,9 +396,18 @@ public class GachaSystem extends BaseGameSystem {
                             pools.removeFromAllPools(new int[] {itemId});
                         }
                         addStarglitter = (itemData.getRankLevel() == 5) ? 10 : 2;
-                        int constItemId =
-                                itemId + 100; // This may not hold true for future characters. Examples of strictly
-                        // correct constellation item lookup are elsewhere for now.
+                        // Cards from 4101 on are not 100 below their constellation item, so ask the
+                        // owned avatar's skill depot, as ItemUseGainAvatar does when it hands it out.
+                        int constItemId = itemId + 100;
+                        var ownedAvatar =
+                                player.getAvatars()
+                                        .getAvatarById(
+                                                InventorySystem.getAvatarIdFromItem(itemId));
+                        if (ownedAvatar != null
+                                && ownedAvatar.getSkillDepot() != null
+                                && ownedAvatar.getSkillDepot().getTalentCostItemId() > 0) {
+                            constItemId = ownedAvatar.getSkillDepot().getTalentCostItemId();
+                        }
                         boolean haveConstItem =
                                 inventory.getInventoryTab(ItemType.ITEM_MATERIAL).getItemById(constItemId) == null;
                         gachaItem.addTransferItems(

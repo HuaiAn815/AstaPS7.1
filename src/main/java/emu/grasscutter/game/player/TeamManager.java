@@ -1071,8 +1071,7 @@ public final class TeamManager extends BasePlayerDataManager {
             this.getPlayer().sendPacket(new PacketEnterScenePeerNotify(this.getPlayer()));
             this.getPlayer().getPosition().set(fallback);
         }
-
-        this.getPlayer().sendPacket(new BasePacket(PacketOpcodes.WorldPlayerReviveRsp));
+        // HandlerWorldPlayerReviveReq sends the one WorldPlayerReviveRsp after this returns.
     }
 
     public Position getRespawnPosition() {

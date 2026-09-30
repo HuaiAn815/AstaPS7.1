@@ -146,6 +146,24 @@ public class ItemData extends GameResource {
                             .filter(Objects::nonNull)
                             .toList();
         }
+
+        // 7.1 data leaves useOnGain off every avatar card and costume and most gliders, so they fell
+        // through to the "lacks isUseOnGain" branch and were thrown away: a character pulled from a
+        // wish never arrived. A card whose only job is to grant the thing is always used on gain.
+        if (!this.useOnGain && this.itemUseActions != null) {
+            var gainOp =
+                    switch (this.materialType) {
+                        case MATERIAL_AVATAR -> ItemUseOp.ITEM_USE_GAIN_AVATAR;
+                        case MATERIAL_FLYCLOAK -> ItemUseOp.ITEM_USE_GAIN_FLYCLOAK;
+                        case MATERIAL_COSTUME -> ItemUseOp.ITEM_USE_GAIN_COSTUME;
+                        case MATERIAL_NAMECARD -> ItemUseOp.ITEM_USE_GAIN_NAME_CARD;
+                        default -> null;
+                    };
+            if (gainOp != null
+                    && this.itemUseActions.stream().anyMatch(a -> a.getItemUseOp() == gainOp)) {
+                this.useOnGain = true;
+            }
+        }
     }
 
     @Getter
