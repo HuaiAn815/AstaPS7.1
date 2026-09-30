@@ -70,11 +70,11 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
             return;
         }
 
+        // Login first so quest initialization can safely use the player's World and scenes.
+        session.getPlayer().onLogin();
+
         // The character was just created: start the quests a new account begins with.
         session.getPlayer().getQuestManager().onPlayerBorn();
-
-        // Login done
-        session.getPlayer().onLogin();
 
         // Born resp packet. Empty is a valid success - retcode defaults to 0 - so the CmdId is the
         // only thing this needs, and PacketOpcodes has no 7.0 entry for it.
