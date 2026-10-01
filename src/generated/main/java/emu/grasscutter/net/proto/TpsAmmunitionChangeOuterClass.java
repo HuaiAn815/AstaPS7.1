@@ -19,10 +19,10 @@ public final class TpsAmmunitionChangeOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>uint32 item_id = 7;</code>
-     * @return The itemId.
+     * <code>uint32 ammunition_config_id = 7;</code>
+     * @return The ammunitionConfigId.
      */
-    int getItemId();
+    int getAmmunitionConfigId();
 
     /**
      * <code>int32 change_count = 12;</code>
@@ -33,7 +33,8 @@ public final class TpsAmmunitionChangeOuterClass {
   /**
    * <pre>
    * CmdId: -
-   * 7.1 obf: MLCOEDLCCAA (7.0: IBIMPAJBFOP)
+   * 7.1 obf: MLCOEDLCCAA (7.0: IBIMPAJBFOP). Field names are descriptive: the 7.0 list calls them
+   * item_id / change_count, but 7.1 spells those EIGJMOABCGH / DOCFIDJNIFO.
    * </pre>
    *
    * Protobuf type {@code TpsAmmunitionChange}
@@ -82,7 +83,7 @@ public final class TpsAmmunitionChangeOuterClass {
               break;
             case 56: {
 
-              itemId_ = input.readUInt32();
+              ammunitionConfigId_ = input.readUInt32();
               break;
             }
             case 96: {
@@ -122,15 +123,15 @@ public final class TpsAmmunitionChangeOuterClass {
               emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.class, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder.class);
     }
 
-    public static final int ITEM_ID_FIELD_NUMBER = 7;
-    private int itemId_;
+    public static final int AMMUNITION_CONFIG_ID_FIELD_NUMBER = 7;
+    private int ammunitionConfigId_;
     /**
-     * <code>uint32 item_id = 7;</code>
-     * @return The itemId.
+     * <code>uint32 ammunition_config_id = 7;</code>
+     * @return The ammunitionConfigId.
      */
     @java.lang.Override
-    public int getItemId() {
-      return itemId_;
+    public int getAmmunitionConfigId() {
+      return ammunitionConfigId_;
     }
 
     public static final int CHANGE_COUNT_FIELD_NUMBER = 12;
@@ -158,8 +159,8 @@ public final class TpsAmmunitionChangeOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (itemId_ != 0) {
-        output.writeUInt32(7, itemId_);
+      if (ammunitionConfigId_ != 0) {
+        output.writeUInt32(7, ammunitionConfigId_);
       }
       if (changeCount_ != 0) {
         output.writeInt32(12, changeCount_);
@@ -173,9 +174,9 @@ public final class TpsAmmunitionChangeOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (itemId_ != 0) {
+      if (ammunitionConfigId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(7, itemId_);
+          .computeUInt32Size(7, ammunitionConfigId_);
       }
       if (changeCount_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -196,8 +197,8 @@ public final class TpsAmmunitionChangeOuterClass {
       }
       emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange other = (emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange) obj;
 
-      if (getItemId()
-          != other.getItemId()) return false;
+      if (getAmmunitionConfigId()
+          != other.getAmmunitionConfigId()) return false;
       if (getChangeCount()
           != other.getChangeCount()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -211,8 +212,8 @@ public final class TpsAmmunitionChangeOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + ITEM_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getItemId();
+      hash = (37 * hash) + AMMUNITION_CONFIG_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getAmmunitionConfigId();
       hash = (37 * hash) + CHANGE_COUNT_FIELD_NUMBER;
       hash = (53 * hash) + getChangeCount();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -313,7 +314,8 @@ public final class TpsAmmunitionChangeOuterClass {
     /**
      * <pre>
      * CmdId: -
-     * 7.1 obf: MLCOEDLCCAA (7.0: IBIMPAJBFOP)
+     * 7.1 obf: MLCOEDLCCAA (7.0: IBIMPAJBFOP). Field names are descriptive: the 7.0 list calls them
+     * item_id / change_count, but 7.1 spells those EIGJMOABCGH / DOCFIDJNIFO.
      * </pre>
      *
      * Protobuf type {@code TpsAmmunitionChange}
@@ -353,7 +355,7 @@ public final class TpsAmmunitionChangeOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        itemId_ = 0;
+        ammunitionConfigId_ = 0;
 
         changeCount_ = 0;
 
@@ -383,7 +385,7 @@ public final class TpsAmmunitionChangeOuterClass {
       @java.lang.Override
       public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange buildPartial() {
         emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange result = new emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange(this);
-        result.itemId_ = itemId_;
+        result.ammunitionConfigId_ = ammunitionConfigId_;
         result.changeCount_ = changeCount_;
         onBuilt();
         return result;
@@ -433,8 +435,8 @@ public final class TpsAmmunitionChangeOuterClass {
 
       public Builder mergeFrom(emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange other) {
         if (other == emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.getDefaultInstance()) return this;
-        if (other.getItemId() != 0) {
-          setItemId(other.getItemId());
+        if (other.getAmmunitionConfigId() != 0) {
+          setAmmunitionConfigId(other.getAmmunitionConfigId());
         }
         if (other.getChangeCount() != 0) {
           setChangeCount(other.getChangeCount());
@@ -468,33 +470,33 @@ public final class TpsAmmunitionChangeOuterClass {
         return this;
       }
 
-      private int itemId_ ;
+      private int ammunitionConfigId_ ;
       /**
-       * <code>uint32 item_id = 7;</code>
-       * @return The itemId.
+       * <code>uint32 ammunition_config_id = 7;</code>
+       * @return The ammunitionConfigId.
        */
       @java.lang.Override
-      public int getItemId() {
-        return itemId_;
+      public int getAmmunitionConfigId() {
+        return ammunitionConfigId_;
       }
       /**
-       * <code>uint32 item_id = 7;</code>
-       * @param value The itemId to set.
+       * <code>uint32 ammunition_config_id = 7;</code>
+       * @param value The ammunitionConfigId to set.
        * @return This builder for chaining.
        */
-      public Builder setItemId(int value) {
+      public Builder setAmmunitionConfigId(int value) {
         
-        itemId_ = value;
+        ammunitionConfigId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 item_id = 7;</code>
+       * <code>uint32 ammunition_config_id = 7;</code>
        * @return This builder for chaining.
        */
-      public Builder clearItemId() {
+      public Builder clearAmmunitionConfigId() {
         
-        itemId_ = 0;
+        ammunitionConfigId_ = 0;
         onChanged();
         return this;
       }
@@ -596,10 +598,10 @@ public final class TpsAmmunitionChangeOuterClass {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\031TpsAmmunitionChange.proto\"<\n\023TpsAmmuni" +
-      "tionChange\022\017\n\007item_id\030\007 \001(\r\022\024\n\014change_co" +
-      "unt\030\014 \001(\005B\033\n\031emu.grasscutter.net.protob\006" +
-      "proto3"
+      "\n\031TpsAmmunitionChange.proto\"I\n\023TpsAmmuni" +
+      "tionChange\022\034\n\024ammunition_config_id\030\007 \001(\r" +
+      "\022\024\n\014change_count\030\014 \001(\005B\033\n\031emu.grasscutte" +
+      "r.net.protob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -610,7 +612,7 @@ public final class TpsAmmunitionChangeOuterClass {
     internal_static_TpsAmmunitionChange_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TpsAmmunitionChange_descriptor,
-        new java.lang.String[] { "ItemId", "ChangeCount", });
+        new java.lang.String[] { "AmmunitionConfigId", "ChangeCount", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -62,10 +62,32 @@ repository already used. `tools/show.py` prints a 7.1 message with the known nam
 The field names in the 7.1 meta message line up with `SceneWeaponInfo.12`: `ammunition_type` and
 the ammunition config id carry the same obfuscated names in both.
 
+### Checking the 7.0 TPS name list
+
+Inside one version a real field name always gets the same obfuscated name: in `7.1nt.txt` 2193
+of 2194 field names have exactly one spelling, and e.g. `ECMNNFKNAIK` is `avatar_guid` in dozens
+of messages. So a label from the 7.0 list can be checked: find the 7.1 field it became by
+structure, and see whether 7.1 spells that real name the same way. `match.py --fields
+7.0nameTranslation_TPS.txt ...` prints the result:
+
+| 7.0 label | 7.0 obf | 7.1 by structure | Verdict |
+|---|---|---|---|
+| `item_id` | BMNOGGNIIFO | PPFJCENMNEO | wrong: 7.1 `item_id` is EIGJMOABCGH. The values are ammunition ids, so it is named `ammunition_config_id`, the alias the list itself gives |
+| `change_count` | FBMKHDNKCAP | CEAMPEAIPPJ | wrong: 7.1 `change_count` is DOCFIDJNIFO. Name kept as a description |
+| `weapon_list` | KPJFLNKEFBC | MJGFMDADPJE | wrong: 7.1 `weapon_list` is OCBIBFHOCAG. Same name as `SceneAvatarInfo.tps_weapon_list`, so it is named that |
+| `level` | MMAHICOGIKB | (field 12 or 14) | wrong: the matched message has no `level` (MLADOODEJDP) |
+| `progress` | FHKAJDHNIJN | DFEMHODHAAP | wrong: the matched message has no `progress` (GLEDHAJBGBN) |
+| `avatar_guid`, `equip_guid_list`, `retcode`, `update_type`, `affix_map` | | | agree with 7.1 |
+| the other 12 | | | 7.1 list has no such name to check against |
+
+`TpsEntityFightPropUpdateNotify` (KHAAHLBEIAC) and its `entity_id` / `fight_prop_map` are not in
+the 7.0 dump at all, so the list comes from a different build. No 7.1 packet has that shape
+other than EntityFightPropUpdateNotify (9736) and EntityFightPropNotify (27270).
+
 ### What is not settled
 
 - `TpsWeaponAccessoryInfo` fields 12 and 14: the 7.0 list calls them `slot_index` and `level`, but
-  nothing tells which is which. The server only logs them.
+  neither is 7.1's `level`. The server only logs them.
 - `AbilityMetaUpdateTpsWeaponAmmunition` field 7, a bool.
 - `TpsAmmunitionChangeNotify` (24371) is a guessed name, and whether its counts are deltas or totals
   is unknown, so the server does not send it.

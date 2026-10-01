@@ -1,6 +1,7 @@
 // TPS (third-person shooter) protocol of 7.1.0, recovered by structure from the obfuscated dump.
 // Each message notes its 7.1 obfuscated name and the 7.0 message it was matched to.
-// Fields named in UPPER CASE are still unidentified. See README.md for how and how sure.
+// Fields named in UPPER CASE are still unidentified. Lower-case names the 7.0 TPS name list gets
+// wrong (see README.md) are replaced by descriptive ones and marked "descriptive".
 //
 // Generated into src/generated: everything down to TpsEquipChangeNotify, plus the renamed fields
 // of SceneWeaponInfo / SceneAvatarInfo / AvatarInfo / _TpsWeapon at the bottom.
@@ -22,7 +23,7 @@ message WearTpsEquipRsp {
 // CmdId: 21312   7.1 FGIDLEPIPAG  <- 7.0 PJFEBILHHJJ (25951)
 message TpsEquipChangeNotify {
   uint64 avatar_guid = 3;
-  repeated SceneWeaponInfo weapon_list = 7;
+  repeated SceneWeaponInfo tps_weapon_list = 7;   // MJGFMDADPJE, as in SceneAvatarInfo.31; not weapon_list (OCBIBFHOCAG)
 }
 
 // 7.1 JENJHKPCEOK. Payload of AbilityInvokeArgument 31 (ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION).
@@ -43,15 +44,15 @@ enum TpsAmmunitionUpdateType {
 
 // 7.1 MLCOEDLCCAA  <- 7.0 IBIMPAJBFOP
 message TpsAmmunitionChange {
-  uint32 item_id = 7;        // TpsAmmunitionExcelConfigData id (1001...)
-  int32 change_count = 12;
+  uint32 ammunition_config_id = 7;   // PPFJCENMNEO, TpsAmmunitionExcelConfigData id (1001...); not item_id
+  int32 change_count = 12;           // CEAMPEAIPPJ, descriptive: 7.1's change_count is DOCFIDJNIFO
 }
 
 // 7.1 EGFFJBICIHP  <- 7.0 ANLNAOGOBFM
 message TpsWeaponAccessoryInfo {
   uint32 ammunition_type = 7;   // ammo slot id (101, 102, ...)
-  uint32 item_id = 11;          // ammunition config id
-  uint32 KAPHEDKKFGK = 12;      // slot_index or level (7.0 names); which is which is unknown
+  uint32 ammunition_config_id = 11;
+  uint32 KAPHEDKKFGK = 12;      // 7.0 list: slot_index / level. Neither is 7.1's level (MLADOODEJDP)
   uint32 MHFBBNKOBPK = 14;
 }
 
@@ -71,8 +72,8 @@ message TpsRegionalPlaySupplyInfoNotify {
 
 // 7.1 EBPGOAKBPBG  <- 7.0 HJOPNGJBLBN
 message TpsSupplyProgressInfo {
-  uint32 item_id = 1;
-  uint32 progress = 14;
+  uint32 ammunition_config_id = 1;   // PPFJCENMNEO, same name as in TpsAmmunitionChange
+  uint32 supply_progress = 14;       // DFEMHODHAAP, descriptive: 7.1's progress is GLEDHAJBGBN
 }
 
 // CmdId: 24371   7.1 ONMCNLDIGJK  <- 7.0 HGKMLCKCHBD (24406). No real name in either
@@ -83,8 +84,8 @@ message TpsAmmunitionChangeNotify {
 
 // 7.1 BOOHJPLDHBO  <- 7.0 JCGFEBNFLJP
 message TpsAmmunitionChangeNotifyEntry {
-  int32 change_count = 4;
-  uint32 item_id = 8;
+  int32 change_count = 4;            // CEAMPEAIPPJ, as in TpsAmmunitionChange
+  uint32 ammunition_config_id = 8;   // PPFJCENMNEO
 }
 
 // 7.1 DDGNBAHLAPL  <- 7.0 FHDLHJICDHB. Weapon record inside the TPS Mercenaries record.

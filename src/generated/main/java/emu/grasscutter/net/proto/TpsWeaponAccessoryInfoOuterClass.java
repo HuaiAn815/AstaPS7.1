@@ -25,10 +25,10 @@ public final class TpsWeaponAccessoryInfoOuterClass {
     int getAmmunitionType();
 
     /**
-     * <code>uint32 item_id = 11;</code>
-     * @return The itemId.
+     * <code>uint32 ammunition_config_id = 11;</code>
+     * @return The ammunitionConfigId.
      */
-    int getItemId();
+    int getAmmunitionConfigId();
 
     /**
      * <code>uint32 KAPHEDKKFGK = 12;</code>
@@ -45,8 +45,8 @@ public final class TpsWeaponAccessoryInfoOuterClass {
   /**
    * <pre>
    * CmdId: -
-   * 7.1 obf: EGFFJBICIHP (7.0: ANLNAOGOBFM). Fields 12 and 14 are slot_index and level in
-   * some order; the dumps cannot tell which is which.
+   * 7.1 obf: EGFFJBICIHP (7.0: ANLNAOGOBFM). Fields 12 and 14 are unidentified: the 7.0 list calls
+   * them slot_index and level, but neither is 7.1's level (MLADOODEJDP).
    * </pre>
    *
    * Protobuf type {@code TpsWeaponAccessoryInfo}
@@ -100,7 +100,7 @@ public final class TpsWeaponAccessoryInfoOuterClass {
             }
             case 88: {
 
-              itemId_ = input.readUInt32();
+              ammunitionConfigId_ = input.readUInt32();
               break;
             }
             case 96: {
@@ -156,15 +156,15 @@ public final class TpsWeaponAccessoryInfoOuterClass {
       return ammunitionType_;
     }
 
-    public static final int ITEM_ID_FIELD_NUMBER = 11;
-    private int itemId_;
+    public static final int AMMUNITION_CONFIG_ID_FIELD_NUMBER = 11;
+    private int ammunitionConfigId_;
     /**
-     * <code>uint32 item_id = 11;</code>
-     * @return The itemId.
+     * <code>uint32 ammunition_config_id = 11;</code>
+     * @return The ammunitionConfigId.
      */
     @java.lang.Override
-    public int getItemId() {
-      return itemId_;
+    public int getAmmunitionConfigId() {
+      return ammunitionConfigId_;
     }
 
     public static final int KAPHEDKKFGK_FIELD_NUMBER = 12;
@@ -206,8 +206,8 @@ public final class TpsWeaponAccessoryInfoOuterClass {
       if (ammunitionType_ != 0) {
         output.writeUInt32(7, ammunitionType_);
       }
-      if (itemId_ != 0) {
-        output.writeUInt32(11, itemId_);
+      if (ammunitionConfigId_ != 0) {
+        output.writeUInt32(11, ammunitionConfigId_);
       }
       if (kAPHEDKKFGK_ != 0) {
         output.writeUInt32(12, kAPHEDKKFGK_);
@@ -228,9 +228,9 @@ public final class TpsWeaponAccessoryInfoOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(7, ammunitionType_);
       }
-      if (itemId_ != 0) {
+      if (ammunitionConfigId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(11, itemId_);
+          .computeUInt32Size(11, ammunitionConfigId_);
       }
       if (kAPHEDKKFGK_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -257,8 +257,8 @@ public final class TpsWeaponAccessoryInfoOuterClass {
 
       if (getAmmunitionType()
           != other.getAmmunitionType()) return false;
-      if (getItemId()
-          != other.getItemId()) return false;
+      if (getAmmunitionConfigId()
+          != other.getAmmunitionConfigId()) return false;
       if (getKAPHEDKKFGK()
           != other.getKAPHEDKKFGK()) return false;
       if (getMHFBBNKOBPK()
@@ -276,8 +276,8 @@ public final class TpsWeaponAccessoryInfoOuterClass {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + AMMUNITION_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + getAmmunitionType();
-      hash = (37 * hash) + ITEM_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getItemId();
+      hash = (37 * hash) + AMMUNITION_CONFIG_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getAmmunitionConfigId();
       hash = (37 * hash) + KAPHEDKKFGK_FIELD_NUMBER;
       hash = (53 * hash) + getKAPHEDKKFGK();
       hash = (37 * hash) + MHFBBNKOBPK_FIELD_NUMBER;
@@ -380,8 +380,8 @@ public final class TpsWeaponAccessoryInfoOuterClass {
     /**
      * <pre>
      * CmdId: -
-     * 7.1 obf: EGFFJBICIHP (7.0: ANLNAOGOBFM). Fields 12 and 14 are slot_index and level in
-     * some order; the dumps cannot tell which is which.
+     * 7.1 obf: EGFFJBICIHP (7.0: ANLNAOGOBFM). Fields 12 and 14 are unidentified: the 7.0 list calls
+     * them slot_index and level, but neither is 7.1's level (MLADOODEJDP).
      * </pre>
      *
      * Protobuf type {@code TpsWeaponAccessoryInfo}
@@ -423,7 +423,7 @@ public final class TpsWeaponAccessoryInfoOuterClass {
         super.clear();
         ammunitionType_ = 0;
 
-        itemId_ = 0;
+        ammunitionConfigId_ = 0;
 
         kAPHEDKKFGK_ = 0;
 
@@ -456,7 +456,7 @@ public final class TpsWeaponAccessoryInfoOuterClass {
       public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo buildPartial() {
         emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo result = new emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo(this);
         result.ammunitionType_ = ammunitionType_;
-        result.itemId_ = itemId_;
+        result.ammunitionConfigId_ = ammunitionConfigId_;
         result.kAPHEDKKFGK_ = kAPHEDKKFGK_;
         result.mHFBBNKOBPK_ = mHFBBNKOBPK_;
         onBuilt();
@@ -510,8 +510,8 @@ public final class TpsWeaponAccessoryInfoOuterClass {
         if (other.getAmmunitionType() != 0) {
           setAmmunitionType(other.getAmmunitionType());
         }
-        if (other.getItemId() != 0) {
-          setItemId(other.getItemId());
+        if (other.getAmmunitionConfigId() != 0) {
+          setAmmunitionConfigId(other.getAmmunitionConfigId());
         }
         if (other.getKAPHEDKKFGK() != 0) {
           setKAPHEDKKFGK(other.getKAPHEDKKFGK());
@@ -579,33 +579,33 @@ public final class TpsWeaponAccessoryInfoOuterClass {
         return this;
       }
 
-      private int itemId_ ;
+      private int ammunitionConfigId_ ;
       /**
-       * <code>uint32 item_id = 11;</code>
-       * @return The itemId.
+       * <code>uint32 ammunition_config_id = 11;</code>
+       * @return The ammunitionConfigId.
        */
       @java.lang.Override
-      public int getItemId() {
-        return itemId_;
+      public int getAmmunitionConfigId() {
+        return ammunitionConfigId_;
       }
       /**
-       * <code>uint32 item_id = 11;</code>
-       * @param value The itemId to set.
+       * <code>uint32 ammunition_config_id = 11;</code>
+       * @param value The ammunitionConfigId to set.
        * @return This builder for chaining.
        */
-      public Builder setItemId(int value) {
+      public Builder setAmmunitionConfigId(int value) {
         
-        itemId_ = value;
+        ammunitionConfigId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 item_id = 11;</code>
+       * <code>uint32 ammunition_config_id = 11;</code>
        * @return This builder for chaining.
        */
-      public Builder clearItemId() {
+      public Builder clearAmmunitionConfigId() {
         
-        itemId_ = 0;
+        ammunitionConfigId_ = 0;
         onChanged();
         return this;
       }
@@ -738,11 +738,11 @@ public final class TpsWeaponAccessoryInfoOuterClass {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\034TpsWeaponAccessoryInfo.proto\"l\n\026TpsWea" +
+      "\n\034TpsWeaponAccessoryInfo.proto\"y\n\026TpsWea" +
       "ponAccessoryInfo\022\027\n\017ammunition_type\030\007 \001(" +
-      "\r\022\017\n\007item_id\030\013 \001(\r\022\023\n\013KAPHEDKKFGK\030\014 \001(\r\022" +
-      "\023\n\013MHFBBNKOBPK\030\016 \001(\rB\033\n\031emu.grasscutter." +
-      "net.protob\006proto3"
+      "\r\022\034\n\024ammunition_config_id\030\013 \001(\r\022\023\n\013KAPHE" +
+      "DKKFGK\030\014 \001(\r\022\023\n\013MHFBBNKOBPK\030\016 \001(\rB\033\n\031emu" +
+      ".grasscutter.net.protob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -753,7 +753,7 @@ public final class TpsWeaponAccessoryInfoOuterClass {
     internal_static_TpsWeaponAccessoryInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TpsWeaponAccessoryInfo_descriptor,
-        new java.lang.String[] { "AmmunitionType", "ItemId", "KAPHEDKKFGK", "MHFBBNKOBPK", });
+        new java.lang.String[] { "AmmunitionType", "AmmunitionConfigId", "KAPHEDKKFGK", "MHFBBNKOBPK", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

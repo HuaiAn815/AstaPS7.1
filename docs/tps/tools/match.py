@@ -1,6 +1,9 @@
 """Find the 7.1 message that matches a 7.0 message by structure.
 
-usage: match.py OLD.proto NEW.proto NEW_NAMES.json NAME [NAME...]
+usage: match.py OLD.proto NEW.proto NEW_NAMES.json [--fields OLD_NAMES.txt] NAME [NAME...]
+
+--fields prints the old->new field-name map learned on the way, labelled with the real names
+from OLD_NAMES.txt (lines "OBFNAME - real_name").
 
 Obfuscated names change every version, so messages are compared by shape: the multiset of
 (label, kind) of their fields. kind is the scalar type, map<k,v>, the type's real name when both
@@ -83,6 +86,13 @@ if __name__ == '__main__':
     rare = lambda ns: {n for n in ns if freq.get(n, 0) <= 4}
 
     names = sys.argv[4:]
+    old_names = {}
+    if names[:1] == ['--fields']:
+        for line in open(names[1], encoding='utf-8'):
+            m = re.match(r'^([A-P]{11}) - (\w+)$', line.strip())
+            if m: old_names[m.group(1)] = m.group(2)
+        names = names[2:]
+    seeded = set()
     cands, why = {}, {}
     for name in names:
         m0 = old[name]
@@ -100,6 +110,7 @@ if __name__ == '__main__':
     for obf, real in nt.items():
         if real[:1].islower(): by_real.setdefault(real, set()).add(obf)
     fieldmap.update({real: next(iter(o)) for real, o in by_real.items() if len(o) == 1})
+    seeded = set(fieldmap)
 
     def fkey(msgs, shapes_of, m, f):
         t = p.resolve(msgs, m, f.type)
@@ -161,3 +172,31 @@ if __name__ == '__main__':
             ev = evidence(new, nt, m)
             print(f'   {m.full}  cmd={m.cmd}  {m.fields or m.values}'
                   + (f'\n            evidence: {", ".join(ev[:6])}' if ev else ''))
+
+    if old_names:
+        # Inside one version a real field name always gets the same obfuscated name (7.1nt.txt has
+        # one exception in 2194), so a label is checked by whether the new dump spells that real
+        # name the way the structure says. Only names learned from structure are reported; the
+        # translation's own labels are what is being checked.
+        print('\nfield labels of the old list, checked (old -> new):')
+        resolved = {n: c[0] for n, c in cands.items() if len(c) == 1}
+        for old_name, real in sorted(old_names.items(), key=lambda x: x[1]):
+            if not real[:1].islower(): continue
+            learned = fieldmap.get(old_name) if old_name not in seeded else None
+            spelled = by_real.get(real, set())
+            # Matched messages holding this field.
+            # Use the real name only when the old dump no longer has the obfuscated one anywhere.
+            key = old_name if any(f.name == old_name for m in old.values() for f in m.fields) else real
+            holders = [m1 for n, m1 in resolved.items() if any(f.name == key for f in old[n].fields)]
+            in_holder = any(g.name in spelled for m1 in holders for g in m1.fields)
+            if not spelled:
+                verdict = 'unverifiable: 7.1 list lacks this name'
+            elif learned:
+                verdict = 'confirmed' if learned in spelled else f'WRONG: 7.1 spells {real} {"/".join(sorted(spelled))}'
+            elif holders and key == real:
+                verdict = 'agrees with the old dump, which already uses this name' if in_holder else 'unchecked'
+            elif holders:
+                verdict = 'confirmed' if in_holder else f'WRONG: the matched 7.1 message has no {"/".join(sorted(spelled))}'
+            else:
+                verdict = 'its message is not in the old dump'
+            print(f'   {real:26s} {old_name} -> {learned or "?":12s} {verdict}')

@@ -14,7 +14,7 @@ public class PacketTpsEquipChangeNotify extends BasePacket {
         this.setData(
                 TpsEquipChangeNotify.newBuilder()
                         .setAvatarGuid(avatar.getGuid())
-                        .addAllWeaponList(weapons)
+                        .addAllTpsWeaponList(weapons)
                         .build());
     }
 }

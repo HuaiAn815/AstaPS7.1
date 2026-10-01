@@ -288,12 +288,12 @@ public final class TpsWeaponSystem {
     public static void onAmmunitionInvoke(Player player, AbilityInvokeEntry invoke) throws Exception {
         var update = AbilityMetaUpdateTpsWeaponAmmunition.parseFrom(invoke.getAbilityData());
         for (var change : update.getAmmunitionListList()) {
-            int reserve = changeReserve(player, change.getItemId(), change.getChangeCount());
+            int reserve = changeReserve(player, change.getAmmunitionConfigId(), change.getChangeCount());
             Grasscutter.getLogger()
                     .debug(
                             "TPS ammunition {} {} {} -> {}",
                             update.getUpdateType(),
-                            change.getItemId(),
+                            change.getAmmunitionConfigId(),
                             change.getChangeCount(),
                             reserve);
         }
@@ -302,9 +302,9 @@ public final class TpsWeaponSystem {
         for (var accessory : update.getAccessoryListList()) {
             Grasscutter.getLogger()
                     .debug(
-                            "TPS ammunition slot type={} item={} f12={} f14={} (entity {})",
+                            "TPS ammunition slot type={} ammunition={} f12={} f14={} (entity {})",
                             accessory.getAmmunitionType(),
-                            accessory.getItemId(),
+                            accessory.getAmmunitionConfigId(),
                             accessory.getKAPHEDKKFGK(),
                             accessory.getMHFBBNKOBPK(),
                             invoke.getEntityId());
