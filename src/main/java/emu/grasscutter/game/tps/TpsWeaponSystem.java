@@ -113,6 +113,34 @@ public final class TpsWeaponSystem {
         getWornWeapons(avatar).forEach(item -> ensureWeaponEntity(item, scene));
     }
 
+    /**
+     * Gives every worn weapon a new entity and drops the old one. A TpsEquipChangeNotify that
+     * repeats the entity ids the client already holds made the gun vanish, and the shoot button
+     * with it: the client replaces the old weapons with the listed ones, and the old ones had the
+     * same ids.
+     */
+    private static void respawnWeaponEntities(Avatar avatar) {
+        var avatarEntity = avatar.getAsEntity();
+        var scene = avatarEntity != null ? avatarEntity.getScene() : null;
+        for (GameItem item : getWornWeapons(avatar)) {
+            var old = item.getWeaponEntity();
+            if (old != null && old.getScene() != null) {
+                old.getScene().getWeaponEntities().remove(old.getId());
+            }
+            item.setWeaponEntity(null);
+            ensureWeaponEntity(item, scene);
+        }
+    }
+
+    /** Owned avatars and the trial avatars of the current team (the TPS traveler) wearing TPS weapons. */
+    public static List<Avatar> getTpsWearers(Player player) {
+        var wearers = new ArrayList<Avatar>();
+        player.getAvatars().forEach(wearers::add);
+        wearers.addAll(player.getTeamManager().getTrialAvatars().values());
+        wearers.removeIf(avatar -> avatar.getTpsWeaponIds().isEmpty());
+        return wearers;
+    }
+
     public static SceneWeaponInfo toSceneWeaponInfo(Player player, GameItem item) {
         var info =
                 SceneWeaponInfo.newBuilder()
@@ -196,6 +224,9 @@ public final class TpsWeaponSystem {
             itemIds.add(item.getItemId());
         }
 
+        // Nothing to change: answer, but do not resend weapons the client already shows.
+        if (itemIds.equals(avatar.getTpsWeaponIds())) return Retcode.RET_SUCC_VALUE;
+
         for (Avatar other : player.getAvatars()) {
             if (other == avatar || !other.getTpsWeaponIds().removeIf(itemIds::contains)) continue;
             other.save();
@@ -215,9 +246,6 @@ public final class TpsWeaponSystem {
         avatar.getTpsWeaponIds().clear();
         avatar.getTpsWeaponIds().addAll(itemIds);
         if (avatar.getTrialAvatarId() == 0) avatar.save();
-        if (avatar.getAsEntity() != null) {
-            ensureWeaponEntities(avatar, avatar.getAsEntity().getScene());
-        }
         avatar.recalcStats();
         sendEquipChange(avatar);
         return Retcode.RET_SUCC_VALUE;
@@ -233,11 +261,15 @@ public final class TpsWeaponSystem {
                 .orElse(null);
     }
 
-    /** TpsEquipChangeNotify to everyone in the scene when the avatar is on the field. */
+    /**
+     * TpsEquipChangeNotify to everyone in the scene when the avatar is on the field, with fresh
+     * weapon entities (see {@link #respawnWeaponEntities}).
+     */
     public static void sendEquipChange(Avatar avatar) {
         var player = avatar.getPlayer();
         if (player == null || !player.hasSentLoginPackets()) return;
 
+        respawnWeaponEntities(avatar);
         var packet = new PacketTpsEquipChangeNotify(avatar, getSceneWeaponInfos(avatar));
         var entity = avatar.getAsEntity();
         if (entity != null && entity.getScene() != null) {
@@ -279,9 +311,7 @@ public final class TpsWeaponSystem {
             player.getTpsAmmunition().put(data.getId(), data.getTpsAmmoLimit());
         }
         player.save();
-        for (Avatar avatar : player.getAvatars()) {
-            if (!avatar.getTpsWeaponIds().isEmpty()) sendEquipChange(avatar);
-        }
+        getTpsWearers(player).forEach(TpsWeaponSystem::sendEquipChange);
     }
 
     /** ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION: the client spent, reloaded, picked up or was supplied. */

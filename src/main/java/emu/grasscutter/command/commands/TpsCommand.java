@@ -59,9 +59,10 @@ public final class TpsCommand implements CommandHandler {
         }
         changed.forEach(GameItem::save);
         if (!changed.isEmpty()) target.sendPacket(new PacketStoreItemChangeNotify(changed));
-        // Accessory affixes add abilities, so the wearers need their embryos rebuilt.
-        for (var avatar : target.getAvatars()) {
-            if (avatar.getTpsWeaponIds().isEmpty()) continue;
+        // Accessory affixes add abilities, so the wearers of changed weapons need them rebuilt.
+        var changedIds = changed.stream().map(GameItem::getItemId).toList();
+        for (var avatar : TpsWeaponSystem.getTpsWearers(target)) {
+            if (avatar.getTpsWeaponIds().stream().noneMatch(changedIds::contains)) continue;
             avatar.recalcStats();
             TpsWeaponSystem.sendEquipChange(avatar);
         }
