@@ -70,6 +70,10 @@ of messages. So a label from the 7.0 list can be checked: find the 7.1 field it 
 structure, and see whether 7.1 spells that real name the same way. `match.py --fields
 7.0nameTranslation_TPS.txt ...` prints the result:
 
+Two references are used: the 7.1 name list (its recovered names carry a leading underscore,
+`_current_slot_num`, which the check ignores), and the 7.0 dump itself, which already spells many
+fields by their real name.
+
 | 7.0 label | 7.0 obf | 7.1 by structure | Verdict |
 |---|---|---|---|
 | `item_id` | BMNOGGNIIFO | PPFJCENMNEO | wrong: 7.1 `item_id` is EIGJMOABCGH. The values are ammunition ids, so it is named `ammunition_config_id`, the alias the list itself gives |
@@ -77,12 +81,16 @@ structure, and see whether 7.1 spells that real name the same way. `match.py --f
 | `weapon_list` | KPJFLNKEFBC | MJGFMDADPJE | wrong: 7.1 `weapon_list` is OCBIBFHOCAG. Same name as `SceneAvatarInfo.tps_weapon_list`, so it is named that |
 | `level` | MMAHICOGIKB | (field 12 or 14) | wrong: the matched message has no `level` (MLADOODEJDP) |
 | `progress` | FHKAJDHNIJN | DFEMHODHAAP | wrong: the matched message has no `progress` (GLEDHAJBGBN) |
-| `avatar_guid`, `equip_guid_list`, `retcode`, `update_type`, `affix_map` | | | agree with 7.1 |
-| the other 12 | | | 7.1 list has no such name to check against |
+| `avatar_guid`, `equip_guid_list`, `retcode`, `update_type`, `affix_map`, `current_slot_num`, `material_id_list`, `is_force_ignore_cd` | | | confirmed: the 7.0 dump names the field so and 7.1 spells it the same |
+| `entity_id` | FPKIFOPCGNE | | only "confirmed" through `SceneWeaponInfo.entity_id`; its own message is missing (below) |
+| `accessory_list`, `ammunition_list`, `accessory_id_list`, `supply_progress_list`, `client_sequence`, `ammunition_type`, `current_ammunition`, `ammunition_config_id_list`, `slot_index` | | | unverifiable: neither reference knows the name. The first five are placed by structure |
 
-`TpsEntityFightPropUpdateNotify` (KHAAHLBEIAC) and its `entity_id` / `fight_prop_map` are not in
-the 7.0 dump at all, so the list comes from a different build. No 7.1 packet has that shape
-other than EntityFightPropUpdateNotify (9736) and EntityFightPropNotify (27270).
+`TpsEntityFightPropUpdateNotify` (KHAAHLBEIAC) is in neither dump, under its obfuscated name or any
+real one. Both versions have the same six messages carrying `fight_prop_map` (the entity and avatar
+fight-prop notifies, AvatarInfo, ShowAvatarInfo), so if it exists in 7.1 it is one of the two
+unnamed entity notifies, 9736 or 27270, which this server uses as EntityFightPropUpdateNotify /
+EntityFightPropNotify. The list's scope note says it covers proto files added after some commit,
+so it likely comes from a later build.
 
 ### What is not settled
 

@@ -108,6 +108,8 @@ if __name__ == '__main__':
     # Seed it with field names the new translation already knows (affix_map -> DJLJCHOPHHC).
     by_real = {}
     for obf, real in nt.items():
+        # Names recovered by other means carry a leading underscore (_current_slot_num).
+        real = real.lstrip('_')
         if real[:1].islower(): by_real.setdefault(real, set()).add(obf)
     fieldmap.update({real: next(iter(o)) for real, o in by_real.items() if len(o) == 1})
     seeded = set(fieldmap)
@@ -189,12 +191,24 @@ if __name__ == '__main__':
             key = old_name if any(f.name == old_name for m in old.values() for f in m.fields) else real
             holders = [m1 for n, m1 in resolved.items() if any(f.name == key for f in old[n].fields)]
             in_holder = any(g.name in spelled for m1 in holders for g in m1.fields)
-            if not spelled:
-                verdict = 'unverifiable: 7.1 list lacks this name'
+            # The old dump is a second reference: its own deobfuscation applied one name map
+            # everywhere, so a label for a name it still leaves obfuscated, while it spells that
+            # real name elsewhere, contradicts it.
+            old_plain = any(f.name == real for m in old.values() for f in m.fields)
+            old_has_obf = any(f.name == old_name for m in old.values() for f in m.fields)
+            if not spelled and old_plain and old_has_obf:
+                verdict = f'WRONG: the old dump spells {real} differently'
+            elif not spelled and old_plain:
+                verdict = 'agrees with the old dump, which already uses this name'
+            elif not spelled:
+                verdict = 'unverifiable: neither list knows this name'
             elif learned:
                 verdict = 'confirmed' if learned in spelled else f'WRONG: 7.1 spells {real} {"/".join(sorted(spelled))}'
             elif holders and key == real:
-                verdict = 'agrees with the old dump, which already uses this name' if in_holder else 'unchecked'
+                # Two independent deobfuscations name the same field the same way.
+                where = ', '.join(sorted({n for n in resolved if any(f.name == key for f in old[n].fields)}))
+                verdict = (f'confirmed in {where}: the old dump names it so and 7.1 spells it the same' if in_holder
+                           else f'WRONG: the old dump names it so, but the 7.1 message has no {"/".join(sorted(spelled))}')
             elif holders:
                 verdict = 'confirmed' if in_holder else f'WRONG: the matched 7.1 message has no {"/".join(sorted(spelled))}'
             else:
