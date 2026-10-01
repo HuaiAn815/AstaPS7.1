@@ -245,7 +245,8 @@
       "spawned": "Placed NPC %s in front of you.",
       "cleared": "Removed %s NPCs placed by this command.",
       "not_found": "NPC %s not found.",
-      "none_near": "No NPC within %s m."
+      "none_near": "No NPC within %s m.",
+      "group_sent": "Asked the client to load group %s suite %s; its NPCs appear where the script places them (you must be in that group's scene)."
     },
     "pierro": {
       "description": "Toggle Il Pierro's support button from the Ronova fight",

@@ -8,6 +8,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.entity.EntityNPC;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.world.Position;
+import emu.grasscutter.server.packet.send.PacketGroupSuiteNotify;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @Command(
         label = "npc",
-        usage = {"<npcId>", "near [radius]", "clear"},
+        usage = {"<npcId>", "near [radius]", "group <groupId> <suiteId>", "clear"},
         permission = "server.npc",
         permissionTargeted = "server.npc.others")
 public final class NpcCommand implements CommandHandler {
@@ -39,6 +40,26 @@ public final class NpcCommand implements CommandHandler {
 
         if (args.get(0).equalsIgnoreCase("near")) {
             this.listNearby(sender, targetPlayer, args);
+            return;
+        }
+
+        if (args.get(0).equalsIgnoreCase("group")) {
+            // How a scene script brings in its NPCs: the client loads the group from its own copy of
+            // the Lua and draws that suite's NPCs where the script puts them. The server needs no
+            // Lua for it, so this also reaches quest groups missing from the resources.
+            if (args.size() < 3) {
+                this.sendUsageMessage(sender);
+                return;
+            }
+            try {
+                int groupId = Integer.parseInt(args.get(1));
+                int suiteId = Integer.parseInt(args.get(2));
+                targetPlayer.sendPacket(new PacketGroupSuiteNotify(groupId, suiteId));
+                CommandHandler.sendMessage(
+                        sender, translate(sender, "commands.npc.group_sent", groupId, suiteId));
+            } catch (NumberFormatException e) {
+                this.sendUsageMessage(sender);
+            }
             return;
         }
 
