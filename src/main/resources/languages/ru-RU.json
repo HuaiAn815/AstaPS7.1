@@ -245,6 +245,7 @@
       "finished": "Квест %s был завершен.",
       "not_found": "Квест не найден.",
       "invalid_id": "Некорректный ID квеста.",
+      "questing_off": "Questing is off, so an added quest would never reach the client. Set both gameOptions.questing.enabled and server.game.enableScriptInBigWorld to true in config.json and restart.",
       "description": "Добавляет (add) или завершает (finish) квесты",
       "running": "Квест %s %s (%s).",
       "talking": "Разговор %s %s для главного квеста %s (%s).",

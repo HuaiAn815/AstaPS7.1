@@ -245,6 +245,7 @@
       "finished": "Misión %s finalizada.",
       "not_found": "Misión no encontrada.",
       "invalid_id": "ID de misión inválido.",
+      "questing_off": "Questing is off, so an added quest would never reach the client. Set both gameOptions.questing.enabled and server.game.enableScriptInBigWorld to true in config.json and restart.",
       "description": "Añade o finaliza misiones",
       "running": "🇺🇸Quest %s is %s (%s).",
       "talking": "🇺🇸Talk %s is %s for main quest %s (%s).",

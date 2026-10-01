@@ -5,6 +5,7 @@ import static emu.grasscutter.utils.lang.Language.translate;
 import emu.grasscutter.command.*;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.quest.GameQuest;
+import emu.grasscutter.game.quest.QuestManager;
 import emu.grasscutter.game.quest.enums.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,6 +61,12 @@ public final class QuestCommand implements CommandHandler {
                                 + " This is saved and re-sent on every login.");
             }
             case "add" -> {
+                // With questing off the quest is created but its update reaches the client empty,
+                // so the command reported a success the player never saw.
+                if (!QuestManager.isQuestingActive()) {
+                    CommandHandler.sendMessage(sender, translate(sender, "commands.quest.questing_off"));
+                    return;
+                }
                 var quest = targetPlayer.getQuestManager().addQuest(questId);
 
                 if (quest != null) {

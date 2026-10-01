@@ -245,6 +245,7 @@
       "finished": "已完成任务 %s。",
       "not_found": "任务不存在。",
       "invalid_id": "无效的任务 ID。",
+      "questing_off": "任务系统没有开启，添加的任务不会显示。请在 config.json 里同时把 gameOptions.questing.enabled 和 server.game.enableScriptInBigWorld 设为 true 并重启。",
       "description": "添加或完成任务",
       "running": "任务 %s 的状态为 %s (%s)。",
       "talking": "对话 %s 的状态为 %s [主要任务 %s] (%s)。",

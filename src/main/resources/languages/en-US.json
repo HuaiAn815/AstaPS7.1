@@ -245,6 +245,7 @@
       "finished": "Finished quest %s.",
       "not_found": "Quest not found.",
       "invalid_id": "Invalid quest ID.",
+      "questing_off": "Questing is off, so an added quest would never reach the client. Set both gameOptions.questing.enabled and server.game.enableScriptInBigWorld to true in config.json and restart.",
       "description": "Add or finish quests",
       "running": "Quest %s is %s (%s).",
       "talking": "Talk %s is %s for main quest %s (%s).",

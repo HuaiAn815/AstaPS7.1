@@ -245,6 +245,7 @@
       "finished": "クエスト %s を終了しました。",
       "not_found": "クエストが見つかりません｡",
       "invalid_id": "クエストIDが無効です｡",
+      "questing_off": "Questing is off, so an added quest would never reach the client. Set both gameOptions.questing.enabled and server.game.enableScriptInBigWorld to true in config.json and restart.",
       "description": "クエストを追加または終了します｡",
       "running": "🇺🇸Quest %s is %s (%s).",
       "talking": "🇺🇸Talk %s is %s for main quest %s (%s).",

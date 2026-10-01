@@ -245,6 +245,7 @@
       "finished": "已完成任務 %s",
       "not_found": "未找到任務",
       "invalid_id": "無效的任務ID",
+      "questing_off": "任務系統沒有開啟，添加的任務不會顯示。請在 config.json 裡同時把 gameOptions.questing.enabled 和 server.game.enableScriptInBigWorld 設為 true 並重啟。",
       "description": "添加或完成任務",
       "running": "任務 %s 的狀態為 %s (%s)。",
       "talking": "對話 %s 的狀態為 %s，主任務為 %s (%s)。",
