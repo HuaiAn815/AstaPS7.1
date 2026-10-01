@@ -11,6 +11,7 @@ This folder has the 7.1 protocol recovered for it (`tps_7.1.proto`) and the tool
 | Gun models | An avatar's worn TPS weapons get weapon entities (gadgets 50016001-50016008) and are listed in `SceneAvatarInfo.tps_weapon_list` (31) and `AvatarInfo.tps_weapon_list` (37). |
 | Abilities | Each worn weapon's affix (and unlocked accessory affixes) opens its `EquipAffixExcelConfigData.openConfig`, e.g. `TPS_Weapon_IceGun`, which adds `Avatar_TPS_IceGun_PressAim`, `Avatar_TPS_Ammo_Manager`, `Avatar_TPS_Ammo_Reload` and the rest to the avatar. `recalcStats` sends them with `AbilityChangeNotify`. |
 | Switching | `WearTpsEquipReq` (20756) replaces the avatar's whole TPS list, at most 2 guns and 1 grenade (`CONST_VALUE_TPS_SLOT_WEAR_NUM_LIMIT`). A weapon worn by another avatar moves. Replies `WearTpsEquipRsp` (25902) and broadcasts `TpsEquipChangeNotify` (21312). |
+| TPS traveler | The TPS dungeons (51334, 51336 shooting range, 51341-51345) allow only 10000134/10000135. Entering one swaps the team for the TPS traveler matching the player's traveler, as the level 20 trial avatar 10064/10065, wearing the player's TPS loadout (224001 the first time, `CONST_VALUE_INIT_TPS_WEAPON_ID`). Leaving the dungeon restores the team. Weapons chosen there are kept as the loadout. |
 | Ammunition | A reserve per `TpsAmmunitionExcelConfigData` id, shared by the slots it fills (1001 feeds both rifles' slot 101/201), full by default, capped at `tpsAmmoLimit`. `ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION` (invoke argument 31) applies the client's `ammunition_list` changes. Each weapon's `ammunition_list` reports the reserve per slot. |
 
 The openConfig loader also had to learn the obfuscated 7.x talent entries (`PHNIGFHBFMD` = AddAbility,
@@ -72,8 +73,9 @@ the ammunition config id carry the same obfuscated names in both.
 - Whether `TpsWeaponAmmunitionInfo.current_ammunition` is the reserve or the loaded magazine. The
   ability config initialises the magazine on the client (`Avatar_TPS_Ammo_Manager`), so the
   server sends the reserve.
-- The dedicated TPS traveler avatars (`CONST_VALUE_TPS_AVATAR_CONFIG_ID_MALE/FEMALE`, 10000134/135)
-  are not involved yet; any avatar can wear the weapons.
+- The TPS traveler is a trial avatar here. Whether the official server grants it as an owned
+  avatar instead is unknown. Outside TPS dungeons any avatar can still wear the weapons, which is
+  handy with `/tps wear` for testing.
 
 A packet capture from the official client would settle all of these.
 

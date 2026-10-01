@@ -12,6 +12,7 @@ import emu.grasscutter.game.ability.PartyReviveHelper;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.props.*;
+import emu.grasscutter.game.tps.TpsAvatarSystem;
 import emu.grasscutter.game.world.*;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.*;
@@ -1215,6 +1216,7 @@ public final class TeamManager extends BasePlayerDataManager {
 
         avatar.setTrialAvatarInfo(trialAvatarBasicParam.get(1), avatarId, reason, questMainId);
         avatar.equipTrialItems();
+        TpsAvatarSystem.onTrialAvatarCreated(avatar);
 
         avatar.recalcStats();
 

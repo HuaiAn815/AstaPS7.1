@@ -172,12 +172,13 @@ public final class TpsWeaponSystem {
 
     /**
      * WearTpsEquipReq: the avatar now wears exactly {@code equipGuids}. Weapons are taken off
-     * whoever wore them before.
+     * whoever wore them before. The avatar may be the TPS traveler, a trial avatar: its choice is
+     * kept as the player's TPS loadout instead.
      *
      * @return a {@link Retcode} value.
      */
     public static int wear(Player player, long avatarGuid, List<Long> equipGuids) {
-        var avatar = player.getAvatars().getAvatarByGuid(avatarGuid);
+        var avatar = findAvatar(player, avatarGuid);
         if (avatar == null) return Retcode.RET_CAN_NOT_FIND_AVATAR_VALUE;
 
         var itemIds = new ArrayList<Integer>(equipGuids.size());
@@ -202,15 +203,34 @@ public final class TpsWeaponSystem {
             sendEquipChange(other);
         }
 
+        var loadout = player.getTpsLoadout();
+        if (TpsAvatarSystem.isTpsAvatar(avatar)) {
+            loadout.clear();
+            loadout.addAll(itemIds);
+            player.save();
+        } else if (loadout.removeIf(itemIds::contains)) {
+            player.save();
+        }
+
         avatar.getTpsWeaponIds().clear();
         avatar.getTpsWeaponIds().addAll(itemIds);
-        avatar.save();
+        if (avatar.getTrialAvatarId() == 0) avatar.save();
         if (avatar.getAsEntity() != null) {
             ensureWeaponEntities(avatar, avatar.getAsEntity().getScene());
         }
         avatar.recalcStats();
         sendEquipChange(avatar);
         return Retcode.RET_SUCC_VALUE;
+    }
+
+    /** An owned avatar, or one of the trial avatars in the current team. */
+    @Nullable private static Avatar findAvatar(Player player, long avatarGuid) {
+        var avatar = player.getAvatars().getAvatarByGuid(avatarGuid);
+        if (avatar != null) return avatar;
+        return player.getTeamManager().getTrialAvatars().values().stream()
+                .filter(trial -> trial.getGuid() == avatarGuid)
+                .findFirst()
+                .orElse(null);
     }
 
     /** TpsEquipChangeNotify to everyone in the scene when the avatar is on the field. */
