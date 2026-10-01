@@ -240,6 +240,13 @@
       "success": "坐標：%s, %s, %s\n旋轉：%s, %s, %s\n場景ID：%s",
       "description": "獲取所在坐標和旋轉資訊"
     },
+    "npc": {
+      "description": "在面前放一個 NPC 模型（無對話、不會移動）",
+      "spawned": "已在面前放置 NPC %s。",
+      "cleared": "已清除 %s 個用指令放置的 NPC。",
+      "not_found": "找不到 NPC %s。",
+      "none_near": "附近 %s 公尺內沒有 NPC。"
+    },
     "pierro": {
       "description": "切換若娜瓦戰中皮耶羅的支援按鈕",
       "on": "已開啟皮耶羅支援按鈕，隊伍欄會出現他的頭像，點擊可攻擊若娜瓦。下線後失效。",

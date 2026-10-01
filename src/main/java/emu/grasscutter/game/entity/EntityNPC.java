@@ -16,6 +16,7 @@ public class EntityNPC extends GameEntity {
     private final Position rotation;
 
     private final SceneNPC metaNpc;
+    private final int npcId;
     @Getter private final int suiteId;
 
     public EntityNPC(Scene scene, SceneNPC metaNPC, int blockId, int suiteId) {
@@ -28,11 +29,31 @@ public class EntityNPC extends GameEntity {
         this.position = metaNPC.pos.clone();
         this.rotation = metaNPC.rot.clone();
         this.metaNpc = metaNPC;
+        this.npcId = metaNPC.npc_id;
+    }
+
+    /**
+     * A bare NPC from NpcExcelConfigData, placed by hand rather than by a scene script: it shows the
+     * model and nothing else - no talk, no route, no group behind it.
+     */
+    public EntityNPC(Scene scene, int npcId, Position position, Position rotation) {
+        super(scene);
+        this.id = getScene().getWorld().getNextEntityId(EntityIdType.NPC);
+        this.suiteId = 0;
+        this.position = position.clone();
+        this.rotation = rotation.clone();
+        this.metaNpc = null;
+        this.npcId = npcId;
+    }
+
+    /** Whether this NPC was placed by hand (the /npc command) instead of by a scene script. */
+    public boolean isStandalone() {
+        return this.metaNpc == null;
     }
 
     @Override
     public int getEntityTypeId() {
-        return this.metaNpc.npc_id;
+        return this.npcId;
     }
 
     /**
@@ -80,7 +101,7 @@ public class EntityNPC extends GameEntity {
 
         entityInfo.setNpc(
                 SceneNpcInfoOuterClass.SceneNpcInfo.newBuilder()
-                        .setNpcId(metaNpc.npc_id)
+                        .setNpcId(this.npcId)
                         .setBlockId(getBlockId())
                         .build());
 
@@ -89,7 +110,6 @@ public class EntityNPC extends GameEntity {
 
     @Override
     public void initAbilities() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'initAbilities'");
+        // An NPC carries no abilities of its own.
     }
 }
