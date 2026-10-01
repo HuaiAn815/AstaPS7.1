@@ -1473,11 +1473,23 @@ public class Avatar {
 
     @PostLoad
     private void onLoad() {
-        AvatarStatePersist.stash(this, this.currentHp, this.currentEnergy, this.nyxValue);
+        // 存档里的 currentHp 是权威值。构造期 recalc 已经把 CUR_HP 写成过
+        // “属性表还没加载完时算出的临时上限”（例如 5311），如果直接 stash 这个临时值，
+        // 后续 recalc 会把临时值当成“玩家当前血”恢复回去，存档血就永远丢了。
+        // 这里先把存档血写回战斗属性，再 stash，保证恢复链拿到的是存档血。
+        float miaoSavedHp = this.currentHp;
+        if (miaoSavedHp > 1.0f) {
+            this.setFightProperty(FightProperty.FIGHT_PROP_CUR_HP, miaoSavedHp);
+        }
+        AvatarStatePersist.stash(this, miaoSavedHp, this.currentEnergy, this.nyxValue);
     }
 
     @PrePersist
     private void prePersist() {
+        float miaoCurProp = this.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
+        float miaoMax = this.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP);
+        if (Math.abs(miaoCurProp - this.currentHp) > 1.0f) {
+        }
         this.currentHp = this.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
         try {
             AvatarSkillDepotData depot = this.getSkillDepot();

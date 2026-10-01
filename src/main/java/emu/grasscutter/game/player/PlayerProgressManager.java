@@ -520,22 +520,10 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
                                 : new emu.grasscutter.game.world.Position());
 
         var spawnPoints = new java.util.ArrayList<emu.grasscutter.game.world.Position>();
-        if (this.player.getPosition() != null) {
-            spawnPoints.add(this.player.getPosition().clone());
-        }
-        if (pd.getTranPos() != null) {
-            spawnPoints.add(pd.getTranPos().clone());
-        }
-        var center = statuePos != null ? statuePos : pd.getTranPos();
-        if (center != null) {
-            for (int i = 0; i < 6; i++) {
-                double ang = (Math.PI * 2 * i) / 6;
-                spawnPoints.add(
-                        new emu.grasscutter.game.world.Position(
-                                center.getX() + (float) (Math.cos(ang) * 6f),
-                                center.getY(),
-                                center.getZ() + (float) (Math.sin(ang) * 6f)));
-            }
+        // 代理只放在锚点（雕像）本体位置，不再跟玩家、不再锦环
+        {
+            var c0 = pd.getPos() != null ? pd.getPos() : pd.getTranPos();
+            if (c0 != null) spawnPoints.add(c0.clone());
         }
         var unique = new java.util.ArrayList<emu.grasscutter.game.world.Position>();
         for (var p : spawnPoints) {
@@ -630,27 +618,10 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
 
         // Thick Nod-Krai pillars block standing on center - ring of proxies + player/tranPos.
         var spawnPoints = new java.util.ArrayList<emu.grasscutter.game.world.Position>();
-        if (this.player.getPosition() != null) {
-            spawnPoints.add(this.player.getPosition().clone());
-        }
-        if (pd.getTranPos() != null) {
-            spawnPoints.add(pd.getTranPos().clone());
-        }
-        var center = statuePos != null ? statuePos : pd.getTranPos();
-        if (center != null) {
-            // ~12m ring so F is reachable around bulky bases.
-            float[] radii = {8f, 12f};
-            int sectors = 8;
-            for (float radius : radii) {
-                for (int i = 0; i < sectors; i++) {
-                    double ang = (Math.PI * 2 * i) / sectors;
-                    spawnPoints.add(
-                            new emu.grasscutter.game.world.Position(
-                                    center.getX() + (float) (Math.cos(ang) * radius),
-                                    center.getY(),
-                                    center.getZ() + (float) (Math.sin(ang) * radius)));
-                }
-            }
+        // 代理只放在锚点（柱子）本体位置，不再锦 8/12m 大环
+        {
+            var c0 = pd.getPos() != null ? pd.getPos() : pd.getTranPos();
+            if (c0 != null) spawnPoints.add(c0.clone());
         }
         if (spawnPoints.isEmpty()) return;
 
@@ -971,6 +942,56 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
                         this.player.getUid(),
                         pointId,
                         entityIds.size());
+    }
+
+    /**
+     * 真解锁神像：标记解锁 + 通知客户端 + **补回神像雕像 gadget** + 铺回血代理。
+     *
+     * <p>客户端收到解锁通知后会把「未解锁雕像」移除，等服务器给「已激活」实体；AstaPS 原先
+     * 不给，所以神像会“灭掉”且不能传送。这里用场景点数据里的 gadgetId 把雕像补回去。
+     */
+    public void miaoUnlockStatue(int sceneId, int pointId) {
+        var entry = GameData.getScenePointEntryById(sceneId, pointId);
+        if (entry == null || entry.getPointData() == null) return;
+        var pd = entry.getPointData();
+        boolean isNew = this.player.getUnlockedScenePoints(sceneId).add(pointId);
+        this.player.getForceLockedScenePoints(sceneId).remove(pointId);
+        if (isNew) {
+            this.player.sendPacket(
+                    new emu.grasscutter.server.packet.send.PacketScenePointUnlockNotify(
+                            sceneId, pointId));
+            // 关键：重发场景点列表，客户端的“已解锁/可传送”状态来自这个包。
+            this.player.sendPacket(
+                    new emu.grasscutter.server.packet.send.PacketGetScenePointRsp(
+                            this.player, sceneId));
+        }
+        try {
+            var scene = this.player.getScene();
+            if (scene != null && scene.getId() == sceneId && pd.getGadgetId() > 0) {
+                int gid = pd.getGadgetId();
+                // 已经补过就不再重复补
+                boolean exists = false;
+                for (var ent : scene.getEntities().values()) {
+                    if (ent instanceof emu.grasscutter.game.entity.EntityGadget eg
+                            && eg.getGadgetData() != null
+                            && eg.getGadgetData().getId() == gid) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    var pos = pd.getPos() != null ? pd.getPos() : pd.getTranPos();
+                    var rot = pd.getRot() != null ? pd.getRot() : pd.getTranRot();
+                    if (pos != null) {
+                        var eg = new emu.grasscutter.game.entity.EntityGadget(
+                                scene, gid, pos, rot != null ? rot : new emu.grasscutter.game.world.Position());
+                        scene.addEntity(eg);
+                    }
+                }
+            }
+        } catch (Throwable t) {
+        }
+        this.refreshStatueGoddessNpc(sceneId, pointId);
     }
 
     public boolean unlockTransPoint(int sceneId, int pointId, boolean isStatue) {
