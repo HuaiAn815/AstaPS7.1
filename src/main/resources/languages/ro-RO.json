@@ -240,6 +240,11 @@
       "success": "Coordonate: %s, %s, %s\nGravitează：%s, %s, %s\nScene ID: %s",
       "description": "Obține informații despre poziție și rotație"
     },
+    "pierro": {
+      "description": "Toggle Il Pierro's support button from the Ronova fight",
+      "on": "Pierro's support button is on: his portrait appears on the team bar and strikes Ronova when pressed. It lasts until logout.",
+      "off": "Pierro's support button is off."
+    },
     "quest": {
       "added": "Misiunea %s adăugată.",
       "finished": "Ați terminat misiunea %s.",

@@ -240,6 +240,11 @@
       "success": "座標: %s, %s, %s\n回転: %s, %s, %s\nシーンID: %s",
       "description": "位置と回転情報を取得します。"
     },
+    "pierro": {
+      "description": "Toggle Il Pierro's support button from the Ronova fight",
+      "on": "Pierro's support button is on: his portrait appears on the team bar and strikes Ronova when pressed. It lasts until logout.",
+      "off": "Pierro's support button is off."
+    },
     "quest": {
       "added": "クエスト %s が追加されました。",
       "finished": "クエスト %s を終了しました。",
