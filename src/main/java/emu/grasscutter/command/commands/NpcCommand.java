@@ -2,6 +2,7 @@ package emu.grasscutter.command.commands;
 
 import static emu.grasscutter.utils.lang.Language.translate;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.command.*;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.entity.EntityNPC;
@@ -74,7 +75,24 @@ public final class NpcCommand implements CommandHandler {
                         .addZ((float) (Math.cos(yaw) * DISTANCE));
         var rot = new Position(0, (targetPlayer.getRotation().getY() + 180) % 360, 0);
 
-        scene.addEntity(new EntityNPC(scene, npcId, pos, rot));
+        var npc = new EntityNPC(scene, npcId, pos, rot);
+        // The client files NPCs under the scene block they belong to and drops one whose block it
+        // does not have loaded; block 0 never is, so give it the block the player stands in.
+        for (var block : scene.getLoadedBlocks()) {
+            if (block.contains(pos)) {
+                npc.setBlockId(block.id);
+                break;
+            }
+        }
+        scene.addEntity(npc);
+        Grasscutter.getLogger()
+                .info(
+                        "[npc] placed npc {} as entity {} in scene {} block {} at {}",
+                        npcId,
+                        npc.getId(),
+                        scene.getId(),
+                        npc.getBlockId(),
+                        pos);
         CommandHandler.sendMessage(sender, translate(sender, "commands.npc.spawned", npcId));
     }
 
