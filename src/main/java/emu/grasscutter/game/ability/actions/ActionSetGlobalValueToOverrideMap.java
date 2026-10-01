@@ -17,7 +17,10 @@ public final class ActionSetGlobalValueToOverrideMap extends AbilityActionHandle
         if (action.isFromOwner) {
             if (target instanceof EntityClientGadget) {
                 EntityClientGadget gadget = (EntityClientGadget)target;
-                entity = entity.getScene().getEntityById(gadget.getOwnerEntityId());
+                entity =
+                        entity.getScene() != null
+                                ? entity.getScene().getEntityById(gadget.getOwnerEntityId())
+                                : null;
             } else if (target instanceof EntityGadget) {
                 EntityGadget gadget = (EntityGadget)target;
                 entity = gadget.getOwner();
@@ -44,7 +47,13 @@ public final class ActionSetGlobalValueToOverrideMap extends AbilityActionHandle
         entity.getGlobalAbilityValues().put(globalValueKey, globalValue);
         ability.getAbilitySpecials().put(action.overrideMapKey, globalValue.floatValue());
         entity.onAbilityValueUpdate();
-        entity.getScene().getHost().sendPacket(new PacketServerGlobalValueChangeNotify(entity, globalValueKey, globalValue.floatValue()));
+        // A team member who is not on the field has no scene (Columbina's E sets values on her
+        // while she is off-field); tell the ability's own player instead of throwing.
+        var scene = entity.getScene();
+        var host = scene != null ? scene.getHost() : ability.getPlayerOwner();
+        if (host != null) {
+            host.sendPacket(new PacketServerGlobalValueChangeNotify(entity, globalValueKey, globalValue.floatValue()));
+        }
         return true;
     }
 }
