@@ -124,6 +124,8 @@ public class Player implements PlayerHook, FieldFetch {
     @Getter private Map<Integer, ActiveCookCompoundData> activeCookCompounds;
     @Getter private Map<Integer, Integer> questGlobalVariables;
     @Getter private Map<Integer, Integer> openStates;
+    // TPS ammunition reserve, keyed by TpsAmmunitionExcelConfigData id.
+    private Map<Integer, Integer> tpsAmmunition;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedSceneAreas;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedScenePoints;
     /** Debug/test: points forced locked even if GetScenePointRsp would otherwise unlock-all. */
@@ -1395,6 +1397,13 @@ public class Player implements PlayerHook, FieldFetch {
         this.getCodex().setPlayer(this);
         this.getProgressManager().setPlayer(this);
         this.getTeamManager().setPlayer(this);
+    }
+
+    public Map<Integer, Integer> getTpsAmmunition() {
+        if (this.tpsAmmunition == null) {
+            this.tpsAmmunition = new HashMap<>();
+        }
+        return this.tpsAmmunition;
     }
 
     public void save() {
