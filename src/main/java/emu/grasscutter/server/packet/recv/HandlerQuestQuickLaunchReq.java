@@ -20,6 +20,17 @@ public class HandlerQuestQuickLaunchReq extends PacketHandler {
                         req.getQuestId(),
                         req.getIsEnterFocusMode());
 
+        // 原来这里只回一个空响应，任务永远不会进任务列表。
+        // 客户端按“快速启动/接取”发出的就是这个包，所以这里要真把任务加进去。
+        int miaoQuestId = req.getQuestId();
+        if (miaoQuestId > 0) {
+            try {
+                var miaoQuest =
+                        session.getPlayer().getQuestManager().addQuest(miaoQuestId);
+            } catch (Throwable t) {
+            }
+        }
+
         var rsp =
                 _QuestQuickLaunchRsp.newBuilder()
                         .setQuestId(req.getQuestId())

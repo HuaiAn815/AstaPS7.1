@@ -55,7 +55,7 @@ public final class ActionTriggerAbility extends AbilityActionHandler {
         if (list == null) {
             return null;
         }
-        for (Ability candidate : list) {
+        for (Ability candidate : new java.util.ArrayList<>(list)) { // 副本遍历，避免并发修改崩溃
             if (candidate == null || candidate.getData() == null) {
                 continue;
             }

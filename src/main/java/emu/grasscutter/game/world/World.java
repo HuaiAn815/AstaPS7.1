@@ -293,6 +293,7 @@ public class World implements Iterable<Player> {
                                                         : p.getTeamManager().getEntity().getId())
                                 .toList()));
 
+        this.server.getMultiplayerSystem().onPlayerRemovedFromWorld(this, player);
         // Deregister
         this.getPlayers().remove(player);
         player.setWorld(null);

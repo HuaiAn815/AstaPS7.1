@@ -88,11 +88,12 @@ public final class UnlockAllCommand implements CommandHandler {
                                         .add(tag.getId()));
         targetPlayer.sendPacket(new PacketPlayerWorldSceneInfoListNotify(targetPlayer));
 
-        // Region access is quest-gated, and a region released after this server's resource set was
-        // cut has no quest data here at all - so the quest system cannot finish it and the client
-        // keeps the barrier up. Telling the client directly is the only lever available.
-        var quests = emu.grasscutter.game.quest.ForcedQuests.allMainQuests();
-        emu.grasscutter.game.quest.ForcedQuests.apply(targetPlayer, quests);
+        // [removed 2026-10-01 on request] 原来这里会把 jar 内 main_quest_ids.txt 的 4372 条
+        // 主线/传说任务 id 全部写进 forcedFinishedQuests，并在客户端标记为“已完成”，
+        // 导致传说任务从列表里消失。用户要求踢掉，故不再执行。
+        // 代价：靠任务门禁解锁的新区域可能打不开（原逻辑靠伪造 ParentQuest 完成通知绕过）。
+        // var quests = emu.grasscutter.game.quest.ForcedQuests.allMainQuests();
+        // emu.grasscutter.game.quest.ForcedQuests.apply(targetPlayer, quests);
 
         targetPlayer.save();
 
@@ -100,6 +101,6 @@ public final class UnlockAllCommand implements CommandHandler {
                 sender, translate(sender, "commands.unlockall.success", targetPlayer.getNickname()));
         CommandHandler.sendMessage(
                 sender,
-                "Also unlocked every scene tag and force-finished every main quest.");
+                "Also unlocked every scene tag.");
     }
 }

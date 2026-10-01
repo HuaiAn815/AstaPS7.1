@@ -19,6 +19,18 @@ public class HandlerEnterTransPointRegionNotify extends PacketHandler {
             EnterTransPointRegionNotify notify = EnterTransPointRegionNotify.parseFrom(payload);
             int sceneId = notify.getSceneId();
             int pointId = notify.getPointId();
+            // ===== 7.1 真字段布局未确认：proto 解析不出来时，从原始 varint 猜 scene/point =====
+            if (sceneId <= 0 || pointId <= 0) {
+                int curScene =
+                        (session.getPlayer() != null && session.getPlayer().getScene() != null)
+                                ? session.getPlayer().getSceneId()
+                                : 0;
+                int[] sp = bruteScenePoint(payload, curScene);
+                if (sp != null) {
+                    sceneId = sp[0];
+                    pointId = sp[1];
+                }
+            }
             Grasscutter.getLogger()
                     .info(
                             "EnterTransPoint uid={} sceneId={} pointId={} hex={} tags={}",
@@ -44,25 +56,15 @@ public class HandlerEnterTransPointRegionNotify extends PacketHandler {
                                     && (player.isScenePointForceLocked(sceneId, pointId)
                                             || !player.getUnlockedScenePoints(sceneId)
                                                     .contains(pointId));
-                    if (locked) {
-                        boolean ok =
-                                player.getProgressManager()
-                                        .unlockTransPoint(sceneId, pointId, true);
-                        Grasscutter.getLogger()
-                                .info(
-                                        "Auto-unlock locked statue uid={} scene={} point={} ok={}",
-                                        uid,
-                                        sceneId,
-                                        pointId,
-                                        ok);
-                        if (ok) {
-                            player.sendPacket(
-                                    new emu.grasscutter.server.packet.send.PacketGetScenePointRsp(
-                                            player, sceneId));
+                    if (locked) { // 靠近就解锁；已解锁则完全不碰
+                        try {
+                            player.getProgressManager().miaoUnlockStatue(sceneId, pointId);
                             player.sendPacket(
                                     new emu.grasscutter.server.packet.send.PacketGetSceneAreaRsp(
                                             player, sceneId));
+                        } catch (Throwable t2) {
                         }
+                    } else if (isStatue) {
                     }
                 } catch (Throwable t) {
                     Grasscutter.getLogger()
@@ -71,7 +73,7 @@ public class HandlerEnterTransPointRegionNotify extends PacketHandler {
             }
 
             // Only nudge unlock notify for points that are already unlocked server-side.
-            if (sceneId > 0
+            if (false && sceneId > 0 // 已关闭“靠近即发激活提示”
                     && pointId > 0
                     && player != null
                     && !player.isScenePointForceLocked(sceneId, pointId)
@@ -98,6 +100,78 @@ public class HandlerEnterTransPointRegionNotify extends PacketHandler {
                             tags);
         }
         session.getPlayer().getSotsManager().handleEnterTransPointRegionNotify();
+    }
+
+    /**
+     * 从 payload 的 protobuf varint 字段里猜 scene/point：将值等于“当前场景 id”的那个字段
+     * 当作 scene_id，另一个字段的值当作 point_id。用来兼容 7.1 客户端与本地 proto 字段号不一致的情况。
+     */
+    private static int[] bruteScenePoint(byte[] payload, int curScene) {
+        if (payload == null || payload.length == 0 || curScene <= 0) return null;
+        java.util.List<int[]> kv = new java.util.ArrayList<>();
+        int i = 0;
+        try {
+            while (i < payload.length) {
+                long key = 0;
+                int shift = 0;
+                while (i < payload.length) {
+                    int b = payload[i++] & 0xff;
+                    key |= (long) (b & 0x7f) << shift;
+                    if ((b & 0x80) == 0) break;
+                    shift += 7;
+                    if (shift > 28) return null;
+                }
+                int field = (int) (key >>> 3);
+                int wire = (int) (key & 0x7);
+                if (field <= 0) return null;
+                if (wire == 0) {
+                    long val = 0;
+                    shift = 0;
+                    while (i < payload.length) {
+                        int b = payload[i++] & 0xff;
+                        val |= (long) (b & 0x7f) << shift;
+                        if ((b & 0x80) == 0) break;
+                        shift += 7;
+                        if (shift > 28) return null;
+                    }
+                    kv.add(new int[] {field, (int) val});
+                } else if (wire == 2) {
+                    long len = 0;
+                    shift = 0;
+                    while (i < payload.length) {
+                        int b = payload[i++] & 0xff;
+                        len |= (long) (b & 0x7f) << shift;
+                        if ((b & 0x80) == 0) break;
+                        shift += 7;
+                        if (shift > 28) return null;
+                    }
+                    if (len < 0 || i + len > payload.length) return null;
+                    i += (int) len;
+                } else if (wire == 5) {
+                    i += 4;
+                } else if (wire == 1) {
+                    i += 8;
+                } else {
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        if (kv.size() < 2) return null;
+        int sc = -1, pt = -1, ptField = -1;
+        for (int[] e : kv) {
+            if (e[1] == curScene && sc < 0) {
+                sc = e[1];
+                continue;
+            }
+            if (pt < 0) {
+                pt = e[1];
+                ptField = e[0];
+            }
+        }
+        if (sc <= 0 || pt <= 0) return null;
+        return new int[] {sc, pt};
     }
 
     /** Dump protobuf field_number->varint for quick wire-layout checks. */
