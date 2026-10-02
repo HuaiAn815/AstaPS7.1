@@ -17,6 +17,7 @@ import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.net.proto.SceneWeaponInfoOuterClass.SceneWeaponInfo;
 import emu.grasscutter.net.proto.TpsWeapon._TpsWeapon;
 import emu.grasscutter.net.proto.TpsWeaponAmmunitionInfoOuterClass.TpsWeaponAmmunitionInfo;
+import emu.grasscutter.server.packet.send.PacketAbilityChangeNotify;
 import emu.grasscutter.server.packet.send.PacketTpsEquipChangeNotify;
 import it.unimi.dsi.fastutil.ints.*;
 import java.util.*;
@@ -276,6 +277,41 @@ public final class TpsWeaponSystem {
             entity.getScene().broadcastPacket(packet);
         } else {
             player.sendPacket(packet);
+        }
+        sendWeaponAbilityBlocks(avatar);
+    }
+
+    /**
+     * AbilityChangeNotify for each worn weapon entity, announcing its gadget-config abilities
+     * ({@code TPS_Weapon_*_Innate_Ability}, fire, reload). Without them the gun has no ability
+     * instance on the client: no shooting HUD and no shot.
+     */
+    public static void sendWeaponAbilityBlocks(Avatar avatar) {
+        var player = avatar.getPlayer();
+        if (player == null || !player.hasSentLoginPackets()) return;
+        for (GameItem item : getWornWeapons(avatar)) {
+            var weapon = item.getWeaponEntity();
+            if (weapon == null) continue;
+            var block = weapon.getAbilityControlBlock();
+            if (block.getAbilityEmbryoListCount() == 0) {
+                Grasscutter.getLogger().debug("TPS weapon {} has no gadget abilities", weapon.getGadgetId());
+                continue;
+            }
+            player.sendPacket(new PacketAbilityChangeNotify(weapon.getId(), block));
+            Grasscutter.getLogger()
+                    .debug(
+                            "TPS weapon abilities: gadget {} entity {} embryos {}",
+                            weapon.getGadgetId(),
+                            weapon.getId(),
+                            block.getAbilityEmbryoListCount());
+        }
+    }
+
+    /** The client finished initialising an entity's abilities; give a TPS wearer's guns theirs. */
+    public static void onClientAbilityInit(Player player, int entityId) {
+        for (var entity : player.getTeamManager().getActiveTeam()) {
+            if (entity.getId() != entityId) continue;
+            if (!entity.getAvatar().getTpsWeaponIds().isEmpty()) sendWeaponAbilityBlocks(entity.getAvatar());
         }
     }
 
