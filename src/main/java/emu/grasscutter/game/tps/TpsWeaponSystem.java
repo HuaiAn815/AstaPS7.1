@@ -10,15 +10,25 @@ import emu.grasscutter.game.entity.EntityWeapon;
 import emu.grasscutter.game.inventory.*;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.world.Scene;
+import emu.grasscutter.net.packet.BasePacket;
+import emu.grasscutter.net.packet.PacketOpcodes;
+import emu.grasscutter.net.proto.AbilityInvokeArgumentOuterClass.AbilityInvokeArgument;
+import emu.grasscutter.net.proto.AbilityInvokeEntryHeadOuterClass.AbilityInvokeEntryHead;
 import emu.grasscutter.net.proto.AbilityInvokeEntryOuterClass.AbilityInvokeEntry;
 import emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition;
 import emu.grasscutter.net.proto.AbilitySyncStateInfoOuterClass.AbilitySyncStateInfo;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.net.proto.SceneWeaponInfoOuterClass.SceneWeaponInfo;
+import emu.grasscutter.net.proto.TpsAmmunitionChangeNotifyOuterClass.TpsAmmunitionChangeNotify;
+import emu.grasscutter.net.proto.TpsAmmunitionChangeNotifyOuterClass.TpsAmmunitionChangeNotifyEntry;
+import emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange;
+import emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType;
 import emu.grasscutter.net.proto.TpsWeapon._TpsWeapon;
 import emu.grasscutter.net.proto.TpsWeaponAmmunitionInfoOuterClass.TpsWeaponAmmunitionInfo;
 import emu.grasscutter.server.packet.send.PacketAbilityChangeNotify;
+import emu.grasscutter.server.packet.send.PacketAbilityInvocationsNotify;
 import emu.grasscutter.server.packet.send.PacketTpsEquipChangeNotify;
+import emu.grasscutter.utils.Utils;
 import it.unimi.dsi.fastutil.ints.*;
 import java.util.*;
 import javax.annotation.Nullable;
@@ -41,6 +51,16 @@ public final class TpsWeaponSystem {
     private static final Int2IntMap WEAR_LIMIT = new Int2IntOpenHashMap(new int[] {1, 2}, new int[] {2, 1});
 
     private TpsWeaponSystem() {}
+
+    /**
+     * How TpsWeaponAmmunitionInfo is filled. What the client reads from it is not settled (see
+     * docs/tps), so {@code /tps ammo} can switch these at runtime to try the candidates.
+     */
+    public enum AmmoCurrent { RESERVE, LIMIT, FIXED }
+
+    public static volatile boolean ammoTypeIsSlot = true;
+    public static volatile AmmoCurrent ammoCurrent = AmmoCurrent.RESERVE;
+    public static volatile int ammoFixed = 45;
 
     public static boolean isTpsWeapon(@Nullable GameItem item) {
         return item != null
@@ -159,11 +179,17 @@ public final class TpsWeaponSystem {
             for (int slotId : weaponData.getAmmoSlotIds()) {
                 var ammunition = getAmmunitionForSlot(slotId);
                 if (ammunition == null) continue;
+                int current =
+                        switch (ammoCurrent) {
+                            case RESERVE -> getReserve(player, ammunition.getId());
+                            case LIMIT -> ammunition.getTpsAmmoLimit();
+                            case FIXED -> ammoFixed;
+                        };
                 info.addAmmunitionList(
                         TpsWeaponAmmunitionInfo.newBuilder()
-                                .setAmmunitionType(slotId)
+                                .setAmmunitionType(ammoTypeIsSlot ? slotId : 1)
                                 .setAmmunitionConfigId(ammunition.getId())
-                                .setCurrentAmmunition(getReserve(player, ammunition.getId())));
+                                .setCurrentAmmunition(current));
             }
         }
         return info.build();
@@ -350,9 +376,89 @@ public final class TpsWeaponSystem {
         getTpsWearers(player).forEach(TpsWeaponSystem::sendEquipChange);
     }
 
+    /** Every ammunition the player's worn weapons draw from, with its reserve. */
+    private static Int2IntMap getWornAmmunition(Player player) {
+        var pools = new Int2IntLinkedOpenHashMap();
+        for (Avatar avatar : getTpsWearers(player)) {
+            for (GameItem item : getWornWeapons(avatar)) {
+                var data = GameData.getTpsWeaponDataMap().get(item.getItemId());
+                if (data == null || data.getAmmoSlotIds() == null) continue;
+                for (int slotId : data.getAmmoSlotIds()) {
+                    var ammunition = getAmmunitionForSlot(slotId);
+                    if (ammunition != null) pools.put(ammunition.getId(), getReserve(player, ammunition.getId()));
+                }
+            }
+        }
+        return pools;
+    }
+
+    /** Experiment: CmdId 24371 listing each worn ammunition with its reserve as the count. */
+    public static int sendAmmunitionNotify(Player player) {
+        var proto = TpsAmmunitionChangeNotify.newBuilder();
+        getWornAmmunition(player)
+                .forEach(
+                        (id, count) ->
+                                proto.addAmmunitionList(
+                                        TpsAmmunitionChangeNotifyEntry.newBuilder()
+                                                .setAmmunitionConfigId(id)
+                                                .setChangeCount(count)));
+        var packet = new BasePacket(PacketOpcodes.TpsAmmunitionChangeNotify);
+        packet.setData(proto.build());
+        player.sendPacket(packet);
+        Grasscutter.getLogger().info("TPS ammo: sent 24371 {}", proto.build());
+        return proto.getAmmunitionListCount();
+    }
+
+    /**
+     * Experiment: a server-authored ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION (SUPPLY) on each field
+     * wearer, routed to its Avatar_TPS_Ammo_Manager instance. Uses 7.1 field numbers.
+     */
+    public static int sendAmmunitionSupply(Player player) {
+        var pools = getWornAmmunition(player);
+        var meta = AbilityMetaUpdateTpsWeaponAmmunition.newBuilder()
+                .setUpdateType(TpsAmmunitionUpdateType.TpsAmmunitionUpdateType_SUPPLY);
+        pools.forEach(
+                (id, count) ->
+                        meta.addAmmunitionList(
+                                TpsAmmunitionChange.newBuilder().setAmmunitionConfigId(id).setChangeCount(count)));
+
+        int sent = 0;
+        int managerHash = Utils.abilityHash("Avatar_TPS_Ammo_Manager");
+        for (var entity : player.getTeamManager().getActiveTeam()) {
+            if (entity.getAvatar().getTpsWeaponIds().isEmpty()) continue;
+            int instancedId =
+                    entity.getAbilityControlBlock().getAbilityEmbryoListList().stream()
+                            .filter(embryo -> embryo.getAbilityNameHash() == managerHash)
+                            .mapToInt(embryo -> embryo.getAbilityId())
+                            .findFirst()
+                            .orElse(0);
+            var invoke =
+                    AbilityInvokeEntry.newBuilder()
+                            .setArgumentType(
+                                    AbilityInvokeArgument.AbilityInvokeArgument_ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION)
+                            .setEntityId(entity.getId())
+                            .setHead(AbilityInvokeEntryHead.newBuilder().setInstancedAbilityId(instancedId))
+                            .setAbilityData(meta.build().toByteString())
+                            .build();
+            player.sendPacket(new PacketAbilityInvocationsNotify(invoke));
+            Grasscutter.getLogger()
+                    .info("TPS ammo: sent SUPPLY to entity {} (Ammo_Manager instance {}): {}", entity.getId(), instancedId, meta.build());
+            sent++;
+        }
+        return sent;
+    }
+
     /** ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION: the client spent, reloaded, picked up or was supplied. */
     public static void onAmmunitionInvoke(Player player, AbilityInvokeEntry invoke) throws Exception {
         var update = AbilityMetaUpdateTpsWeaponAmmunition.parseFrom(invoke.getAbilityData());
+        // Until the fields are settled, every one of these is worth seeing whole.
+        Grasscutter.getLogger()
+                .info(
+                        "TPS ammo invoke: entity {} instance {} hex {} -> {}",
+                        invoke.getEntityId(),
+                        invoke.getHead().getInstancedAbilityId(),
+                        Utils.bytesToHex(invoke.getAbilityData().toByteArray()),
+                        update.toString().replace('\n', ' '));
         for (var change : update.getAmmunitionListList()) {
             int reserve = changeReserve(player, change.getAmmunitionConfigId(), change.getChangeCount());
             Grasscutter.getLogger()

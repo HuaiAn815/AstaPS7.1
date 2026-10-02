@@ -26,7 +26,26 @@ LittleIdol talents, which now load too.
 /tps accessory       unlock every accessory of the weapons you own
 /tps wear 224001 224004   the field avatar wears the Glacia rifle and a fire grenade
 /tps refill          fill all ammunition and resend the weapons
+/tps ammo ...        ammunition experiments, see below
 ```
+
+### Ammunition experiments
+
+How the client reads `SceneWeaponInfo.ammunition_list` is not settled, so `/tps ammo` switches the
+fill at runtime (until restart) and resends the weapons:
+
+```
+/tps ammo type slot|one              ammunition_type = the ammo slot (101...) or 1
+/tps ammo current reserve|limit|45   current_ammunition = the reserve, the pool limit, or a number
+/tps ammo notify                     send 24371 with each worn ammunition's reserve
+/tps ammo supply                     send a SUPPLY ammunition invoke to Avatar_TPS_Ammo_Manager
+```
+
+Every `ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION` the client sends is logged at info, decoded and
+in hex (`TPS ammo invoke: ...`). The ammunition state lives in the client's TPS module: the
+weapon-side `UNIQUE_TPS_*_Combatbase` modifier's mixin (`AGKHIHKEJCM`) names the slot (101), the
+pool (1001) and the magazine size (45, or 75 with the magazine accessory), and the action
+`EBDEAFMADGN` changes a slot by an amount or fills it.
 
 Ammunition traffic is logged at debug level (`TPS ammunition ...`).
 

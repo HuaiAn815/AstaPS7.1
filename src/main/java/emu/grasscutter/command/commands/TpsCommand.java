@@ -11,7 +11,13 @@ import java.util.*;
 /** Third-person shooter weapons: hand them out, wear them on the current avatar, refill ammo. */
 @Command(
         label = "tps",
-        usage = {"give [<weaponId>]", "accessory", "wear [<weaponId>...]", "refill"},
+        usage = {
+            "give [<weaponId>]",
+            "accessory",
+            "wear [<weaponId>...]",
+            "refill",
+            "ammo [type slot|one] [current reserve|limit|<n>] [notify] [supply]"
+        },
         permission = "player.tps",
         permissionTargeted = "player.tps.others")
 public final class TpsCommand implements CommandHandler {
@@ -28,6 +34,7 @@ public final class TpsCommand implements CommandHandler {
             case "give" -> this.give(sender, targetPlayer, rest);
             case "accessory" -> this.unlockAccessories(sender, targetPlayer);
             case "wear" -> this.wear(sender, targetPlayer, rest);
+            case "ammo" -> this.ammo(sender, targetPlayer, rest);
             case "refill" -> {
                 TpsWeaponSystem.refillAmmunition(targetPlayer);
                 CommandHandler.sendMessage(sender, "TPS ammunition refilled.");
@@ -91,6 +98,62 @@ public final class TpsCommand implements CommandHandler {
         int retcode = TpsWeaponSystem.wear(target, entity.getAvatar().getGuid(), guids);
         CommandHandler.sendMessage(
                 sender, retcode == 0 ? "TPS weapons now worn: " + args : "Wear failed, retcode " + retcode + ".");
+    }
+
+    /**
+     * Ammunition experiments: what the client reads from the weapons' ammunition list is not
+     * settled, so the fill can be switched in game and the server-to-client pushes tried by hand.
+     */
+    private void ammo(Player sender, Player target, List<String> args) {
+        boolean resend = false;
+        for (int i = 0; i < args.size(); i++) {
+            String arg = args.get(i).toLowerCase();
+            String next = i + 1 < args.size() ? args.get(i + 1).toLowerCase() : "";
+            switch (arg) {
+                case "type" -> {
+                    TpsWeaponSystem.ammoTypeIsSlot = !next.equals("one");
+                    resend = true;
+                    i++;
+                }
+                case "current" -> {
+                    switch (next) {
+                        case "reserve" -> TpsWeaponSystem.ammoCurrent = TpsWeaponSystem.AmmoCurrent.RESERVE;
+                        case "limit" -> TpsWeaponSystem.ammoCurrent = TpsWeaponSystem.AmmoCurrent.LIMIT;
+                        default -> {
+                            try {
+                                TpsWeaponSystem.ammoFixed = Integer.parseInt(next);
+                                TpsWeaponSystem.ammoCurrent = TpsWeaponSystem.AmmoCurrent.FIXED;
+                            } catch (NumberFormatException e) {
+                                sendUsageMessage(sender);
+                                return;
+                            }
+                        }
+                    }
+                    resend = true;
+                    i++;
+                }
+                case "notify" ->
+                        CommandHandler.sendMessage(
+                                sender, "Sent 24371 with " + TpsWeaponSystem.sendAmmunitionNotify(target) + " entries.");
+                case "supply" ->
+                        CommandHandler.sendMessage(
+                                sender, "Sent SUPPLY to " + TpsWeaponSystem.sendAmmunitionSupply(target) + " avatars.");
+                default -> {
+                    sendUsageMessage(sender);
+                    return;
+                }
+            }
+        }
+        if (resend) TpsWeaponSystem.getTpsWearers(target).forEach(TpsWeaponSystem::sendEquipChange);
+        CommandHandler.sendMessage(
+                sender,
+                "TPS ammo list: type="
+                        + (TpsWeaponSystem.ammoTypeIsSlot ? "slot" : "one")
+                        + " current="
+                        + TpsWeaponSystem.ammoCurrent
+                        + (TpsWeaponSystem.ammoCurrent == TpsWeaponSystem.AmmoCurrent.FIXED
+                                ? "(" + TpsWeaponSystem.ammoFixed + ")"
+                                : ""));
     }
 
     private static Integer parseWeaponId(Player sender, String arg) {
