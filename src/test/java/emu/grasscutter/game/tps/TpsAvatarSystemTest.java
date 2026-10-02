@@ -2,10 +2,11 @@ package emu.grasscutter.game.tps;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import emu.grasscutter.data.excels.avatar.*;
 import emu.grasscutter.data.excels.dungeon.DungeonData;
 import emu.grasscutter.data.excels.scene.SceneData;
 import emu.grasscutter.game.dungeons.enums.DungeonType;
-import emu.grasscutter.utils.JsonUtils;
+import emu.grasscutter.utils.*;
 import org.junit.jupiter.api.Test;
 
 /** Which scenes swap the team for the TPS traveler. */
@@ -36,5 +37,28 @@ public final class TpsAvatarSystemTest {
                         "{\"id\": 10955, \"sceneId\": 51336, \"type\": \"DUNGEON_TPS_SHOOTING_RANGE\"}",
                         DungeonData.class);
         assertEquals(DungeonType.DUNGEON_TPS_SHOOTING_RANGE, dungeon.getType());
+    }
+
+    @Test
+    public void tpsTravelerHasTheTpsAbilities() {
+        // The TPS traveler's icon is the traveler's, so the icon name alone picks PlayerGirl's set.
+        var data =
+                JsonUtils.decode(
+                        "{\"id\": 10000135, \"iconName\": \"UI_AvatarIcon_PlayerGirl\"}", AvatarData.class);
+        data.buildEmbryo();
+
+        assertEquals("LumineShadow", data.getName());
+        assertTrue(data.getAbilities().contains(Utils.abilityHash("Avatar_TPS_Innate_Ability")));
+        assertTrue(data.getAbilities().contains(Utils.abilityHash("Avatar_TPS_PlayerGirl_Ability")));
+    }
+
+    @Test
+    public void attackModeSkillIsASkill() {
+        // Depot 50001: every regular skill is 0, the aim/fire input is the attack mode skill.
+        var depot =
+                JsonUtils.decode(
+                        "{\"id\": 50001, \"skills\": [0, 0, 0, 0], \"attackModeSkill\": 20000}",
+                        AvatarSkillDepotData.class);
+        assertArrayEquals(new int[] {20000}, depot.getSkillsAndEnergySkill().toArray());
     }
 }
