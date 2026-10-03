@@ -196,6 +196,27 @@ public final class TeamManager extends BasePlayerDataManager {
         return this.getTeams().get(this.currentTeamIndex);
     }
 
+    /**
+     * Drops avatar ids the player does not own from every saved team. A trial avatar is added to
+     * the current team while it is in use (see {@link #addAvatarToTrialTeam}); one left behind, by
+     * leaving through a path that did not remove it or by logging out mid-dungeon, gets saved, and
+     * the next team rebuild has no avatar for it.
+     *
+     * @return whether anything was removed.
+     */
+    public boolean removeUnownedAvatarsFromTeams() {
+        var avatars = this.getPlayer().getAvatars();
+        boolean changed = false;
+        for (TeamInfo team : this.getTeams().values()) {
+            changed |= team.getAvatars().removeIf(id -> avatars.getAvatarById(id) == null);
+            if (team.getAvatars().isEmpty() && team == this.getCurrentSinglePlayerTeamInfo()) {
+                var main = avatars.getAvatarById(this.getPlayer().getMainCharacterId());
+                if (main != null) team.getAvatars().add(main.getAvatarId());
+            }
+        }
+        return changed;
+    }
+
     public TeamInfo getCurrentSinglePlayerTeamInfo() {
         return this.getTeams().get(this.currentTeamIndex);
     }
@@ -662,6 +683,8 @@ public final class TeamManager extends BasePlayerDataManager {
 
         this.usingTrialTeam = false;
         this.trialAvatarTeam = new TeamInfo();
+        // addAvatarToTrialTeam put the trial avatars into the current team; take them out again.
+        this.removeUnownedAvatarsFromTeams();
 
         this.getActiveTeam()
             .forEach(

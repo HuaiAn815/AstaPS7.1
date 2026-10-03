@@ -1452,6 +1452,9 @@ public class Player implements PlayerHook, FieldFetch {
     }
 
     public void onLogin() {
+        // A trial avatar saved into a team (e.g. logging out inside a trial dungeon) has no avatar
+        // to build an entity from.
+        this.getTeamManager().removeUnownedAvatarsFromTeams();
 
         if (this.getSceneTags().isEmpty() || this.getSceneTags() == null) {
             this.applyStartingSceneTags();
