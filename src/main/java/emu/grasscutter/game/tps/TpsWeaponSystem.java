@@ -367,13 +367,14 @@ public final class TpsWeaponSystem {
         return value;
     }
 
-    /** Fills every reserve and tells the client through the ammunition list of each worn weapon. */
+    /** Fills every reserve and tells the client (24371, and each worn weapon's ammunition list). */
     public static void refillAmmunition(Player player) {
         for (var data : GameData.getTpsAmmunitionDataMap().values()) {
             player.getTpsAmmunition().put(data.getId(), data.getTpsAmmoLimit());
         }
         player.save();
         getTpsWearers(player).forEach(TpsWeaponSystem::sendEquipChange);
+        if (!getWornAmmunition(player).isEmpty()) sendAmmunitionNotify(player);
     }
 
     /** Every ammunition the player's worn weapons draw from, with its reserve. */
@@ -392,7 +393,20 @@ public final class TpsWeaponSystem {
         return pools;
     }
 
-    /** Experiment: CmdId 24371 listing each worn ammunition with its reserve as the count. */
+    /**
+     * Gives the client its ammunition on entering a scene, the way a capture shows it: an empty
+     * TpsRegionalPlaySupplyInfoNotify (6579), then TpsAmmunitionChangeNotify (24371) with the reserve
+     * of each ammunition the worn weapons draw from ({1001: 1000, 1003: 12, 1005: 3} there), both
+     * before EnterSceneDoneRsp. Without 24371 the client's reserves stay at 0: the HUD shows 0 and a
+     * reload has nothing to load.
+     */
+    public static void sendSceneAmmunition(Player player) {
+        if (getWornAmmunition(player).isEmpty()) return;
+        player.sendPacket(new BasePacket(PacketOpcodes.TpsRegionalPlaySupplyInfoNotify));
+        sendAmmunitionNotify(player);
+    }
+
+    /** TpsAmmunitionChangeNotify (24371) listing each worn ammunition with its reserve as the count. */
     public static int sendAmmunitionNotify(Player player) {
         var proto = TpsAmmunitionChangeNotify.newBuilder();
         getWornAmmunition(player)

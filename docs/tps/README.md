@@ -13,7 +13,7 @@ This folder has the 7.1 protocol recovered for it (`tps_7.1.proto`) and the tool
 | Switching | `WearTpsEquipReq` (20756) replaces the avatar's whole TPS list, at most 2 guns and 1 grenade (`CONST_VALUE_TPS_SLOT_WEAR_NUM_LIMIT`). A weapon worn by another avatar moves. Replies `WearTpsEquipRsp` (25902) and broadcasts `TpsEquipChangeNotify` (21312). |
 | TPS traveler | The TPS dungeons (51334, 51336 shooting range, 51341-51345) allow only 10000134/10000135. Entering one swaps the team for the TPS traveler matching the player's traveler, as the level 20 trial avatar 10064/10065, wearing the player's TPS loadout (224001 the first time, `CONST_VALUE_INIT_TPS_WEAPON_ID`). Leaving the dungeon restores the team. Weapons chosen there are kept as the loadout. |
 | TPS traveler abilities | 10000134/10000135 share the travelers' icons, so the icon name alone gave them the normal traveler's abilities. They now load `ConfigAvatar_AetherShadow`/`LumineShadow` (`Avatar_TPS_Innate_Ability` and the rest; a stale `AbilityEmbryos.json` is backfilled). Their depot 50001 has no regular skills, only the attack mode skill 20000 (`Main_AimActive`), which is now in the skill maps. |
-| Ammunition | A reserve per `TpsAmmunitionExcelConfigData` id, shared by the slots it fills (1001 feeds both rifles' slot 101/201), full by default, capped at `tpsAmmoLimit`. `ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION` (invoke argument 31) applies the client's `ammunition_list` changes. Each weapon's `ammunition_list` reports the reserve per slot. |
+| Ammunition | A reserve per `TpsAmmunitionExcelConfigData` id, shared by the slots it fills (1001 feeds both rifles' slot 101/201), full by default, capped at `tpsAmmoLimit`. `ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION` (invoke argument 31) applies the client's `ammunition_list` changes. Each weapon's `ammunition_list` reports the reserve per slot. On entering a scene the server sends an empty `TpsRegionalPlaySupplyInfoNotify` (6579) and then `TpsAmmunitionChangeNotify` (24371) with each worn ammunition's reserve, before `EnterSceneDoneRsp`, as a capture shows (`{1001: 1000, 1003: 12, 1005: 3}`). Without 24371 the client's reserves are 0. |
 
 The openConfig loader also had to learn the obfuscated 7.x talent entries (`PHNIGFHBFMD` = AddAbility,
 `GMOELNAHCOH` = ModifyAbility, `CMGFNDNMFFO` = UnlockTalentParam, key `NCCKLDFFDOH` = abilityName).
@@ -117,8 +117,8 @@ so it likely comes from a later build.
 - `TpsWeaponAccessoryInfo` fields 12 and 14: the 7.0 list calls them `slot_index` and `level`, but
   neither is 7.1's `level`. The server only logs them.
 - `AbilityMetaUpdateTpsWeaponAmmunition` field 7, a bool.
-- `TpsAmmunitionChangeNotify` (24371) is a guessed name, and whether its counts are deltas or totals
-  is unknown, so the server does not send it.
+- `TpsAmmunitionChangeNotify` (24371) is a guessed name. At scene entry its counts are the reserves;
+  whether later ones are deltas or totals is unknown, so it is only sent on entry and on `/tps refill`.
 - `GetWidgetQuickSlotListRsp` / `SetWidgetQuickSlotListRsp` are 5047 and 6316 in some order.
 - Whether `TpsWeaponAmmunitionInfo.current_ammunition` is the reserve or the loaded magazine. The
   ability config initialises the magazine on the client (`Avatar_TPS_Ammo_Manager`), so the
