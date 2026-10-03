@@ -1460,6 +1460,14 @@ public class Player implements PlayerHook, FieldFetch {
             this.applyStartingSceneTags();
         }
 
+        // A TPS dungeon is not saved: logging back into one finds no dungeon running, an empty
+        // scene and a client that never finishes loading. Start in Teyvat instead.
+        var savedScene = GameData.getSceneDataMap().get(this.getSceneId());
+        if (emu.grasscutter.game.tps.TpsAvatarSystem.isTpsScene(savedScene)) {
+            this.setSceneId(3);
+            this.position.set(ScriptLoader.getSceneMeta(3).config.born_pos);
+        }
+
         if (GameHome.HOME_SCENE_IDS.contains(this.getSceneId())) {
             this.setSceneId(this.prevScene <= 0 ? 3 : this.prevScene);
             var pos = this.getPrevPosForHome();
@@ -1564,7 +1572,13 @@ public class Player implements PlayerHook, FieldFetch {
             // otherwise keep this player and their world reachable after they leave.
             PlayerRuntimeStateCleanup.clear(this);
 
-            this.getServer().getDungeonSystem().exitDungeon(this);
+            // Leaving the dungeon (trial team, TPS traveler) must not keep the player in the world:
+            // a world left behind keeps ticking and sending to the closed session forever.
+            try {
+                this.getServer().getDungeonSystem().exitDungeon(this);
+            } catch (Throwable e) {
+                Grasscutter.getLogger().warn("Player (UID {}) could not leave the dungeon on logout", getUid(), e);
+            }
 
             if (this.getWorld() != null) {
                 this.getWorld().removePlayer(this);
@@ -1583,8 +1597,7 @@ public class Player implements PlayerHook, FieldFetch {
             PlayerQuitEvent event = new PlayerQuitEvent(this);
             event.call();
         } catch (Throwable e) {
-            e.printStackTrace();
-            Grasscutter.getLogger().warn("Player (UID {}) save failure", getUid());
+            Grasscutter.getLogger().warn("Player (UID {}) save failure", getUid(), e);
         } finally {
             removeFromServer();
         }
