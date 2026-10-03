@@ -40,7 +40,8 @@ extends AbilityActionHandler {
             if (entry.getKey() == null || entry.getValue() == null) continue;
             object2FloatOpenHashMap.put((String)entry.getKey(), (Float)entry.getValue());
         }
-        float f2 = f = abilityModifierAction.ratio != null ? abilityModifierAction.ratio.get(object2FloatOpenHashMap, 0.0f) : 0.0f;
+        // An AddNyxValue with no value adds nothing; ratio's unset default is one.
+        float f2 = f = abilityModifierAction.writtenValue().get(object2FloatOpenHashMap, 0.0f);
         if (f > 0.5f && SkirkCunningHelper.isSkirk(gameEntity2)) {
             SkirkCunningHelper.syncNyxFromSpecial(gameEntity2);
             return true;

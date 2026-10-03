@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedOutputStream;
@@ -75,11 +76,13 @@ public abstract class GameEntity {
     @Getter @Setter private EntityController entityController;
     @Getter private ElementType lastAttackType = ElementType.None;
 
-    @Getter private List<Ability> instancedAbilities = new ArrayList<>();
+    // Both are read and written from the ability thread pool as well as the game thread. A plain
+    // ArrayList threw ConcurrentModificationException out of TriggerAbility, and the fastutil map
+    // threw a NullPointerException out of HealHP when a modifier was added mid-iteration.
+    @Getter private List<Ability> instancedAbilities = new CopyOnWriteArrayList<>();
 
     @Getter
-    private Int2ObjectMap<AbilityModifierController> instancedModifiers =
-            new Int2ObjectOpenHashMap<>();
+    private Map<Integer, AbilityModifierController> instancedModifiers = new ConcurrentHashMap<>();
 
     // Abilities run on a thread pool, so a plain HashMap here threw ConcurrentModificationException
     // out of whichever action happened to be reading the values while another wrote them
