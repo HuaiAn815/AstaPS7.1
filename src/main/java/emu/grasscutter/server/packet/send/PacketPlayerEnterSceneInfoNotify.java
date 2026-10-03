@@ -62,7 +62,7 @@ public class PacketPlayerEnterSceneInfoNotify extends BasePacket {
                 player.setPhlogistonValue(100);
 
         long hexCount = player.getTeamManager().getActiveTeam().stream()
-                .filter(e -> getHexenzirkelIds().contains(e.getAvatar().getAvatarId()))
+                .filter(e -> e != null && getHexenzirkelIds().contains(e.getAvatar().getAvatarId()))
                 .count();
 
         AbilityScalarValueEntry hexLevel = AbilityScalarValueEntry.newBuilder()

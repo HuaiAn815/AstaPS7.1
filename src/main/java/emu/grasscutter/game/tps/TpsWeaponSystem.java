@@ -336,7 +336,7 @@ public final class TpsWeaponSystem {
     /** The client finished initialising an entity's abilities; give a TPS wearer's guns theirs. */
     public static void onClientAbilityInit(Player player, int entityId) {
         for (var entity : player.getTeamManager().getActiveTeam()) {
-            if (entity.getId() != entityId) continue;
+            if (entity == null || entity.getId() != entityId) continue;
             if (!entity.getAvatar().getTpsWeaponIds().isEmpty()) sendWeaponAbilityBlocks(entity.getAvatar());
         }
     }

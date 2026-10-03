@@ -244,11 +244,20 @@ public final class TeamManager extends BasePlayerDataManager {
     public EntityAvatar getCurrentAvatarEntity() {
 
         if (this.getActiveTeam().isEmpty()) {
-
             this.currentCharacterIndex = 0;
-            Avatar mainCharacter = new Avatar(this.player.getMainCharacterId());
-            this.avatars.add(mainCharacter.getAsEntity());
-            return mainCharacter.getAsEntity();
+            // An empty team gets the player's own main character. This used to add the entity of a
+            // fresh, unowned Avatar, which has none: the team then held a null that broke the scene
+            // info, ability creation and everything else that walks the team.
+            var mainCharacter = this.player.getAvatars().getAvatarById(this.player.getMainCharacterId());
+            var scene = this.player.getScene();
+            if (mainCharacter == null || scene == null) return null;
+            var entity =
+                    EntityCreationEvent.call(
+                            EntityAvatar.class,
+                            new Class<?>[] {Scene.class, Avatar.class},
+                            new Object[] {scene, mainCharacter});
+            if (entity != null) this.avatars.add(entity);
+            return entity;
         }
 
         if (this.currentCharacterIndex >= this.getActiveTeam().size()) {
