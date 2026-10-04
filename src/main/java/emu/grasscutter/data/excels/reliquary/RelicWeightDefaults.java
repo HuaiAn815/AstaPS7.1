@@ -7,13 +7,15 @@ import java.util.Map;
 /**
  * Artifact roll weights for resource packs that do not carry them.
  *
- * <p>The 7.x tables dropped the {@code weight} and {@code upgradeWeight} columns from
- * ReliquaryMainPropExcelConfigData and ReliquaryAffixExcelConfigData, so every artifact would roll
- * from an empty pool. These are the community-measured drop rates, used only where a row has no
- * weight of its own.
+ * <p>Current release client resources do not expose the server-side reliquary roll weights. These
+ * defaults preserve known server-side weight ratios, normalized where convenient, and are used only
+ * when a resource row has no weight of its own.
  */
 final class RelicWeightDefaults {
-    /** Every value tier of a substat is equally likely to be the one an upgrade adds. */
+    /**
+     * Every value tier of a substat is equally likely to be the one an upgrade adds. The known
+     * server-side weights are equal per tier; 2500 simply normalizes the four tiers to 10000.
+     */
     static final int UPGRADE_WEIGHT = 2500;
 
     /** Substats roll flat HP/ATK/DEF : percent stats, ER, EM : crit at 6 : 4 : 3. */
