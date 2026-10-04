@@ -1171,12 +1171,31 @@ public class ScriptLib {
 
     public int SetGadgetEnableInteract(int groupId, int configId, boolean enable) {
         logger.debug("[LUA] Call SetGadgetEnableInteract with {} {} {}", groupId, configId, enable);
-        var entity = getSceneScriptManager().getScene().getEntityByConfigId(configId, groupId);
-        // Open-world ElementFlora: config/group lookup often fails; use Lua context entity.
-        if (!(entity instanceof EntityGadget)) {
-            entity = getCurrentEntityGadget();
+
+        EntityGadget gadget = null;
+
+        // ExecuteGadgetLua controller callbacks carry currentEntity but do not necessarily
+        // install a SceneScriptManager context. Prefer the exact context gadget first.
+        var current = getCurrentEntityGadget();
+        if (current != null
+                && current.getGroupId() == groupId
+                && current.getConfigId() == configId) {
+            gadget = current;
         }
-        if (!(entity instanceof EntityGadget gadget)) {
+
+        // Group scripts normally have SceneScriptManager context, so retain the scene lookup
+        // for calls targeting another gadget.
+        if (gadget == null) {
+            var manager = sceneScriptManager.getIfExists();
+            if (manager != null && manager.getScene() != null) {
+                var entity = manager.getScene().getEntityByConfigId(configId, groupId);
+                if (entity instanceof EntityGadget found) {
+                    gadget = found;
+                }
+            }
+        }
+
+        if (gadget == null) {
             logger.warn(
                     "SetGadgetEnableInteract: no gadget group={} config={} enable={}",
                     groupId,
