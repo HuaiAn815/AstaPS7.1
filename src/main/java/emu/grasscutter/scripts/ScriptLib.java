@@ -1055,16 +1055,31 @@ public class ScriptLib {
     }
 
     public int RefreshGroup(LuaTable table) {
-        logger.warn("[LUA] Call improperly implemented RefreshGroup with {}", printTable(table));
+        int groupId = table.get("group_id").optint(0);
+        int suite = table.get("suite").optint(0);
+        boolean excludePrev = table.get("exclude_prev").optboolean(false);
+        int refreshLevelRevise = table.get("refresh_level_revise").optint(0);
 
-        int groupId = table.get("group_id").toint();
-        int suite = table.get("suite").toint();
-        SceneGroupInstance groupInstance = getSceneScriptManager().getGroupInstanceById(groupId);
+        var manager = sceneScriptManager.getIfExists();
+        if (manager == null) {
+            logger.warn("[LUA] RefreshGroup without scene context for group {}", groupId);
+            return 1;
+        }
+
+        SceneGroupInstance groupInstance = manager.getGroupInstanceById(groupId);
         if (groupInstance == null) {
             logger.warn("[LUA] trying to refresh unloaded group {}", groupId);
             return 1;
         }
-        getSceneScriptManager().refreshGroup(groupInstance, suite, false);
+
+        if (refreshLevelRevise != 0) {
+            logger.warn(
+                    "[LUA] RefreshGroup refresh_level_revise={} is not implemented for group {}",
+                    refreshLevelRevise,
+                    groupId);
+        }
+
+        manager.refreshGroup(groupInstance, suite, excludePrev);
         return 0;
     }
 
