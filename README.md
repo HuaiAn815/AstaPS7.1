@@ -19,12 +19,21 @@ If you can fix a bug, please help me.
 
 | | |
 |---|---|
-| Java | 21 to build. The sources target 17, but virtual threads and other 21 APIs compile against the JDK's own classes. |
+| Java | **JDK 21** to build and **Java 21** to run. AstaPS uses Java 21 APIs such as virtual threads. |
 | MongoDB | Community Server. Must be running before the server starts. |
 | Game client | Genshin Impact 7.1.0. The official client checks the region's signature, so it needs a client patch to connect to a private server, such as [hk4e-patch-universal](https://github.com/capyb2222/animegamepatch). AstaPS does not ship one. |
 | Resources | A 7.1.0 resource pack, extracted to `resources/` in the server directory. If you don't have Resources, you can download it [here](https://github.com/MeChen618/AstaPS-Resource). |
 
 ## Building
+
+Check that both Java commands resolve to version 21 before building:
+
+```
+java -version
+javac -version
+```
+
+Then build with:
 
 ```
 ./gradlew jar -PskipHandbook=1
