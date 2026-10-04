@@ -19,12 +19,21 @@
 
 | | |
 |---|---|
-| Java | 編譯需要 21。原始碼目標是 17，但虛擬執行緒等 21 的 API 是對著 JDK 自身的類別編譯的。 |
+| Java | **JDK 21** 用於編譯，**Java 21** 用於執行。AstaPS 會使用虛擬執行緒等 Java 21 API。 |
 | MongoDB | Community Server，啟動伺服器前必須先跑起來。 |
 | 遊戲客戶端 | 原神 7.1.0。官方客戶端會校驗 region 的簽名，要連私服需要另外打客戶端補丁，例如 [hk4e-patch-universal](https://github.com/capyb2222/animegamepatch)。AstaPS 本身不附帶補丁。 |
 | 資源檔 | 7.1.0 的資源包，解壓到伺服器目錄下的 `resources/`。如果你沒有資源檔，可以透過[該連結](https://github.com/MeChen618/AstaPS-Resource)下載。 |
 
 ## 編譯
+
+編譯前先確認兩個 Java 指令都指向 21：
+
+```
+java -version
+javac -version
+```
+
+接著執行：
 
 ```
 ./gradlew jar -PskipHandbook=1
