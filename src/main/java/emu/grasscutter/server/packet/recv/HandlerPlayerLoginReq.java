@@ -48,23 +48,23 @@ public class HandlerPlayerLoginReq extends PacketHandler {
             return;
         }
 
-        boolean autoBornNow = false;
         if (freshAccount) {
             createDefaultTraveler(player);
 
             // Skipping the visible native intro must still use the ordinary world and scene
             // lifecycle. Only fresh quest creation is delayed until the first PostEnterSceneRsp.
             BornIntroGate.armSceneReady(session);
-            autoBornNow = true;
         } else {
             BornDataHelper.ensureMainCharacter(player);
         }
 
         player.onLogin();
 
-        if (autoBornNow) {
-            BornIntroGate.markWorldLoginComplete(session);
-        }
+        // Also on a plain login: a client that dropped mid-intro reconnects with its Traveler
+        // already chosen and lands here, while its bootstrap is still waiting on the old
+        // connection's pause cycles. Without this its EnterSceneReady stays deferred forever and
+        // Quest 351 never starts. A no-op for players with no bootstrap.
+        BornIntroGate.markWorldLoginComplete(session);
 
         session.send(new PacketPlayerLoginRsp(session));
     }
