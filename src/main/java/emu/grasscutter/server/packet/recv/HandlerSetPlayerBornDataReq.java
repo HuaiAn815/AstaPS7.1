@@ -23,6 +23,13 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
         SetPlayerBornDataReq req = SetPlayerBornDataReq.parseFrom(payload);
 
+        Player player = session.getPlayer();
+        if (BornIntroGate.isNativeIntroForSession(session)
+                && player.getAvatars().getAvatarCount() > 0) {
+            sendBornDataResponse(session);
+            return;
+        }
+
         int avatarId = req.getAvatarId();
         int startingSkillDepot;
         if (avatarId == GameConstants.MAIN_CHARACTER_MALE) {
@@ -42,7 +49,6 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
             return;
         }
 
-        Player player = session.getPlayer();
         player.setNickname(req.getNickName());
 
         if (player.getAvatars().getAvatarCount() == 0) {
@@ -67,12 +73,7 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
         // 7.1 accepts the chosen Traveler first, then runs a second native intro client-side. Do
         // not create the World yet: sending scene-entry here cuts that intro off and eventually
         // makes the client reconnect.
-        int configuredRsp = GAME_OPTIONS.newAccountIntro.setPlayerBornDataRsp;
-        if (configuredRsp > 0 && configuredRsp != PacketSetPlayerBornDataRsp.CMD_ID) {
-            session.send(new BasePacket(configuredRsp));
-        } else {
-            session.send(new PacketSetPlayerBornDataRsp());
-        }
+        sendBornDataResponse(session);
         session.send(new PacketPlayerNicknameNotify(req.getNickName()));
 
         // Normal packets (including the pause-cycle signal below) arrive after 26105, so leave the
@@ -96,5 +97,14 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
         mailBuilder.mail.itemList.addAll(Arrays.asList(welcomeMail.items));
         mailBuilder.mail.importance = 1;
         player.sendMail(mailBuilder.mail);
+    }
+
+    private static void sendBornDataResponse(GameSession session) {
+        int configuredRsp = GAME_OPTIONS.newAccountIntro.setPlayerBornDataRsp;
+        if (configuredRsp > 0 && configuredRsp != PacketSetPlayerBornDataRsp.CMD_ID) {
+            session.send(new BasePacket(configuredRsp));
+        } else {
+            session.send(new PacketSetPlayerBornDataRsp());
+        }
     }
 }

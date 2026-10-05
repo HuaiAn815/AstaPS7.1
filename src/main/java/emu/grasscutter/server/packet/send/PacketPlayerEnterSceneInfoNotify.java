@@ -11,6 +11,7 @@ import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.player.TeamManager;
 import emu.grasscutter.game.tps.TpsWeaponSystem;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.AbilityAppliedAbilityOuterClass.AbilityAppliedAbility;
@@ -73,9 +74,7 @@ public class PacketPlayerEnterSceneInfoNotify extends BasePacket {
                 .setFloatValue(hexCount)
                 .build();
 
-        long moonPhaseCount = player.getTeamManager().getActiveTeam().stream()
-                .filter(e -> getMoonphaseIds().contains(e.getAvatar().getAvatarId()))
-                .count();
+        int moonPhaseCount = player.getTeamManager().getMoonsignLevel();
 
         AbilityScalarValueEntry moonPhaseLevel = AbilityScalarValueEntry.newBuilder()
                 .setKey(AbilityString.newBuilder()
@@ -96,7 +95,8 @@ public class PacketPlayerEnterSceneInfoNotify extends BasePacket {
                             .setHash(Utils.abilityHash("MoonOvergrowPoint_All"))
                             .setStr("MoonOvergrowPoint_All")
                             .build())
-                    .setFloatValue(50f)
+                    .setFloatValue(player.getTeamManager().getEntity().getGlobalAbilityValues()
+                            .getOrDefault(TeamManager.VERDANT_DEW, 0f))
                     .build());
         }
 
@@ -153,7 +153,8 @@ public class PacketPlayerEnterSceneInfoNotify extends BasePacket {
                             .setHash(Utils.abilityHash("MoonOvergrowPoint_All"))
                             .setStr("MoonOvergrowPoint_All")
                             .build())
-                    .setFloatValue(50f)
+                    .setFloatValue(avatarEntity.getPlayer().getTeamManager().getEntity().getGlobalAbilityValues()
+                            .getOrDefault(TeamManager.VERDANT_DEW, 0f))
                     .build());
         }
 

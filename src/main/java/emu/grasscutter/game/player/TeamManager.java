@@ -33,6 +33,7 @@ import lombok.*;
 
 @Entity
 public final class TeamManager extends BasePlayerDataManager {
+    public static final int MOONSIGN_MAX_LEVEL = 2;
     /**
      * Global value key for the party's Verdant Dew. The client owns the running total and
      * mirrors its updates back; the server keeps a copy because ability conditions read it as
@@ -414,9 +415,9 @@ public final class TeamManager extends BasePlayerDataManager {
 
     /** How many Moonsign characters the active team is fielding - the client's Moonsign level. */
     public int getMoonsignLevel() {
-        return (int) this.getActiveTeam().stream()
+        return (int) Math.min(MOONSIGN_MAX_LEVEL, this.getActiveTeam().stream()
             .filter(e -> PacketPlayerEnterSceneInfoNotify.getMoonphaseIds().contains(e.getAvatar().getAvatarId()))
-            .count();
+            .count());
     }
 
     /**
@@ -429,13 +430,6 @@ public final class TeamManager extends BasePlayerDataManager {
 
         this.getPlayer().sendPacket(new PacketServerGlobalValueChangeNotify(
             this.getEntity().getId(), "SGV_MoonPhaseLevel", (float) moonsignLevel));
-
-        // Seeds the party's Verdant Dew. The client owns the value from here on and mirrors its
-        // own updates back through AbilityManager, which is why this is a seed and not a refresh.
-        if (moonsignLevel > 0) {
-            this.getPlayer().sendPacket(new PacketServerGlobalValueChangeNotify(
-                this.getEntity().getId(), VERDANT_DEW, 100f));
-        }
 
         this.getPlayer().sendPacket(new PacketTeamMoonPhaseChangeNotify(moonsignLevel));
     }

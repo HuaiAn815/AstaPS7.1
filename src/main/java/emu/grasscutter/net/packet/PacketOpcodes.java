@@ -1470,7 +1470,7 @@ public final class PacketOpcodes {
     public static final int GachaOpenWishNotify = 0; // 7.1 CmdId unknown (7.0: 9800)
     public static final int FungusCaptureSettleNotify = 1553;
     public static final int WidgetWeatherWizardDataNotify = 9150;
-    public static final int SetBattlePassViewedReq = 0; // 7.1 CmdId unknown (7.0: 9820)
+    public static final int SetBattlePassViewedReq = 23538;
     public static final int AvatarFollowRouteNotify = 8449;
     public static final int TowerBuffSelectRsp = 9661;
     // public static final int CHDGBLAODCL = 22966;

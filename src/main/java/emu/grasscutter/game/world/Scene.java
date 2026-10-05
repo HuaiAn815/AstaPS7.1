@@ -701,7 +701,9 @@ public class Scene {
             }
         }
 
-        this.broadcastPacket(new PacketLifeStateChangeNotify(attackerId, target, LifeState.LIFE_DEAD));
+        var echoOwner = target instanceof EntityClientGadget gadget ? gadget.getOwner() : null;
+        this.broadcastPacketToOthers(
+                echoOwner, new PacketLifeStateChangeNotify(attackerId, target, LifeState.LIFE_DEAD));
 
         // Barbara C6: send LIFE_DEAD first so the character goes down, then immediately revive to full HP,
         // keeping her on-field without a switch.
@@ -748,6 +750,14 @@ public class Scene {
                 && emu.grasscutter.game.dungeons.WeeklyBossModelCleanup.shouldForceRemoveModel(
                         this, boss)) {
             emu.grasscutter.game.dungeons.WeeklyBossModelCleanup.removeBossAndOwnedGadgets(this, boss);
+        } else if (echoOwner != null) {
+            var removed = this.removeEntityDirectly(target);
+            if (removed != null) {
+                EntityRuntimeStateCleanup.clear(removed);
+                this.broadcastPacketToOthers(
+                        echoOwner,
+                        new PacketSceneEntityDisappearNotify(removed, VisionType.VisionType_VISION_DIE));
+            }
         } else {
             this.removeEntity(target);
         }
@@ -1403,10 +1413,12 @@ public class Scene {
         this.removeEntityDirectly(gadget);
 
         var owner = gadget.getOwner();
-        owner.getTeamManager().getGadgets().remove(gadget);
+        if (owner != null) {
+            owner.getTeamManager().getGadgets().remove(gadget);
+        }
 
-        this.broadcastPacket(
-                new PacketSceneEntityDisappearNotify(gadget, VisionType.VisionType_VISION_DIE));
+        this.broadcastPacketToOthers(
+                owner, new PacketSceneEntityDisappearNotify(gadget, VisionType.VisionType_VISION_DIE));
     }
 
     public void broadcastPacket(BasePacket packet) {

@@ -85,11 +85,11 @@ public final class ResourceLoader {
 
         loadConfigData();
 
+        // Dynamic abilities are granted separately; appending them here changes client ability IDs.
         loadAbilityEmbryos();
         loadTalents();
         loadOpenConfig();
         loadAbilityModifiers();
-        mergeDynamicAbilitiesIntoEmbryos();
 
         loadResources(true);
         buildAbilityTalentVarMaps();
@@ -439,49 +439,6 @@ public final class ResourceLoader {
                     .error("Error loading ability modifiers from path " + path.toString() + ": ", e);
         }
     }
-
-    private static void mergeDynamicAbilitiesIntoEmbryos() {
-
-    for (Map.Entry<String, AbilityEmbryoEntry> entry : GameData.getAbilityEmbryoInfo().entrySet()) {
-
-        String avatarName = entry.getKey();
-
-        AbilityEmbryoEntry embryo = entry.getValue();
-
-        List<String> mergedAbilities = new ArrayList<>(Arrays.asList(embryo.getAbilities()));
-
-        for (AbilityData abilityData : GameData.getAbilityDataMap().values()) {
-            if (!abilityData.isDynamicAbility) {
-                continue;
-            }
-
-            // Quest abilities are dynamic too, but only a quest may grant them. Avatar_Columbina_MainQuest
-            // sets a team global value that hides Slot2/Slot5 for every member, so merging it made
-            // Columbina's whole team lose E and Q.
-            if (abilityData.abilityName.contains("Quest")) {
-                continue;
-            }
-
-            if (abilityData.abilityName.startsWith("Avatar_" + avatarName)) {
-                if (!mergedAbilities.contains(abilityData.abilityName)) {
-                    mergedAbilities.add(abilityData.abilityName);
-                    Grasscutter.getLogger().debug("Merged dynamic ability " + abilityData.abilityName +
-                            " into embryo for avatar " + avatarName);
-                } else {
-                    Grasscutter.getLogger().debug("Dynamic ability " + abilityData.abilityName +
-                            " already exists in embryo for avatar " + avatarName);
-                }
-            }
-        }
-
-        AbilityEmbryoEntry mergedEntry = new AbilityEmbryoEntry(
-            embryo.getName(),
-            mergedAbilities.toArray(new String[mergedAbilities.size()])
-        );
-
-        GameData.getAbilityEmbryoInfo().put(avatarName, mergedEntry);
-    }
-}
 
     private static void loadAbilityData(AbilityData data) {
         // An ability config from a dump whose field names are still obfuscated leaves this null.
