@@ -147,7 +147,7 @@ public final class DatabaseHelper {
      * Four pools rather than one, so the traffic classes cannot starve each other: a burst of item
      * writes used to sit in front of the account save that a login was waiting on.
      *
-     * All four reject with CallerRunsPolicy. When a bounded queue fills, the submitting thread does
+     * When a bounded queue fills, the submitting thread does
      * the write itself: that stalls the caller, which is visible and self-limiting, where the
      * AbortPolicy this replaces threw the save away and lost the player's progress silently.
      */
@@ -157,7 +157,7 @@ public final class DatabaseHelper {
                     DEFAULT_POOL_CONFIG,
                     databaseQueue(DEFAULT_POOL_CONFIG, DEFAULT_QUEUE_CAPACITY),
                     databaseThreadFactory("database-default"),
-                    new ThreadPoolExecutor.CallerRunsPolicy());
+                    DatabaseExecutorSupport.callerRunsUnlessShutdown());
 
     /** Low volume, but a login blocks on it. */
     @Getter
@@ -166,7 +166,7 @@ public final class DatabaseHelper {
                     ACCOUNT_POOL_CONFIG,
                     databaseQueue(ACCOUNT_POOL_CONFIG, ACCOUNT_QUEUE_CAPACITY),
                     databaseThreadFactory("database-account"),
-                    new ThreadPoolExecutor.CallerRunsPolicy());
+                    DatabaseExecutorSupport.callerRunsUnlessShutdown());
 
     /** The highest-volume traffic on the server. */
     @Getter
@@ -175,7 +175,7 @@ public final class DatabaseHelper {
                     ITEM_POOL_CONFIG,
                     databaseQueue(ITEM_POOL_CONFIG, ITEM_QUEUE_CAPACITY),
                     databaseThreadFactory("database-item"),
-                    new ThreadPoolExecutor.CallerRunsPolicy());
+                    DatabaseExecutorSupport.callerRunsUnlessShutdown());
 
     /** Driven by scene scripts, which is why the dedup above matters. */
     @Getter
@@ -184,7 +184,7 @@ public final class DatabaseHelper {
                     GROUP_POOL_CONFIG,
                     databaseQueue(GROUP_POOL_CONFIG, GROUP_QUEUE_CAPACITY),
                     databaseThreadFactory("database-group"),
-                    new ThreadPoolExecutor.CallerRunsPolicy());
+                    DatabaseExecutorSupport.callerRunsUnlessShutdown());
 
     /**
      * Whether a pool is backed up far enough that the server should stop letting players in.
@@ -192,9 +192,41 @@ public final class DatabaseHelper {
      * <p>The threshold is below the queue bound on purpose: by the time a queue is actually full
      * every submitting thread is running writes inline, and a login admitted at that point makes
      * the stall worse.
+     *
+     * @param maxCount Retained for source compatibility; the actual queue capacity is used instead.
      */
     public static boolean isThreadPoolOverloaded(ThreadPoolExecutor executor, int maxCount) {
-        return executor.getQueue().size() > maxCount * 0.7f;
+        return DatabaseExecutorSupport.isOverloaded(executor);
+    }
+
+    /** Drains all accepted database tasks within one shared deadline, without discarding queues. */
+    public static void shutdownExecutors(long timeout, TimeUnit unit) {
+        var result =
+                DatabaseExecutorSupport.shutdownAndAwait(
+                        List.of(
+                                new DatabaseExecutorSupport.Pool(
+                                        "DATABASE_DEFAULT", (ThreadPoolExecutor) eventExecutor),
+                                new DatabaseExecutorSupport.Pool(
+                                        "DATABASE_ACCOUNT", (ThreadPoolExecutor) eventExecutorAccount),
+                                new DatabaseExecutorSupport.Pool(
+                                        "DATABASE_ITEM", (ThreadPoolExecutor) eventExecutorItem),
+                                new DatabaseExecutorSupport.Pool(
+                                        "DATABASE_GROUP", (ThreadPoolExecutor) eventExecutorGroup)),
+                        timeout,
+                        unit);
+        if (result.interrupted()) {
+            Grasscutter.getLogger().warn("Interrupted while waiting for database tasks during shutdown.");
+        }
+        for (var pool : result.unfinishedPools()) {
+            Grasscutter.getLogger()
+                    .error(
+                            "Database executor {} did not drain during shutdown: active={}, queued={}, "
+                                    + "outstanding~={}. The JVM may exit before these tasks finish.",
+                            pool.name(),
+                            pool.active(),
+                            pool.queued(),
+                            pool.outstanding());
+        }
     }
 
     /** The reason text written on an account auto-banned by an IP ban. */

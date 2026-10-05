@@ -10,6 +10,10 @@ import lombok.*;
 import org.bson.types.ObjectId;
 
 @Entity(value = "group_instances", useDiscriminator = false)
+@Indexes(
+        @Index(
+                fields = {@Field("ownerUid"), @Field("groupId")},
+                options = @IndexOptions(name = "capacity_group_instances_owner_group_v1")))
 public final class SceneGroupInstance {
     @Id private ObjectId id;
 

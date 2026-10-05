@@ -232,6 +232,20 @@ public class GameSession implements GameSessionManager.KcpChannel {
         return ((bytes[0] & 0xFF) << 8) | (bytes[1] & 0xFF);
     }
 
+    /**
+     * Checks the lengths in a frame before using them to allocate buffers.
+     *
+     * <p>The caller has already consumed the magic, opcode, and length fields. The two-byte
+     * trailer is therefore included in the remaining-byte check. Use a long for the addition so
+     * malformed integer lengths cannot wrap around into an apparently valid frame.
+     */
+    static boolean hasValidFrameLengths(int headerLength, int payloadLength, int readableBytes) {
+        return headerLength >= 0
+                && payloadLength >= 0
+                && readableBytes >= 2
+                && (long) headerLength + payloadLength + 2 <= readableBytes;
+    }
+
     @Override
     public void handleReceive(byte[] bytes) {
         if (Grasscutter.getConfig().server.game.useXorEncryption) {
@@ -279,6 +293,17 @@ public class GameSession implements GameSessionManager.KcpChannel {
                 int opcode = packet.readShort();
                 int headerLength = packet.readShort();
                 int payloadLength = packet.readInt();
+                if (!hasValidFrameLengths(headerLength, payloadLength, packet.readableBytes())) {
+                    Grasscutter.getLogger()
+                            .warn(
+                                    "Dropped malformed inbound frame from {} (opcode={} headerLength={} payloadLength={} remainingBytes={})",
+                                    this.getPlayer() != null ? this.getPlayer().getUid() : this.getAddress(),
+                                    opcode,
+                                    headerLength,
+                                    payloadLength,
+                                    packet.readableBytes());
+                    return;
+                }
                 byte[] header = new byte[headerLength];
                 byte[] payload = new byte[payloadLength];
 

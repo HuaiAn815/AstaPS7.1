@@ -16,6 +16,10 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity("activities")
+@Indexes(
+        @Index(
+                fields = {@Field("uid"), @Field("activityId")},
+                options = @IndexOptions(name = "capacity_activities_uid_activity_id_v1")))
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder(builderMethodName = "of")

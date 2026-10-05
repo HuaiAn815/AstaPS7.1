@@ -27,6 +27,7 @@ public class Achievements {
             () -> (int) (System.currentTimeMillis() / 1000L);
     private static final Achievement INVALID = new Achievement(Status.Status_INVALID, -1, 0, 0, 0);
     @Id private ObjectId id;
+    @Indexed(options = @IndexOptions(name = "capacity_achievements_uid_v1"))
     private int uid;
     @Transient private Player player;
     private Map<Integer, Achievement> achievementList;

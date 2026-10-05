@@ -21,10 +21,14 @@ public class Account {
 
     private String password; // Unused for now
 
+    @Indexed(options = @IndexOptions(name = "capacity_accounts_reserved_player_id_v1"))
     private int reservedPlayerId;
     private String email;
 
+    @Indexed(options = @IndexOptions(name = "capacity_accounts_token_v1", sparse = true))
     private String token;
+
+    @Indexed(options = @IndexOptions(name = "capacity_accounts_session_key_v1", sparse = true))
     private String sessionKey; // Session token for dispatch server
     private List<String> permissions;
     private Locale locale;

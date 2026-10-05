@@ -1,10 +1,19 @@
 package emu.grasscutter.game.gacha;
 
 import dev.morphia.annotations.*;
+import dev.morphia.utils.IndexType;
 import java.util.Date;
 import org.bson.types.ObjectId;
 
 @Entity(value = "gachas", useDiscriminator = false)
+@Indexes(
+        @Index(
+                fields = {
+                    @Field("ownerId"),
+                    @Field("gachaType"),
+                    @Field(value = "transactionDate", type = IndexType.DESC)
+                },
+                options = @IndexOptions(name = "capacity_gachas_owner_type_date_v1")))
 public class GachaRecord {
     @Id private ObjectId id;
 
