@@ -31,6 +31,7 @@ import emu.grasscutter.game.managers.mapmark.*;
 import emu.grasscutter.game.managers.stamina.StaminaManager;
 import emu.grasscutter.game.props.*;
 import emu.grasscutter.game.quest.ForcedQuests;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.game.quest.QuestManager;
 import emu.grasscutter.game.quest.enums.*;
 import emu.grasscutter.game.shop.ShopLimit;
@@ -134,6 +135,7 @@ public class Player implements PlayerHook, FieldFetch {
     @Getter @Setter private Map<Integer, Set<Integer>> forceLockedScenePoints;
     @Getter @Setter private List<Integer> chatEmojiIdList;
     @Getter @Setter private boolean playedFirstLoginCutscene;
+    @Getter @Setter private volatile int prologueIntroStage;
 
     /**
      * Whether this player has yet to see the welcome notice.
@@ -1441,7 +1443,7 @@ public class Player implements PlayerHook, FieldFetch {
 
         runner.submit(this.getFriendsList()::loadFromDatabase);
         runner.submit(this.getMailHandler()::loadFromDatabase);
-        runner.submit(this.getQuestManager()::loadFromDatabase);
+        var questsLoad = runner.submit(this.getQuestManager()::loadFromDatabase);
 
         runner.submit(this::loadBattlePassManager);
         runner.submit(this::loadDailyTaskManager);
@@ -1452,6 +1454,10 @@ public class Player implements PlayerHook, FieldFetch {
         // instead.
         awaitLoad("avatars", avatarsLoad);
         awaitLoad("inventory", inventoryLoad);
+        // Intro recovery must finish the saved quests, not race their asynchronous load.
+        if (PrologueIntro.wentThrough(this)) {
+            awaitLoad("quests", questsLoad);
+        }
 
         this.getPlayerProgress().setPlayer(this);
     }
@@ -1509,6 +1515,7 @@ public class Player implements PlayerHook, FieldFetch {
         this.doDailyReset();
 
         getQuestManager().onLogin();
+        PrologueIntro.onLogin(this);
 
         session.send(new PacketPlayerDataNotify(this));
         session.send(new PacketStoreWeightLimitNotify());
