@@ -227,7 +227,7 @@ publishing {
                 }
                 scm {
                     connection = 'scm:git:git@github.com:Grasscutters/Grasscutter.git'
-                    developerConnection = 'scm:git:ssh://github.com:Grasscutters/Grasscutter.git'
+                    developerConnection = 'scm:git:ssh://github.com/Grasscutters/Grasscutter.git'
                     url = 'https://github.com/Grasscutters/Grasscutter'
                 }
             }
@@ -243,7 +243,7 @@ publishing {
                 }
 
                 url 'https://repo.4benj.com/releases'
-                name = '4benj-maven'
+                name '4benj-maven'
                 credentials {
                     username System.getenv('benj_maven_username')
                     password System.getenv('benj_maven_token')
@@ -334,7 +334,7 @@ tasks.register('generateHandbook') {
             return
         }
         if (!file('src/handbook/data/entities.csv').exists()) {
-            println('Avatar data was not found. Skipping handbook generation.')
+            println('Entity data was not found. Skipping handbook generation.')
             return
         }
         if (!file('src/handbook/data/items.csv').exists()) {
