@@ -9,6 +9,7 @@ on:
       - "tools/protocol/**"
       - "gradle/protocol-generation.gradle"
       - "build.gradle"
+      - "src/main/java/emu/grasscutter/net/packet/BasePacket.java"
       - "src/test/java/emu/grasscutter/net/ProtocolGenerationTest.java"
       - ".github/workflows/protocol-generation.yml"
   workflow_dispatch:
