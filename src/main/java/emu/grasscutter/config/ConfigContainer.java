@@ -462,10 +462,8 @@ public class ConfigContainer {
          * Hands a brand new account to the client's own character creation - the twin stars, the
          * fight, and the choice of Traveler - instead of silently making one Lumine.
          *
-         * <p>Off by default because two of the three packets in that handshake have no known 7.0
-         * CmdId. They are both sent EMPTY, so only the numbers are missing: fill them in below and
-         * the flow completes. At 0 they are not sent at all, which is still worth trying first -
-         * the client may open creation on its own once the server stops pre-empting it.
+         * <p>The 7.1 birth confirmation uses its verified default CmdId. Nonzero packet settings
+         * below override the defaults for another client protocol.
          */
         public static class NewAccountIntro {
             public boolean enabled = false;
@@ -474,6 +472,9 @@ public class ConfigContainer {
 
             /** Seconds to wait for creation before making the Traveler anyway. 0 waits forever. */
             public int fallbackSeconds = 15;
+
+            /** Play the Paimon encounter for new accounts when full questing is disabled. */
+            public boolean meetPaimon = true;
         }
 
         @SerializedName(value = "questing", alternate = "questOptions")

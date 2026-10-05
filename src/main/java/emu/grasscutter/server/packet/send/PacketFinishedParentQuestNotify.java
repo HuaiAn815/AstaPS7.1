@@ -2,6 +2,7 @@ package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.quest.GameMainQuest;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.game.quest.enums.ParentQuestState;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.FinishedParentQuestNotifyOuterClass.FinishedParentQuestNotify;
@@ -22,7 +23,9 @@ public class PacketFinishedParentQuestNotify extends BasePacket {
         for (GameMainQuest mainQuest : player.getQuestManager().getMainQuests().values()) {
             // Canceled Quests do not appear in this packet
             if (mainQuest.getState() == ParentQuestState.PARENT_QUEST_STATE_CANCELED) continue;
-            if (!questingEnabled && mainQuest.getState() != ParentQuestState.PARENT_QUEST_STATE_FINISHED)
+            if (!questingEnabled
+                    && mainQuest.getState() != ParentQuestState.PARENT_QUEST_STATE_FINISHED
+                    && !PrologueIntro.isVisible(player, mainQuest))
                 continue;
             proto.addParentQuestList(mainQuest.toProto(false));
         }

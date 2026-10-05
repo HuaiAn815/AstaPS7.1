@@ -8,6 +8,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.SetPlayerBornDataReqOuterClass.SetPlayerBornDataReq;
 import emu.grasscutter.server.born.BornIntroGate;
@@ -54,7 +55,7 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
         if (player.getAvatars().getAvatarCount() == 0) {
             Avatar mainCharacter = new Avatar(avatarId);
 
-            if (!GAME_OPTIONS.questing.enabled) {
+            if (!GAME_OPTIONS.questing.enabled && !PrologueIntro.isEnabled()) {
                 mainCharacter.setSkillDepotData(
                         GameData.getAvatarSkillDepotDataMap().get(startingSkillDepot));
             }
@@ -65,6 +66,7 @@ public class HandlerSetPlayerBornDataReq extends PacketHandler {
             var team = player.getTeamManager().getCurrentSinglePlayerTeamInfo().getAvatars();
             team.clear();
             team.add(mainCharacter.getAvatarId());
+            PrologueIntro.markNewAccount(player);
             player.save();
         } else {
             return;

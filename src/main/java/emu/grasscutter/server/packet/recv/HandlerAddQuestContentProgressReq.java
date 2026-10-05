@@ -1,5 +1,6 @@
 package emu.grasscutter.server.packet.recv;
 
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.AddQuestContentProgressReqOuterClass.AddQuestContentProgressReq;
@@ -14,7 +15,10 @@ public class HandlerAddQuestContentProgressReq extends PacketHandler {
 
         // Find all conditions in quest that are the same as the given one
         var type = QuestContent.getContentTriggerByValue(req.getContentType());
-        if (type != null) {
+        boolean handled =
+                type == QuestContent.QUEST_CONTENT_FINISH_PLOT
+                        && PrologueIntro.onClientPlotFinished(session.getPlayer(), req.getParam());
+        if (type != null && !handled) {
             session.getPlayer().getQuestManager().queueEvent(type, req.getParam());
         }
 

@@ -7,6 +7,7 @@ import emu.grasscutter.game.dungeons.DomainDungeonHelper;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.player.Player.SceneLoadState;
 import emu.grasscutter.game.player.WidgetPetHelper;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.SceneInitFinishReqOuterClass.SceneInitFinishReq;
 import emu.grasscutter.server.game.GameSession;
@@ -41,7 +42,9 @@ public class HandlerSceneInitFinishReq extends PacketHandler {
             session.send(new PacketWorldPlayerInfoNotify(world));
             session.send(new PacketWorldDataNotify(world));
             session.send(new PacketPlayerWorldSceneInfoListNotify(player));
-            session.send(new PacketSceneForceUnlockNotify(1, true));
+            if (!PrologueIntro.isActive(player)) {
+                session.send(new PacketSceneForceUnlockNotify(1, true));
+            }
             session.send(new PacketHostPlayerNotify(world));
             session.send(new PacketSceneDataNotify(DomainDungeonHelper.notifySceneId(player)));
 

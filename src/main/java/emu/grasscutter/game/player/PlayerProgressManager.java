@@ -8,6 +8,7 @@ import emu.grasscutter.data.binout.ScenePointEntry;
 import emu.grasscutter.data.excels.OpenStateData;
 import emu.grasscutter.data.excels.OpenStateData.OpenStateCondType;
 import emu.grasscutter.game.props.ActionReason;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.game.quest.enums.*;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.scripts.data.ScriptArgs;
@@ -83,38 +84,8 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
         // already met before certain open state unlocks were implemented.
         this.tryUnlockOpenStates(false);
 
-        if (!GAME_OPTIONS.questing.enabled) {
-            // Match remote LunaGC login unlocks when questing is off.
-            // IMPORTANT: do this BEFORE OpenStateUpdateNotify so the login snapshot already
-            // includes the bulk-unlocked map (remote applies these then notifies).
-            this.player.getUnlockedScenePoints(3).add(7);
-            // Do NOT mass-unlock every city/world area here - map fog is owned by statue/waypoint
-            // unlocks (see syncSceneAreasFromUnlockedPoints). Starter Mondstadt area only.
-            this.player.getUnlockedSceneAreas(3).add(1);
-            this.setOpenState(47, 1, false);
-            this.setOpenState(48, 1, false);
-            this.setOpenState(1101, 1, false);
-            this.setOpenState(1102, 1, false);
-
-            int unlocked = 0;
-            for (var openState : GameData.getOpenStateList()) {
-                int id = openState.getId();
-                if (BLACKLIST_OPEN_STATES.contains(id) || IGNORED_OPEN_STATES.contains(id)) {
-                    continue;
-                }
-                if (this.getOpenState(id) == 0) {
-                    unlocked++;
-                }
-                // Always force 1 into the player map so OpenStateUpdateNotify below is complete
-                // even for accounts that already had sparse/partial maps.
-                this.player.getOpenStates().put(id, 1);
-            }
-            emu.grasscutter.Grasscutter.getLogger()
-                    .debug(
-                            "Questing-off OpenState force-fill uid={} mapSize={} newlySet={}",
-                            this.player.getUid(),
-                            this.player.getOpenStates().size(),
-                            unlocked);
+        if (!GAME_OPTIONS.questing.enabled && !PrologueIntro.isActive(this.player)) {
+            this.unlockQuestingOffFeatures();
         }
 
         // Send notify to the client (after questing-off fill so the snapshot is complete).
@@ -128,7 +99,9 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
         }
 
         // Add statue quests if necessary.
-        this.addStatueQuestsOnLogin();
+        if (!PrologueIntro.isActive(this.player)) {
+            this.addStatueQuestsOnLogin();
+        }
 
         // Ensure spring volume props exist before first statue EnterTrans (tip/heal path).
         try {
@@ -141,6 +114,47 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
             }
         } catch (Throwable ignored) {
         }
+    }
+
+    private void unlockQuestingOffFeatures() {
+        if (!PrologueIntro.wentThrough(this.player)) {
+            this.player.getUnlockedScenePoints(3).add(7);
+        }
+        this.player.getUnlockedSceneAreas(3).add(1);
+        this.setOpenState(47, 1, false);
+        this.setOpenState(48, 1, false);
+        this.setOpenState(1101, 1, false);
+        this.setOpenState(1102, 1, false);
+
+        int unlocked = 0;
+        for (var openState : GameData.getOpenStateList()) {
+            int id = openState.getId();
+            if (BLACKLIST_OPEN_STATES.contains(id) || IGNORED_OPEN_STATES.contains(id)) {
+                continue;
+            }
+            if (this.getOpenState(id) == 0) {
+                unlocked++;
+            }
+            this.player.getOpenStates().put(id, 1);
+        }
+        emu.grasscutter.Grasscutter.getLogger()
+                .debug(
+                        "Questing-off OpenState force-fill uid={} mapSize={} newlySet={}",
+                        this.player.getUid(),
+                        this.player.getOpenStates().size(),
+                        unlocked);
+    }
+
+    /** Restore the regular unlocks after the opening scene, without pre-unlocking its statue. */
+    public void finishPrologueIntro() {
+        this.tryUnlockOpenStates(false);
+        if (!GAME_OPTIONS.questing.enabled) {
+            this.unlockQuestingOffFeatures();
+        }
+        if (this.player.hasSentLoginPackets()) {
+            this.addStatueQuestsOnLogin();
+        }
+        this.player.getUnlockedSceneAreas(3).add(1);
     }
 
     /**********
@@ -184,19 +198,20 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
                     }
                 }
                 case OPEN_STATE_COND_QUEST -> {
-                    // check sub quest id for quest finished met requirements
-                    var quest = this.player.getQuestManager().getQuestById(condition.getParam());
-                    if (quest == null || quest.getState() != QuestState.QUEST_STATE_FINISHED) {
-                        return false;
+                    if (this.questsGateFeatures()) {
+                        var quest = this.player.getQuestManager().getQuestById(condition.getParam());
+                        if (quest == null || quest.getState() != QuestState.QUEST_STATE_FINISHED) {
+                            return false;
+                        }
                     }
                 }
                 case OPEN_STATE_COND_PARENT_QUEST -> {
-                    // check main quest id for quest finished met requirements
-                    // TODO not sure if its having or finished quest
-                    var mainQuest = this.player.getQuestManager().getMainQuestById(condition.getParam());
-                    if (mainQuest == null
-                            || mainQuest.getState() != ParentQuestState.PARENT_QUEST_STATE_FINISHED) {
-                        return false;
+                    if (this.questsGateFeatures()) {
+                        var mainQuest = this.player.getQuestManager().getMainQuestById(condition.getParam());
+                        if (mainQuest == null
+                                || mainQuest.getState() != ParentQuestState.PARENT_QUEST_STATE_FINISHED) {
+                            return false;
+                        }
                     }
                 }
                     // ToDo: Implement.
@@ -206,6 +221,10 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
 
         // Done. If we didn't find any violations, all conditions are met.
         return true;
+    }
+
+    private boolean questsGateFeatures() {
+        return GAME_OPTIONS.questing.enabled || PrologueIntro.isActive(this.player);
     }
 
     /**********
@@ -345,6 +364,7 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
 
     /** Ensure starter statue exists; do not mass-unlock every statue (map fog is per-statue). */
     private void seedUnlockedStatuesFromLegacyUnlockAll() {
+        if (PrologueIntro.wentThrough(this.player)) return;
         final int sceneId = 3;
         var unlocked = this.player.getUnlockedScenePoints(sceneId);
         // Always keep the Starfell statue available as a starter unlock.
@@ -1136,7 +1156,7 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
         if (pointIds == null) return;
 
         var justified = new java.util.LinkedHashSet<Integer>();
-        if (sceneId == 3) {
+        if (sceneId == 3 && !PrologueIntro.isActive(this.player)) {
             justified.add(1); // starter Mondstadt
         }
         var unlockedPoints = this.player.getUnlockedScenePoints(sceneId);

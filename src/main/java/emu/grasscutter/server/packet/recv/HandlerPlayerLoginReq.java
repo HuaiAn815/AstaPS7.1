@@ -6,6 +6,7 @@ import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.server.born.BornDataHelper;
 import emu.grasscutter.server.born.BornIntroGate;
@@ -52,7 +53,8 @@ public class HandlerPlayerLoginReq extends PacketHandler {
             createDefaultTraveler(player);
 
             // Skipping the visible native intro must still use the ordinary world and scene
-            // lifecycle. Only fresh quest creation is delayed until the first PostEnterSceneRsp.
+            // lifecycle. Full questing starts after the first PostEnterSceneRsp; the standalone
+            // Paimon encounter is prepared silently for the login snapshot.
             BornIntroGate.armSceneReady(session);
         } else {
             BornDataHelper.ensureMainCharacter(player);
@@ -73,7 +75,7 @@ public class HandlerPlayerLoginReq extends PacketHandler {
         int avatarId = 10000007;
         Avatar mainCharacter = new Avatar(avatarId);
 
-        if (!GAME_OPTIONS.questing.enabled) {
+        if (!GAME_OPTIONS.questing.enabled && !PrologueIntro.isEnabled()) {
             mainCharacter.setSkillDepotData(GameData.getAvatarSkillDepotDataMap().get(704));
         }
 
@@ -83,6 +85,7 @@ public class HandlerPlayerLoginReq extends PacketHandler {
         var team = player.getTeamManager().getCurrentSinglePlayerTeamInfo().getAvatars();
         team.clear();
         team.add(avatarId);
+        PrologueIntro.markNewAccount(player);
         player.save();
     }
 }
