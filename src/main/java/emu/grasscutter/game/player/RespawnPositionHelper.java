@@ -39,7 +39,7 @@ public final class RespawnPositionHelper {
         ScenePointEntry best = null;
         double bestDist = Double.MAX_VALUE;
         for (Integer pointId : unlocked) {
-            if (pointId == null) continue;
+            if (pointId == null || player.isScenePointForceLocked(sceneId, pointId)) continue;
             ScenePointEntry entry;
             try {
                 entry = GameData.getScenePointEntryById(sceneId, pointId);

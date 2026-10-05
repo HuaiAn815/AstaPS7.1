@@ -57,6 +57,7 @@ import org.jetbrains.annotations.*;
 public final class GameServer extends KcpServer implements Iterable<Player> {
     // Game server base
     private final InetSocketAddress address;
+    private ChannelConfig channelConfig;
     private final GameServerPacketHandler packetHandler;
     private final Map<Integer, Player> players;
     private final Set<World> worlds;
@@ -142,7 +143,10 @@ public final class GameServer extends KcpServer implements Iterable<Player> {
         channelConfig.setUseConvChannel(true);
         channelConfig.setAckNoDelay(false);
 
-        this.init(GameSessionManager.getListener(), channelConfig, address);
+        // The socket is bound in start(), after the resources have loaded. Bound here, it took
+        // logins while the avatar tables were still empty, and every client reconnecting the moment
+        // the server restarted failed with a NullPointerException creating its Traveler.
+        this.channelConfig = channelConfig;
 
         EnergyManager.initialize();
         StaminaManager.initialize();
@@ -316,26 +320,31 @@ public final class GameServer extends KcpServer implements Iterable<Player> {
         // Each of these is guarded on its own. One world or one player throwing used to abandon the
         // whole tick, so everybody else's world stopped moving for reasons that had nothing to do
         // with them - and the scheduler at the end never ran at all.
-        this.worlds.removeIf(
-                world -> {
-                    try {
-                        boolean shouldRemove = world.onTick();
-                        if (shouldRemove && world instanceof HomeWorld homeWorld) {
-                            // Home worlds are indexed separately from the world tick set.
-                            // Remove the same instance from that cache, otherwise the host
-                            // player and every loaded home scene stay strongly reachable after
-                            // the last player leaves.
-                            Player host = homeWorld.getHost();
-                            if (host != null) {
-                                this.homeWorlds.remove(host.getUid(), homeWorld);
+        // Lock the home world cache before the world set. Logging in takes them in that order
+        // (computeIfAbsent builds a HomeWorld, which registers itself in the world set), so taking
+        // the world set first here deadlocked the tick against a login and froze the server.
+        synchronized (this.homeWorlds) {
+            this.worlds.removeIf(
+                    world -> {
+                        try {
+                            boolean shouldRemove = world.onTick();
+                            if (shouldRemove && world instanceof HomeWorld homeWorld) {
+                                // Home worlds are indexed separately from the world tick set.
+                                // Remove the same instance from that cache, otherwise the host
+                                // player and every loaded home scene stay strongly reachable after
+                                // the last player leaves.
+                                Player host = homeWorld.getHost();
+                                if (host != null) {
+                                    this.homeWorlds.remove(host.getUid(), homeWorld);
+                                }
                             }
+                            return shouldRemove;
+                        } catch (Throwable e) {
+                            Grasscutter.getLogger().error("A world threw while ticking.", e);
+                            return false;
                         }
-                        return shouldRemove;
-                    } catch (Throwable e) {
-                        Grasscutter.getLogger().error("A world threw while ticking.", e);
-                        return false;
-                    }
-                });
+                    });
+        }
 
         this.players
                 .values()
@@ -394,6 +403,8 @@ public final class GameServer extends KcpServer implements Iterable<Player> {
     }
 
     public void start() {
+        this.init(GameSessionManager.getListener(), this.channelConfig, this.address);
+
         if (Grasscutter.getRunMode() == ServerRunMode.GAME_ONLY) {
             // Connect to dispatch server.
             this.dispatchClient.connect();

@@ -38,7 +38,8 @@ extends AbilityActionHandler {
             if (entry.getKey() == null || entry.getValue() == null) continue;
             object2FloatOpenHashMap.put((String)entry.getKey(), (Float)entry.getValue());
         }
-        float f = abilityModifierAction.ratio != null ? abilityModifierAction.ratio.get(object2FloatOpenHashMap, 0.0f) : 0.0f;
+        // A SetNyxValue with no value clears it; ratio's unset default is one.
+        float f = abilityModifierAction.writtenValue().get(object2FloatOpenHashMap, 0.0f);
         float f2 = ActionNyxSet.resolveBound(object2FloatOpenHashMap, abilityModifierAction.maxValue, "NyxValueMax", 120.0f);
         float f3 = ActionNyxSet.resolveBound(object2FloatOpenHashMap, abilityModifierAction.minValue, "NyxValueMin", 0.0f);
         f = Math.max(f3, Math.min(f2, f));

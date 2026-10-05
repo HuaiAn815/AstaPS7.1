@@ -1,16 +1,17 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.game.player.EntryNotice;
+import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
+
 import emu.grasscutter.game.ability.EscoffierSkillCookHelper;
+import emu.grasscutter.game.player.EntryNotice;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.PostEnterSceneReqOuterClass.PostEnterSceneReq;
+import emu.grasscutter.server.born.BornIntroGate;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketCutsceneBeginNotify;
 import emu.grasscutter.server.packet.send.PacketGetPlayerFriendListRsp;
 import emu.grasscutter.server.packet.send.PacketPostEnterSceneRsp;
-
-import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 
 @Opcodes(PacketOpcodes.PostEnterSceneReq)
 public class HandlerPostEnterSceneReq extends PacketHandler {
@@ -18,14 +19,22 @@ public class HandlerPostEnterSceneReq extends PacketHandler {
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
         PostEnterSceneReq req = PostEnterSceneReq.parseFrom(payload);
-                
+
         var player = session.getPlayer();
         var scene = player.getScene();
         var questManager = player.getQuestManager();
+        boolean freshPlayerBootstrap = BornIntroGate.isFreshPlayerBootstrap(session);
 
-        switch (session.getPlayer().getScene().getSceneType()) {
-            case SCENE_ROOM -> questManager.queueEvent(
-                    QuestContent.QUEST_CONTENT_ENTER_ROOM, scene.getId(), 0);
+        // Native-selection and automatic births converge here. Let PostEnterSceneRsp reach the
+        // client before Quest 351 starts so its actors see a ready playable scene.
+        if (freshPlayerBootstrap) {
+            session.send(new PacketPostEnterSceneRsp(player));
+            BornIntroGate.finishOnSceneReady(session);
+        }
+
+        switch (scene.getSceneType()) {
+            case SCENE_ROOM ->
+                    questManager.queueEvent(QuestContent.QUEST_CONTENT_ENTER_ROOM, scene.getId(), 0);
             case SCENE_WORLD -> {
                 questManager.queueEvent(QuestContent.QUEST_CONTENT_ENTER_MY_WORLD, scene.getId());
                 questManager.queueEvent(QuestContent.QUEST_CONTENT_ENTER_MY_WORLD_SCENE, scene.getId());
@@ -37,18 +46,16 @@ public class HandlerPostEnterSceneReq extends PacketHandler {
         }
         questManager.queueEvent(QuestContent.QUEST_CONTENT_LEAVE_SCENE, scene.getPrevScene());
 
-        session.send(new PacketPostEnterSceneRsp(session.getPlayer()));
+        if (!freshPlayerBootstrap) session.send(new PacketPostEnterSceneRsp(player));
 
-        // Escoffier's improvised cooking: lightly sync the weekly remainder after entering the scene so a
-        // stale CannotCreateFood does not linger.
         EscoffierSkillCookHelper.syncToClient(player);
         EntryNotice.sendOnce(player);
-        // The client only asks for friends and chat again after a teleport, so push both here or the
-        // console and DPS bots are missing until then.
         session.send(new PacketGetPlayerFriendListRsp(player));
         session.getServer().getChatManager().ensureServerConversation(player);
 
-        this.playOpeningCutscene(player);
+        // Fresh 7.1 starts the opening from AQ351/35104. Do not add the independent legacy
+        // first-login cutscene on top of that bootstrap.
+        if (!freshPlayerBootstrap) this.playOpeningCutscene(player);
     }
 
     /** Fired here rather than at login: a cutscene sent before the scene is up is discarded. */

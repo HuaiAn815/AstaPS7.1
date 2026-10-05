@@ -189,11 +189,13 @@ public class GameMainQuest {
             }
         }
 
-        // handoff main quest
-        // if (mainQuestData.getSuggestTrackMainQuestList() != null) {
-        //     Arrays.stream(mainQuestData.getSuggestTrackMainQuestList())
-        //         .forEach(getQuestManager()::startMainQuest);
-        // }
+        // Hand off to the main quests that follow. Only those whose opening can never be met on its
+        // own are started here; one with a real prerequisite still starts through that.
+        if (mainQuestData.getSuggestTrackMainQuestList() != null) {
+            for (int next : mainQuestData.getSuggestTrackMainQuestList()) {
+                this.getOwner().getQuestManager().startMainQuestIfUnlinked(next);
+            }
+        }
     }
     // TODO
     public void fail() {}

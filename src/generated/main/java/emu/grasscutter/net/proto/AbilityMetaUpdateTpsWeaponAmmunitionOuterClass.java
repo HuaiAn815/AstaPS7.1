@@ -19,73 +19,74 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    java.util.List<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP> 
-        getBJMFLPBNDDJList();
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP getBJMFLPBNDDJ(int index);
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    int getBJMFLPBNDDJCount();
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    java.util.List<? extends emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder> 
-        getBJMFLPBNDDJOrBuilderList();
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder getBJMFLPBNDDJOrBuilder(
-        int index);
-
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    java.util.List<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM> 
-        getMEDDMNJOEICList();
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM getMEDDMNJOEIC(int index);
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    int getMEDDMNJOEICCount();
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    java.util.List<? extends emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder> 
-        getMEDDMNJOEICOrBuilderList();
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder getMEDDMNJOEICOrBuilder(
-        int index);
-
-    /**
-     * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+     * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
      * @return The enum numeric value on the wire for updateType.
      */
     int getUpdateTypeValue();
     /**
-     * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+     * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
      * @return The updateType.
      */
-    emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType getUpdateType();
+    emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType getUpdateType();
 
     /**
-     * <code>bool EMAGJIJHBGM = 7;</code>
-     * @return The eMAGJIJHBGM.
+     * <code>bool FENKFADBDID = 7;</code>
+     * @return The fENKFADBDID.
      */
-    boolean getEMAGJIJHBGM();
+    boolean getFENKFADBDID();
+
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    java.util.List<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo> 
+        getAccessoryListList();
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo getAccessoryList(int index);
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    int getAccessoryListCount();
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    java.util.List<? extends emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder> 
+        getAccessoryListOrBuilderList();
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder getAccessoryListOrBuilder(
+        int index);
+
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    java.util.List<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange> 
+        getAmmunitionListList();
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange getAmmunitionList(int index);
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    int getAmmunitionListCount();
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    java.util.List<? extends emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder> 
+        getAmmunitionListOrBuilderList();
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder getAmmunitionListOrBuilder(
+        int index);
   }
   /**
    * <pre>
    * CmdId: -
+   * 7.1 obf: JENJHKPCEOK. Payload of AbilityInvokeArgument_ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION (31).
    * </pre>
    *
    * Protobuf type {@code AbilityMetaUpdateTpsWeaponAmmunition}
@@ -100,9 +101,9 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       super(builder);
     }
     private AbilityMetaUpdateTpsWeaponAmmunition() {
-      bJMFLPBNDDJ_ = java.util.Collections.emptyList();
-      mEDDMNJOEIC_ = java.util.Collections.emptyList();
       updateType_ = 0;
+      accessoryList_ = java.util.Collections.emptyList();
+      ammunitionList_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -144,25 +145,25 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
             }
             case 56: {
 
-              eMAGJIJHBGM_ = input.readBool();
+              fENKFADBDID_ = input.readBool();
               break;
             }
             case 66: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                mEDDMNJOEIC_ = new java.util.ArrayList<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM>();
-                mutable_bitField0_ |= 0x00000002;
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                accessoryList_ = new java.util.ArrayList<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo>();
+                mutable_bitField0_ |= 0x00000001;
               }
-              mEDDMNJOEIC_.add(
-                  input.readMessage(emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.parser(), extensionRegistry));
+              accessoryList_.add(
+                  input.readMessage(emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.parser(), extensionRegistry));
               break;
             }
             case 74: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                bJMFLPBNDDJ_ = new java.util.ArrayList<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP>();
-                mutable_bitField0_ |= 0x00000001;
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                ammunitionList_ = new java.util.ArrayList<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange>();
+                mutable_bitField0_ |= 0x00000002;
               }
-              bJMFLPBNDDJ_.add(
-                  input.readMessage(emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.parser(), extensionRegistry));
+              ammunitionList_.add(
+                  input.readMessage(emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -180,11 +181,11 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
-          mEDDMNJOEIC_ = java.util.Collections.unmodifiableList(mEDDMNJOEIC_);
-        }
         if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          bJMFLPBNDDJ_ = java.util.Collections.unmodifiableList(bJMFLPBNDDJ_);
+          accessoryList_ = java.util.Collections.unmodifiableList(accessoryList_);
+        }
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          ammunitionList_ = java.util.Collections.unmodifiableList(ammunitionList_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -203,114 +204,114 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
               emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition.class, emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition.Builder.class);
     }
 
-    public static final int BJMFLPBNDDJ_FIELD_NUMBER = 9;
-    private java.util.List<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP> bJMFLPBNDDJ_;
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    @java.lang.Override
-    public java.util.List<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP> getBJMFLPBNDDJList() {
-      return bJMFLPBNDDJ_;
-    }
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder> 
-        getBJMFLPBNDDJOrBuilderList() {
-      return bJMFLPBNDDJ_;
-    }
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    @java.lang.Override
-    public int getBJMFLPBNDDJCount() {
-      return bJMFLPBNDDJ_.size();
-    }
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    @java.lang.Override
-    public emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP getBJMFLPBNDDJ(int index) {
-      return bJMFLPBNDDJ_.get(index);
-    }
-    /**
-     * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-     */
-    @java.lang.Override
-    public emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder getBJMFLPBNDDJOrBuilder(
-        int index) {
-      return bJMFLPBNDDJ_.get(index);
-    }
-
-    public static final int MEDDMNJOEIC_FIELD_NUMBER = 8;
-    private java.util.List<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM> mEDDMNJOEIC_;
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    @java.lang.Override
-    public java.util.List<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM> getMEDDMNJOEICList() {
-      return mEDDMNJOEIC_;
-    }
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder> 
-        getMEDDMNJOEICOrBuilderList() {
-      return mEDDMNJOEIC_;
-    }
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    @java.lang.Override
-    public int getMEDDMNJOEICCount() {
-      return mEDDMNJOEIC_.size();
-    }
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    @java.lang.Override
-    public emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM getMEDDMNJOEIC(int index) {
-      return mEDDMNJOEIC_.get(index);
-    }
-    /**
-     * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-     */
-    @java.lang.Override
-    public emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder getMEDDMNJOEICOrBuilder(
-        int index) {
-      return mEDDMNJOEIC_.get(index);
-    }
-
     public static final int UPDATE_TYPE_FIELD_NUMBER = 3;
     private int updateType_;
     /**
-     * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+     * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
      * @return The enum numeric value on the wire for updateType.
      */
     @java.lang.Override public int getUpdateTypeValue() {
       return updateType_;
     }
     /**
-     * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+     * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
      * @return The updateType.
      */
-    @java.lang.Override public emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType getUpdateType() {
+    @java.lang.Override public emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType getUpdateType() {
       @SuppressWarnings("deprecation")
-      emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType result = emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType.valueOf(updateType_);
-      return result == null ? emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType.UNRECOGNIZED : result;
+      emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType result = emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType.valueOf(updateType_);
+      return result == null ? emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType.UNRECOGNIZED : result;
     }
 
-    public static final int EMAGJIJHBGM_FIELD_NUMBER = 7;
-    private boolean eMAGJIJHBGM_;
+    public static final int FENKFADBDID_FIELD_NUMBER = 7;
+    private boolean fENKFADBDID_;
     /**
-     * <code>bool EMAGJIJHBGM = 7;</code>
-     * @return The eMAGJIJHBGM.
+     * <code>bool FENKFADBDID = 7;</code>
+     * @return The fENKFADBDID.
      */
     @java.lang.Override
-    public boolean getEMAGJIJHBGM() {
-      return eMAGJIJHBGM_;
+    public boolean getFENKFADBDID() {
+      return fENKFADBDID_;
+    }
+
+    public static final int ACCESSORY_LIST_FIELD_NUMBER = 8;
+    private java.util.List<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo> accessoryList_;
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    @java.lang.Override
+    public java.util.List<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo> getAccessoryListList() {
+      return accessoryList_;
+    }
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder> 
+        getAccessoryListOrBuilderList() {
+      return accessoryList_;
+    }
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    @java.lang.Override
+    public int getAccessoryListCount() {
+      return accessoryList_.size();
+    }
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo getAccessoryList(int index) {
+      return accessoryList_.get(index);
+    }
+    /**
+     * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder getAccessoryListOrBuilder(
+        int index) {
+      return accessoryList_.get(index);
+    }
+
+    public static final int AMMUNITION_LIST_FIELD_NUMBER = 9;
+    private java.util.List<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange> ammunitionList_;
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    @java.lang.Override
+    public java.util.List<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange> getAmmunitionListList() {
+      return ammunitionList_;
+    }
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder> 
+        getAmmunitionListOrBuilderList() {
+      return ammunitionList_;
+    }
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    @java.lang.Override
+    public int getAmmunitionListCount() {
+      return ammunitionList_.size();
+    }
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange getAmmunitionList(int index) {
+      return ammunitionList_.get(index);
+    }
+    /**
+     * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+     */
+    @java.lang.Override
+    public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder getAmmunitionListOrBuilder(
+        int index) {
+      return ammunitionList_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -327,17 +328,17 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (updateType_ != emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType._TpsAmmunitionUpdateType_COST.getNumber()) {
+      if (updateType_ != emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType.TpsAmmunitionUpdateType_COST.getNumber()) {
         output.writeEnum(3, updateType_);
       }
-      if (eMAGJIJHBGM_ != false) {
-        output.writeBool(7, eMAGJIJHBGM_);
+      if (fENKFADBDID_ != false) {
+        output.writeBool(7, fENKFADBDID_);
       }
-      for (int i = 0; i < mEDDMNJOEIC_.size(); i++) {
-        output.writeMessage(8, mEDDMNJOEIC_.get(i));
+      for (int i = 0; i < accessoryList_.size(); i++) {
+        output.writeMessage(8, accessoryList_.get(i));
       }
-      for (int i = 0; i < bJMFLPBNDDJ_.size(); i++) {
-        output.writeMessage(9, bJMFLPBNDDJ_.get(i));
+      for (int i = 0; i < ammunitionList_.size(); i++) {
+        output.writeMessage(9, ammunitionList_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -348,21 +349,21 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (updateType_ != emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType._TpsAmmunitionUpdateType_COST.getNumber()) {
+      if (updateType_ != emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType.TpsAmmunitionUpdateType_COST.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, updateType_);
       }
-      if (eMAGJIJHBGM_ != false) {
+      if (fENKFADBDID_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(7, eMAGJIJHBGM_);
+          .computeBoolSize(7, fENKFADBDID_);
       }
-      for (int i = 0; i < mEDDMNJOEIC_.size(); i++) {
+      for (int i = 0; i < accessoryList_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(8, mEDDMNJOEIC_.get(i));
+          .computeMessageSize(8, accessoryList_.get(i));
       }
-      for (int i = 0; i < bJMFLPBNDDJ_.size(); i++) {
+      for (int i = 0; i < ammunitionList_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(9, bJMFLPBNDDJ_.get(i));
+          .computeMessageSize(9, ammunitionList_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -379,13 +380,13 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       }
       emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition other = (emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition) obj;
 
-      if (!getBJMFLPBNDDJList()
-          .equals(other.getBJMFLPBNDDJList())) return false;
-      if (!getMEDDMNJOEICList()
-          .equals(other.getMEDDMNJOEICList())) return false;
       if (updateType_ != other.updateType_) return false;
-      if (getEMAGJIJHBGM()
-          != other.getEMAGJIJHBGM()) return false;
+      if (getFENKFADBDID()
+          != other.getFENKFADBDID()) return false;
+      if (!getAccessoryListList()
+          .equals(other.getAccessoryListList())) return false;
+      if (!getAmmunitionListList()
+          .equals(other.getAmmunitionListList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -397,19 +398,19 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getBJMFLPBNDDJCount() > 0) {
-        hash = (37 * hash) + BJMFLPBNDDJ_FIELD_NUMBER;
-        hash = (53 * hash) + getBJMFLPBNDDJList().hashCode();
-      }
-      if (getMEDDMNJOEICCount() > 0) {
-        hash = (37 * hash) + MEDDMNJOEIC_FIELD_NUMBER;
-        hash = (53 * hash) + getMEDDMNJOEICList().hashCode();
-      }
       hash = (37 * hash) + UPDATE_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + updateType_;
-      hash = (37 * hash) + EMAGJIJHBGM_FIELD_NUMBER;
+      hash = (37 * hash) + FENKFADBDID_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getEMAGJIJHBGM());
+          getFENKFADBDID());
+      if (getAccessoryListCount() > 0) {
+        hash = (37 * hash) + ACCESSORY_LIST_FIELD_NUMBER;
+        hash = (53 * hash) + getAccessoryListList().hashCode();
+      }
+      if (getAmmunitionListCount() > 0) {
+        hash = (37 * hash) + AMMUNITION_LIST_FIELD_NUMBER;
+        hash = (53 * hash) + getAmmunitionListList().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -508,6 +509,7 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
     /**
      * <pre>
      * CmdId: -
+     * 7.1 obf: JENJHKPCEOK. Payload of AbilityInvokeArgument_ABILITY_META_UPDATE_TPS_WEAPON_AMMUNITION (31).
      * </pre>
      *
      * Protobuf type {@code AbilityMetaUpdateTpsWeaponAmmunition}
@@ -542,29 +544,29 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getBJMFLPBNDDJFieldBuilder();
-          getMEDDMNJOEICFieldBuilder();
+          getAccessoryListFieldBuilder();
+          getAmmunitionListFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (bJMFLPBNDDJBuilder_ == null) {
-          bJMFLPBNDDJ_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          bJMFLPBNDDJBuilder_.clear();
-        }
-        if (mEDDMNJOEICBuilder_ == null) {
-          mEDDMNJOEIC_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        } else {
-          mEDDMNJOEICBuilder_.clear();
-        }
         updateType_ = 0;
 
-        eMAGJIJHBGM_ = false;
+        fENKFADBDID_ = false;
 
+        if (accessoryListBuilder_ == null) {
+          accessoryList_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          accessoryListBuilder_.clear();
+        }
+        if (ammunitionListBuilder_ == null) {
+          ammunitionList_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          ammunitionListBuilder_.clear();
+        }
         return this;
       }
 
@@ -592,26 +594,26 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       public emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition buildPartial() {
         emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition result = new emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition(this);
         int from_bitField0_ = bitField0_;
-        if (bJMFLPBNDDJBuilder_ == null) {
+        result.updateType_ = updateType_;
+        result.fENKFADBDID_ = fENKFADBDID_;
+        if (accessoryListBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
-            bJMFLPBNDDJ_ = java.util.Collections.unmodifiableList(bJMFLPBNDDJ_);
+            accessoryList_ = java.util.Collections.unmodifiableList(accessoryList_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
-          result.bJMFLPBNDDJ_ = bJMFLPBNDDJ_;
+          result.accessoryList_ = accessoryList_;
         } else {
-          result.bJMFLPBNDDJ_ = bJMFLPBNDDJBuilder_.build();
+          result.accessoryList_ = accessoryListBuilder_.build();
         }
-        if (mEDDMNJOEICBuilder_ == null) {
+        if (ammunitionListBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0)) {
-            mEDDMNJOEIC_ = java.util.Collections.unmodifiableList(mEDDMNJOEIC_);
+            ammunitionList_ = java.util.Collections.unmodifiableList(ammunitionList_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
-          result.mEDDMNJOEIC_ = mEDDMNJOEIC_;
+          result.ammunitionList_ = ammunitionList_;
         } else {
-          result.mEDDMNJOEIC_ = mEDDMNJOEICBuilder_.build();
+          result.ammunitionList_ = ammunitionListBuilder_.build();
         }
-        result.updateType_ = updateType_;
-        result.eMAGJIJHBGM_ = eMAGJIJHBGM_;
         onBuilt();
         return result;
       }
@@ -660,63 +662,63 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
 
       public Builder mergeFrom(emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition other) {
         if (other == emu.grasscutter.net.proto.AbilityMetaUpdateTpsWeaponAmmunitionOuterClass.AbilityMetaUpdateTpsWeaponAmmunition.getDefaultInstance()) return this;
-        if (bJMFLPBNDDJBuilder_ == null) {
-          if (!other.bJMFLPBNDDJ_.isEmpty()) {
-            if (bJMFLPBNDDJ_.isEmpty()) {
-              bJMFLPBNDDJ_ = other.bJMFLPBNDDJ_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureBJMFLPBNDDJIsMutable();
-              bJMFLPBNDDJ_.addAll(other.bJMFLPBNDDJ_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.bJMFLPBNDDJ_.isEmpty()) {
-            if (bJMFLPBNDDJBuilder_.isEmpty()) {
-              bJMFLPBNDDJBuilder_.dispose();
-              bJMFLPBNDDJBuilder_ = null;
-              bJMFLPBNDDJ_ = other.bJMFLPBNDDJ_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              bJMFLPBNDDJBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getBJMFLPBNDDJFieldBuilder() : null;
-            } else {
-              bJMFLPBNDDJBuilder_.addAllMessages(other.bJMFLPBNDDJ_);
-            }
-          }
-        }
-        if (mEDDMNJOEICBuilder_ == null) {
-          if (!other.mEDDMNJOEIC_.isEmpty()) {
-            if (mEDDMNJOEIC_.isEmpty()) {
-              mEDDMNJOEIC_ = other.mEDDMNJOEIC_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-            } else {
-              ensureMEDDMNJOEICIsMutable();
-              mEDDMNJOEIC_.addAll(other.mEDDMNJOEIC_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.mEDDMNJOEIC_.isEmpty()) {
-            if (mEDDMNJOEICBuilder_.isEmpty()) {
-              mEDDMNJOEICBuilder_.dispose();
-              mEDDMNJOEICBuilder_ = null;
-              mEDDMNJOEIC_ = other.mEDDMNJOEIC_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-              mEDDMNJOEICBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getMEDDMNJOEICFieldBuilder() : null;
-            } else {
-              mEDDMNJOEICBuilder_.addAllMessages(other.mEDDMNJOEIC_);
-            }
-          }
-        }
         if (other.updateType_ != 0) {
           setUpdateTypeValue(other.getUpdateTypeValue());
         }
-        if (other.getEMAGJIJHBGM() != false) {
-          setEMAGJIJHBGM(other.getEMAGJIJHBGM());
+        if (other.getFENKFADBDID() != false) {
+          setFENKFADBDID(other.getFENKFADBDID());
+        }
+        if (accessoryListBuilder_ == null) {
+          if (!other.accessoryList_.isEmpty()) {
+            if (accessoryList_.isEmpty()) {
+              accessoryList_ = other.accessoryList_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureAccessoryListIsMutable();
+              accessoryList_.addAll(other.accessoryList_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.accessoryList_.isEmpty()) {
+            if (accessoryListBuilder_.isEmpty()) {
+              accessoryListBuilder_.dispose();
+              accessoryListBuilder_ = null;
+              accessoryList_ = other.accessoryList_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              accessoryListBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getAccessoryListFieldBuilder() : null;
+            } else {
+              accessoryListBuilder_.addAllMessages(other.accessoryList_);
+            }
+          }
+        }
+        if (ammunitionListBuilder_ == null) {
+          if (!other.ammunitionList_.isEmpty()) {
+            if (ammunitionList_.isEmpty()) {
+              ammunitionList_ = other.ammunitionList_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureAmmunitionListIsMutable();
+              ammunitionList_.addAll(other.ammunitionList_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.ammunitionList_.isEmpty()) {
+            if (ammunitionListBuilder_.isEmpty()) {
+              ammunitionListBuilder_.dispose();
+              ammunitionListBuilder_ = null;
+              ammunitionList_ = other.ammunitionList_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              ammunitionListBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getAmmunitionListFieldBuilder() : null;
+            } else {
+              ammunitionListBuilder_.addAllMessages(other.ammunitionList_);
+            }
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -748,496 +750,16 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
       }
       private int bitField0_;
 
-      private java.util.List<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP> bJMFLPBNDDJ_ =
-        java.util.Collections.emptyList();
-      private void ensureBJMFLPBNDDJIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
-          bJMFLPBNDDJ_ = new java.util.ArrayList<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP>(bJMFLPBNDDJ_);
-          bitField0_ |= 0x00000001;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder> bJMFLPBNDDJBuilder_;
-
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public java.util.List<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP> getBJMFLPBNDDJList() {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(bJMFLPBNDDJ_);
-        } else {
-          return bJMFLPBNDDJBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public int getBJMFLPBNDDJCount() {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          return bJMFLPBNDDJ_.size();
-        } else {
-          return bJMFLPBNDDJBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP getBJMFLPBNDDJ(int index) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          return bJMFLPBNDDJ_.get(index);
-        } else {
-          return bJMFLPBNDDJBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder setBJMFLPBNDDJ(
-          int index, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP value) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureBJMFLPBNDDJIsMutable();
-          bJMFLPBNDDJ_.set(index, value);
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder setBJMFLPBNDDJ(
-          int index, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder builderForValue) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          ensureBJMFLPBNDDJIsMutable();
-          bJMFLPBNDDJ_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder addBJMFLPBNDDJ(emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP value) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureBJMFLPBNDDJIsMutable();
-          bJMFLPBNDDJ_.add(value);
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder addBJMFLPBNDDJ(
-          int index, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP value) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureBJMFLPBNDDJIsMutable();
-          bJMFLPBNDDJ_.add(index, value);
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder addBJMFLPBNDDJ(
-          emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder builderForValue) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          ensureBJMFLPBNDDJIsMutable();
-          bJMFLPBNDDJ_.add(builderForValue.build());
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder addBJMFLPBNDDJ(
-          int index, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder builderForValue) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          ensureBJMFLPBNDDJIsMutable();
-          bJMFLPBNDDJ_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder addAllBJMFLPBNDDJ(
-          java.lang.Iterable<? extends emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP> values) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          ensureBJMFLPBNDDJIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, bJMFLPBNDDJ_);
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder clearBJMFLPBNDDJ() {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          bJMFLPBNDDJ_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public Builder removeBJMFLPBNDDJ(int index) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          ensureBJMFLPBNDDJIsMutable();
-          bJMFLPBNDDJ_.remove(index);
-          onChanged();
-        } else {
-          bJMFLPBNDDJBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder getBJMFLPBNDDJBuilder(
-          int index) {
-        return getBJMFLPBNDDJFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder getBJMFLPBNDDJOrBuilder(
-          int index) {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          return bJMFLPBNDDJ_.get(index);  } else {
-          return bJMFLPBNDDJBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public java.util.List<? extends emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder> 
-           getBJMFLPBNDDJOrBuilderList() {
-        if (bJMFLPBNDDJBuilder_ != null) {
-          return bJMFLPBNDDJBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(bJMFLPBNDDJ_);
-        }
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder addBJMFLPBNDDJBuilder() {
-        return getBJMFLPBNDDJFieldBuilder().addBuilder(
-            emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder addBJMFLPBNDDJBuilder(
-          int index) {
-        return getBJMFLPBNDDJFieldBuilder().addBuilder(
-            index, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .IBIMPAJBFOP BJMFLPBNDDJ = 9;</code>
-       */
-      public java.util.List<emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder> 
-           getBJMFLPBNDDJBuilderList() {
-        return getBJMFLPBNDDJFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder> 
-          getBJMFLPBNDDJFieldBuilder() {
-        if (bJMFLPBNDDJBuilder_ == null) {
-          bJMFLPBNDDJBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOP.Builder, emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.IBIMPAJBFOPOrBuilder>(
-                  bJMFLPBNDDJ_,
-                  ((bitField0_ & 0x00000001) != 0),
-                  getParentForChildren(),
-                  isClean());
-          bJMFLPBNDDJ_ = null;
-        }
-        return bJMFLPBNDDJBuilder_;
-      }
-
-      private java.util.List<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM> mEDDMNJOEIC_ =
-        java.util.Collections.emptyList();
-      private void ensureMEDDMNJOEICIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
-          mEDDMNJOEIC_ = new java.util.ArrayList<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM>(mEDDMNJOEIC_);
-          bitField0_ |= 0x00000002;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder> mEDDMNJOEICBuilder_;
-
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public java.util.List<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM> getMEDDMNJOEICList() {
-        if (mEDDMNJOEICBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(mEDDMNJOEIC_);
-        } else {
-          return mEDDMNJOEICBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public int getMEDDMNJOEICCount() {
-        if (mEDDMNJOEICBuilder_ == null) {
-          return mEDDMNJOEIC_.size();
-        } else {
-          return mEDDMNJOEICBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM getMEDDMNJOEIC(int index) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          return mEDDMNJOEIC_.get(index);
-        } else {
-          return mEDDMNJOEICBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder setMEDDMNJOEIC(
-          int index, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM value) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureMEDDMNJOEICIsMutable();
-          mEDDMNJOEIC_.set(index, value);
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder setMEDDMNJOEIC(
-          int index, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder builderForValue) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          ensureMEDDMNJOEICIsMutable();
-          mEDDMNJOEIC_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder addMEDDMNJOEIC(emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM value) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureMEDDMNJOEICIsMutable();
-          mEDDMNJOEIC_.add(value);
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder addMEDDMNJOEIC(
-          int index, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM value) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureMEDDMNJOEICIsMutable();
-          mEDDMNJOEIC_.add(index, value);
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder addMEDDMNJOEIC(
-          emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder builderForValue) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          ensureMEDDMNJOEICIsMutable();
-          mEDDMNJOEIC_.add(builderForValue.build());
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder addMEDDMNJOEIC(
-          int index, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder builderForValue) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          ensureMEDDMNJOEICIsMutable();
-          mEDDMNJOEIC_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder addAllMEDDMNJOEIC(
-          java.lang.Iterable<? extends emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM> values) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          ensureMEDDMNJOEICIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, mEDDMNJOEIC_);
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder clearMEDDMNJOEIC() {
-        if (mEDDMNJOEICBuilder_ == null) {
-          mEDDMNJOEIC_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public Builder removeMEDDMNJOEIC(int index) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          ensureMEDDMNJOEICIsMutable();
-          mEDDMNJOEIC_.remove(index);
-          onChanged();
-        } else {
-          mEDDMNJOEICBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder getMEDDMNJOEICBuilder(
-          int index) {
-        return getMEDDMNJOEICFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder getMEDDMNJOEICOrBuilder(
-          int index) {
-        if (mEDDMNJOEICBuilder_ == null) {
-          return mEDDMNJOEIC_.get(index);  } else {
-          return mEDDMNJOEICBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public java.util.List<? extends emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder> 
-           getMEDDMNJOEICOrBuilderList() {
-        if (mEDDMNJOEICBuilder_ != null) {
-          return mEDDMNJOEICBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(mEDDMNJOEIC_);
-        }
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder addMEDDMNJOEICBuilder() {
-        return getMEDDMNJOEICFieldBuilder().addBuilder(
-            emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder addMEDDMNJOEICBuilder(
-          int index) {
-        return getMEDDMNJOEICFieldBuilder().addBuilder(
-            index, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .ANLNAOGOBFM MEDDMNJOEIC = 8;</code>
-       */
-      public java.util.List<emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder> 
-           getMEDDMNJOEICBuilderList() {
-        return getMEDDMNJOEICFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder> 
-          getMEDDMNJOEICFieldBuilder() {
-        if (mEDDMNJOEICBuilder_ == null) {
-          mEDDMNJOEICBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFM.Builder, emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.ANLNAOGOBFMOrBuilder>(
-                  mEDDMNJOEIC_,
-                  ((bitField0_ & 0x00000002) != 0),
-                  getParentForChildren(),
-                  isClean());
-          mEDDMNJOEIC_ = null;
-        }
-        return mEDDMNJOEICBuilder_;
-      }
-
       private int updateType_ = 0;
       /**
-       * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+       * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
        * @return The enum numeric value on the wire for updateType.
        */
       @java.lang.Override public int getUpdateTypeValue() {
         return updateType_;
       }
       /**
-       * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+       * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
        * @param value The enum numeric value on the wire for updateType to set.
        * @return This builder for chaining.
        */
@@ -1248,21 +770,21 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
         return this;
       }
       /**
-       * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+       * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
        * @return The updateType.
        */
       @java.lang.Override
-      public emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType getUpdateType() {
+      public emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType getUpdateType() {
         @SuppressWarnings("deprecation")
-        emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType result = emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType.valueOf(updateType_);
-        return result == null ? emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType.UNRECOGNIZED : result;
+        emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType result = emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType.valueOf(updateType_);
+        return result == null ? emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType.UNRECOGNIZED : result;
       }
       /**
-       * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+       * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
        * @param value The updateType to set.
        * @return This builder for chaining.
        */
-      public Builder setUpdateType(emu.grasscutter.net.proto.TpsAmmunitionUpdateType._TpsAmmunitionUpdateType value) {
+      public Builder setUpdateType(emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.TpsAmmunitionUpdateType value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -1272,7 +794,7 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
         return this;
       }
       /**
-       * <code>._TpsAmmunitionUpdateType update_type = 3;</code>
+       * <code>.TpsAmmunitionUpdateType update_type = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearUpdateType() {
@@ -1282,35 +804,515 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
         return this;
       }
 
-      private boolean eMAGJIJHBGM_ ;
+      private boolean fENKFADBDID_ ;
       /**
-       * <code>bool EMAGJIJHBGM = 7;</code>
-       * @return The eMAGJIJHBGM.
+       * <code>bool FENKFADBDID = 7;</code>
+       * @return The fENKFADBDID.
        */
       @java.lang.Override
-      public boolean getEMAGJIJHBGM() {
-        return eMAGJIJHBGM_;
+      public boolean getFENKFADBDID() {
+        return fENKFADBDID_;
       }
       /**
-       * <code>bool EMAGJIJHBGM = 7;</code>
-       * @param value The eMAGJIJHBGM to set.
+       * <code>bool FENKFADBDID = 7;</code>
+       * @param value The fENKFADBDID to set.
        * @return This builder for chaining.
        */
-      public Builder setEMAGJIJHBGM(boolean value) {
+      public Builder setFENKFADBDID(boolean value) {
         
-        eMAGJIJHBGM_ = value;
+        fENKFADBDID_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool EMAGJIJHBGM = 7;</code>
+       * <code>bool FENKFADBDID = 7;</code>
        * @return This builder for chaining.
        */
-      public Builder clearEMAGJIJHBGM() {
+      public Builder clearFENKFADBDID() {
         
-        eMAGJIJHBGM_ = false;
+        fENKFADBDID_ = false;
         onChanged();
         return this;
+      }
+
+      private java.util.List<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo> accessoryList_ =
+        java.util.Collections.emptyList();
+      private void ensureAccessoryListIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          accessoryList_ = new java.util.ArrayList<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo>(accessoryList_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder> accessoryListBuilder_;
+
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public java.util.List<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo> getAccessoryListList() {
+        if (accessoryListBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(accessoryList_);
+        } else {
+          return accessoryListBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public int getAccessoryListCount() {
+        if (accessoryListBuilder_ == null) {
+          return accessoryList_.size();
+        } else {
+          return accessoryListBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo getAccessoryList(int index) {
+        if (accessoryListBuilder_ == null) {
+          return accessoryList_.get(index);
+        } else {
+          return accessoryListBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder setAccessoryList(
+          int index, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo value) {
+        if (accessoryListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAccessoryListIsMutable();
+          accessoryList_.set(index, value);
+          onChanged();
+        } else {
+          accessoryListBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder setAccessoryList(
+          int index, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder builderForValue) {
+        if (accessoryListBuilder_ == null) {
+          ensureAccessoryListIsMutable();
+          accessoryList_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          accessoryListBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder addAccessoryList(emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo value) {
+        if (accessoryListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAccessoryListIsMutable();
+          accessoryList_.add(value);
+          onChanged();
+        } else {
+          accessoryListBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder addAccessoryList(
+          int index, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo value) {
+        if (accessoryListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAccessoryListIsMutable();
+          accessoryList_.add(index, value);
+          onChanged();
+        } else {
+          accessoryListBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder addAccessoryList(
+          emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder builderForValue) {
+        if (accessoryListBuilder_ == null) {
+          ensureAccessoryListIsMutable();
+          accessoryList_.add(builderForValue.build());
+          onChanged();
+        } else {
+          accessoryListBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder addAccessoryList(
+          int index, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder builderForValue) {
+        if (accessoryListBuilder_ == null) {
+          ensureAccessoryListIsMutable();
+          accessoryList_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          accessoryListBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder addAllAccessoryList(
+          java.lang.Iterable<? extends emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo> values) {
+        if (accessoryListBuilder_ == null) {
+          ensureAccessoryListIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, accessoryList_);
+          onChanged();
+        } else {
+          accessoryListBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder clearAccessoryList() {
+        if (accessoryListBuilder_ == null) {
+          accessoryList_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          accessoryListBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public Builder removeAccessoryList(int index) {
+        if (accessoryListBuilder_ == null) {
+          ensureAccessoryListIsMutable();
+          accessoryList_.remove(index);
+          onChanged();
+        } else {
+          accessoryListBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder getAccessoryListBuilder(
+          int index) {
+        return getAccessoryListFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder getAccessoryListOrBuilder(
+          int index) {
+        if (accessoryListBuilder_ == null) {
+          return accessoryList_.get(index);  } else {
+          return accessoryListBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public java.util.List<? extends emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder> 
+           getAccessoryListOrBuilderList() {
+        if (accessoryListBuilder_ != null) {
+          return accessoryListBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(accessoryList_);
+        }
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder addAccessoryListBuilder() {
+        return getAccessoryListFieldBuilder().addBuilder(
+            emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder addAccessoryListBuilder(
+          int index) {
+        return getAccessoryListFieldBuilder().addBuilder(
+            index, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .TpsWeaponAccessoryInfo accessory_list = 8;</code>
+       */
+      public java.util.List<emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder> 
+           getAccessoryListBuilderList() {
+        return getAccessoryListFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder> 
+          getAccessoryListFieldBuilder() {
+        if (accessoryListBuilder_ == null) {
+          accessoryListBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfo.Builder, emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.TpsWeaponAccessoryInfoOrBuilder>(
+                  accessoryList_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          accessoryList_ = null;
+        }
+        return accessoryListBuilder_;
+      }
+
+      private java.util.List<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange> ammunitionList_ =
+        java.util.Collections.emptyList();
+      private void ensureAmmunitionListIsMutable() {
+        if (!((bitField0_ & 0x00000002) != 0)) {
+          ammunitionList_ = new java.util.ArrayList<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange>(ammunitionList_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder> ammunitionListBuilder_;
+
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public java.util.List<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange> getAmmunitionListList() {
+        if (ammunitionListBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(ammunitionList_);
+        } else {
+          return ammunitionListBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public int getAmmunitionListCount() {
+        if (ammunitionListBuilder_ == null) {
+          return ammunitionList_.size();
+        } else {
+          return ammunitionListBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange getAmmunitionList(int index) {
+        if (ammunitionListBuilder_ == null) {
+          return ammunitionList_.get(index);
+        } else {
+          return ammunitionListBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder setAmmunitionList(
+          int index, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange value) {
+        if (ammunitionListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAmmunitionListIsMutable();
+          ammunitionList_.set(index, value);
+          onChanged();
+        } else {
+          ammunitionListBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder setAmmunitionList(
+          int index, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder builderForValue) {
+        if (ammunitionListBuilder_ == null) {
+          ensureAmmunitionListIsMutable();
+          ammunitionList_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          ammunitionListBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder addAmmunitionList(emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange value) {
+        if (ammunitionListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAmmunitionListIsMutable();
+          ammunitionList_.add(value);
+          onChanged();
+        } else {
+          ammunitionListBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder addAmmunitionList(
+          int index, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange value) {
+        if (ammunitionListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAmmunitionListIsMutable();
+          ammunitionList_.add(index, value);
+          onChanged();
+        } else {
+          ammunitionListBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder addAmmunitionList(
+          emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder builderForValue) {
+        if (ammunitionListBuilder_ == null) {
+          ensureAmmunitionListIsMutable();
+          ammunitionList_.add(builderForValue.build());
+          onChanged();
+        } else {
+          ammunitionListBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder addAmmunitionList(
+          int index, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder builderForValue) {
+        if (ammunitionListBuilder_ == null) {
+          ensureAmmunitionListIsMutable();
+          ammunitionList_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          ammunitionListBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder addAllAmmunitionList(
+          java.lang.Iterable<? extends emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange> values) {
+        if (ammunitionListBuilder_ == null) {
+          ensureAmmunitionListIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, ammunitionList_);
+          onChanged();
+        } else {
+          ammunitionListBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder clearAmmunitionList() {
+        if (ammunitionListBuilder_ == null) {
+          ammunitionList_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          ammunitionListBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public Builder removeAmmunitionList(int index) {
+        if (ammunitionListBuilder_ == null) {
+          ensureAmmunitionListIsMutable();
+          ammunitionList_.remove(index);
+          onChanged();
+        } else {
+          ammunitionListBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder getAmmunitionListBuilder(
+          int index) {
+        return getAmmunitionListFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder getAmmunitionListOrBuilder(
+          int index) {
+        if (ammunitionListBuilder_ == null) {
+          return ammunitionList_.get(index);  } else {
+          return ammunitionListBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public java.util.List<? extends emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder> 
+           getAmmunitionListOrBuilderList() {
+        if (ammunitionListBuilder_ != null) {
+          return ammunitionListBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(ammunitionList_);
+        }
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder addAmmunitionListBuilder() {
+        return getAmmunitionListFieldBuilder().addBuilder(
+            emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder addAmmunitionListBuilder(
+          int index) {
+        return getAmmunitionListFieldBuilder().addBuilder(
+            index, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .TpsAmmunitionChange ammunition_list = 9;</code>
+       */
+      public java.util.List<emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder> 
+           getAmmunitionListBuilderList() {
+        return getAmmunitionListFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder> 
+          getAmmunitionListFieldBuilder() {
+        if (ammunitionListBuilder_ == null) {
+          ammunitionListBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChange.Builder, emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.TpsAmmunitionChangeOrBuilder>(
+                  ammunitionList_,
+                  ((bitField0_ & 0x00000002) != 0),
+                  getParentForChildren(),
+                  isClean());
+          ammunitionList_ = null;
+        }
+        return ammunitionListBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -1380,31 +1382,32 @@ public final class AbilityMetaUpdateTpsWeaponAmmunitionOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n*AbilityMetaUpdateTpsWeaponAmmunition.p" +
-      "roto\032\021ANLNAOGOBFM.proto\032\021IBIMPAJBFOP.pro" +
-      "to\032\036_TpsAmmunitionUpdateType.proto\"\261\001\n$A" +
-      "bilityMetaUpdateTpsWeaponAmmunition\022!\n\013B" +
-      "JMFLPBNDDJ\030\t \003(\0132\014.IBIMPAJBFOP\022!\n\013MEDDMN" +
-      "JOEIC\030\010 \003(\0132\014.ANLNAOGOBFM\022.\n\013update_type" +
-      "\030\003 \001(\0162\031._TpsAmmunitionUpdateType\022\023\n\013EMA" +
-      "GJIJHBGM\030\007 \001(\010B\033\n\031emu.grasscutter.net.pr" +
-      "otob\006proto3"
+      "roto\032\031TpsAmmunitionChange.proto\032\035TpsAmmu" +
+      "nitionUpdateType.proto\032\034TpsWeaponAccesso" +
+      "ryInfo.proto\"\312\001\n$AbilityMetaUpdateTpsWea" +
+      "ponAmmunition\022-\n\013update_type\030\003 \001(\0162\030.Tps" +
+      "AmmunitionUpdateType\022\023\n\013FENKFADBDID\030\007 \001(" +
+      "\010\022/\n\016accessory_list\030\010 \003(\0132\027.TpsWeaponAcc" +
+      "essoryInfo\022-\n\017ammunition_list\030\t \003(\0132\024.Tp" +
+      "sAmmunitionChangeB\033\n\031emu.grasscutter.net" +
+      ".protob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-          emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.getDescriptor(),
-          emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.getDescriptor(),
-          emu.grasscutter.net.proto.TpsAmmunitionUpdateType.getDescriptor(),
+          emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.getDescriptor(),
+          emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.getDescriptor(),
+          emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.getDescriptor(),
         });
     internal_static_AbilityMetaUpdateTpsWeaponAmmunition_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_AbilityMetaUpdateTpsWeaponAmmunition_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_AbilityMetaUpdateTpsWeaponAmmunition_descriptor,
-        new java.lang.String[] { "BJMFLPBNDDJ", "MEDDMNJOEIC", "UpdateType", "EMAGJIJHBGM", });
-    emu.grasscutter.net.proto.ANLNAOGOBFMOuterClass.getDescriptor();
-    emu.grasscutter.net.proto.IBIMPAJBFOPOuterClass.getDescriptor();
-    emu.grasscutter.net.proto.TpsAmmunitionUpdateType.getDescriptor();
+        new java.lang.String[] { "UpdateType", "FENKFADBDID", "AccessoryList", "AmmunitionList", });
+    emu.grasscutter.net.proto.TpsAmmunitionChangeOuterClass.getDescriptor();
+    emu.grasscutter.net.proto.TpsAmmunitionUpdateTypeOuterClass.getDescriptor();
+    emu.grasscutter.net.proto.TpsWeaponAccessoryInfoOuterClass.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

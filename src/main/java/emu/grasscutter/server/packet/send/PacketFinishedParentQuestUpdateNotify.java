@@ -1,6 +1,8 @@
 package emu.grasscutter.server.packet.send;
 
 import emu.grasscutter.game.quest.GameMainQuest;
+import emu.grasscutter.game.quest.QuestManager;
+import emu.grasscutter.game.quest.enums.ParentQuestState;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.FinishedParentQuestUpdateNotifyOuterClass.FinishedParentQuestUpdateNotify;
 import java.util.List;
@@ -10,12 +12,12 @@ public class PacketFinishedParentQuestUpdateNotify extends BasePacket {
     public PacketFinishedParentQuestUpdateNotify(GameMainQuest quest) {
         super(PacketOpcodes.FinishedParentQuestUpdateNotify);
 
-        FinishedParentQuestUpdateNotify proto =
-                FinishedParentQuestUpdateNotify.newBuilder()
-                        .addParentQuestList(quest.toProto(true))
-                        .build();
+        var proto = FinishedParentQuestUpdateNotify.newBuilder();
+        if (shouldShow(quest)) {
+            proto.addParentQuestList(quest.toProto(true));
+        }
 
-        this.setData(proto);
+        this.setData(proto.build());
     }
 
     /**
@@ -50,9 +52,21 @@ public class PacketFinishedParentQuestUpdateNotify extends BasePacket {
         var proto = FinishedParentQuestUpdateNotify.newBuilder();
 
         for (GameMainQuest mainQuest : quests) {
-            proto.addParentQuestList(mainQuest.toProto(true));
+            if (shouldShow(mainQuest)) {
+                proto.addParentQuestList(mainQuest.toProto(true));
+            }
         }
         proto.build();
         this.setData(proto);
+    }
+
+    /**
+     * With questing off, quest events still start main quests. An unfinished parent sent then is
+     * tracked by the client (the prologue's "talk to Paimon", with a return-to-quest button) though
+     * the quest log is empty, since its sub-quests are held back too.
+     */
+    private static boolean shouldShow(GameMainQuest quest) {
+        return QuestManager.isQuestingActive()
+                || quest.getState() == ParentQuestState.PARENT_QUEST_STATE_FINISHED;
     }
 }

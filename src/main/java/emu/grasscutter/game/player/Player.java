@@ -124,6 +124,10 @@ public class Player implements PlayerHook, FieldFetch {
     @Getter private Map<Integer, ActiveCookCompoundData> activeCookCompounds;
     @Getter private Map<Integer, Integer> questGlobalVariables;
     @Getter private Map<Integer, Integer> openStates;
+    // TPS ammunition reserve, keyed by TpsAmmunitionExcelConfigData id.
+    private Map<Integer, Integer> tpsAmmunition;
+    // TPS weapons the TPS traveler wears; it is a trial avatar and is never saved itself.
+    private List<Integer> tpsLoadout;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedSceneAreas;
     @Getter @Setter private Map<Integer, Set<Integer>> unlockedScenePoints;
     /** Debug/test: points forced locked even if GetScenePointRsp would otherwise unlock-all. */
@@ -163,10 +167,12 @@ public class Player implements PlayerHook, FieldFetch {
 
     @Transient private long nextGuid = 0;
     @Transient @Getter @Setter private int peerId;
-    @Transient private World world;
+    // volatile rather than guarded by the player lock: Scene and World set these while holding
+    // their own locks, and Player.onTick holds the player lock while it reaches into the scene.
+    @Transient private volatile World world;
     @Transient @Getter @Setter private HomeWorld curHomeWorld;
     @Transient @Getter @Setter private boolean hasSentInitPacketInHome;
-    @Transient private Scene scene;
+    @Transient private volatile Scene scene;
     @Transient @Getter private int weatherId = 0;
     @Transient @Getter private ClimateType climate = ClimateType.CLIMATE_SUNNY;
     @Transient @Getter private int areaId = 0;
@@ -435,19 +441,19 @@ public class Player implements PlayerHook, FieldFetch {
         return this.getSession().getServer();
     }
 
-    public synchronized World getWorld() {
+    public World getWorld() {
         return this.world;
     }
 
-    public synchronized void setWorld(World world) {
+    public void setWorld(World world) {
         this.world = world;
     }
 
-    public synchronized Scene getScene() {
+    public Scene getScene() {
         return scene;
     }
 
-    public synchronized void setScene(Scene scene) {
+    public void setScene(Scene scene) {
         this.scene = scene;
     }
 
@@ -1314,13 +1320,15 @@ public class Player implements PlayerHook, FieldFetch {
             // Energy pending expiry must not break the player tick.
         }
 
-        if (this.getWorld() != null) {
+        // Read the world once: a duplicate login can clear it from another thread mid-tick.
+        var world = this.getWorld();
+        if (world != null) {
 
-            this.sendPacket(new PacketWorldPlayerRTTNotify(this.getWorld()));
+            this.sendPacket(new PacketWorldPlayerRTTNotify(world));
 
             long time = System.currentTimeMillis();
-            if (this.getWorld().isMultiplayer() && this.getScene() != null && time > nextSendPlayerLocTime) {
-                this.sendPacket(new PacketWorldPlayerLocationNotify(this.getWorld()));
+            if (world.isMultiplayer() && this.getScene() != null && time > nextSendPlayerLocTime) {
+                this.sendPacket(new PacketWorldPlayerLocationNotify(world));
                 this.sendPacket(new PacketScenePlayerLocationNotify(this.getScene()));
                 this.resetSendPlayerLocTime();
             }
@@ -1395,6 +1403,20 @@ public class Player implements PlayerHook, FieldFetch {
         this.getTeamManager().setPlayer(this);
     }
 
+    public List<Integer> getTpsLoadout() {
+        if (this.tpsLoadout == null) {
+            this.tpsLoadout = new ArrayList<>();
+        }
+        return this.tpsLoadout;
+    }
+
+    public Map<Integer, Integer> getTpsAmmunition() {
+        if (this.tpsAmmunition == null) {
+            this.tpsAmmunition = new HashMap<>();
+        }
+        return this.tpsAmmunition;
+    }
+
     public void save() {
         DatabaseHelper.savePlayer(this);
     }
@@ -1414,8 +1436,8 @@ public class Player implements PlayerHook, FieldFetch {
         var runner = Grasscutter.getThreadPool();
         runner.submit(() -> this.achievements = Achievements.getByPlayer(this));
 
-        runner.submit(this.getAvatars()::loadFromDatabase);
-        runner.submit(this.getInventory()::loadFromDatabase);
+        var avatarsLoad = runner.submit(this.getAvatars()::loadFromDatabase);
+        var inventoryLoad = runner.submit(this.getInventory()::loadFromDatabase);
 
         runner.submit(this.getFriendsList()::loadFromDatabase);
         runner.submit(this.getMailHandler()::loadFromDatabase);
@@ -1424,17 +1446,50 @@ public class Player implements PlayerHook, FieldFetch {
         runner.submit(this::loadBattlePassManager);
         runner.submit(this::loadDailyTaskManager);
 
-        Utils.waitFor(() ->
-            this.getAvatars().isLoaded() &&
-                this.getInventory().isLoaded());
+        // With asyncLogin off this runs on the one thread that handles every player's packets.
+        // Waiting on the loaded flags forever meant a loader that threw - its exception swallowed
+        // by the pool - or a pool full of stuck tasks froze the whole server. Fail this one login
+        // instead.
+        awaitLoad("avatars", avatarsLoad);
+        awaitLoad("inventory", inventoryLoad);
 
         this.getPlayerProgress().setPlayer(this);
     }
 
+    private static final long LOAD_TIMEOUT_SECONDS = 30;
+
+    private void awaitLoad(String what, java.util.concurrent.Future<?> load) {
+        try {
+            load.get(LOAD_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (java.util.concurrent.ExecutionException e) {
+            throw new IllegalStateException(
+                    "Loading " + what + " for uid " + this.getUid() + " failed.", e.getCause());
+        } catch (java.util.concurrent.TimeoutException e) {
+            load.cancel(true);
+            throw new IllegalStateException(
+                    "Loading " + what + " for uid " + this.getUid() + " took over "
+                            + LOAD_TIMEOUT_SECONDS + "s; the load pool may be stuck.");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted loading " + what + " for uid " + this.getUid());
+        }
+    }
+
     public void onLogin() {
+        // A trial avatar saved into a team (e.g. logging out inside a trial dungeon) has no avatar
+        // to build an entity from.
+        this.getTeamManager().removeUnownedAvatarsFromTeams();
 
         if (this.getSceneTags().isEmpty() || this.getSceneTags() == null) {
             this.applyStartingSceneTags();
+        }
+
+        // A TPS dungeon is not saved: logging back into one finds no dungeon running, an empty
+        // scene and a client that never finishes loading. Start in Teyvat instead.
+        var savedScene = GameData.getSceneDataMap().get(this.getSceneId());
+        if (emu.grasscutter.game.tps.TpsAvatarSystem.isTpsScene(savedScene)) {
+            this.setSceneId(3);
+            this.position.set(ScriptLoader.getSceneMeta(3).config.born_pos);
         }
 
         if (GameHome.HOME_SCENE_IDS.contains(this.getSceneId())) {
@@ -1537,7 +1592,17 @@ public class Player implements PlayerHook, FieldFetch {
 
             getStaminaManager().stopSustainedStaminaHandler();
 
-            this.getServer().getDungeonSystem().exitDungeon(this);
+            // Static per-player combat state (and the repeating tasks some of it drives) would
+            // otherwise keep this player and their world reachable after they leave.
+            PlayerRuntimeStateCleanup.clear(this);
+
+            // Leaving the dungeon (trial team, TPS traveler) must not keep the player in the world:
+            // a world left behind keeps ticking and sending to the closed session forever.
+            try {
+                this.getServer().getDungeonSystem().exitDungeon(this);
+            } catch (Throwable e) {
+                Grasscutter.getLogger().warn("Player (UID {}) could not leave the dungeon on logout", getUid(), e);
+            }
 
             if (this.getWorld() != null) {
                 this.getWorld().removePlayer(this);
@@ -1556,8 +1621,7 @@ public class Player implements PlayerHook, FieldFetch {
             PlayerQuitEvent event = new PlayerQuitEvent(this);
             event.call();
         } catch (Throwable e) {
-            e.printStackTrace();
-            Grasscutter.getLogger().warn("Player (UID {}) save failure", getUid());
+            Grasscutter.getLogger().warn("Player (UID {}) save failure", getUid(), e);
         } finally {
             removeFromServer();
         }

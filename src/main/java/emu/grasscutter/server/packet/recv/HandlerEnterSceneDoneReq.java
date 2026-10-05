@@ -15,6 +15,10 @@ import emu.grasscutter.server.packet.send.*;
 
 @Opcodes(PacketOpcodes.EnterSceneDoneReq)
 public class HandlerEnterSceneDoneReq extends PacketHandler {
+    /** 本次运行内已经给客户端同步过解锁通知的点（防止重复弹提示）。 */
+    private static final java.util.Set<String> MIAO_UNLOCK_SYNCED =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
 
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
@@ -24,6 +28,11 @@ public class HandlerEnterSceneDoneReq extends PacketHandler {
 
         // Finished loading
         player.setSceneLoadState(SceneLoadState.LOADED);
+        // 7.0 移植：进场景完成时校正世界归属
+        try {
+            session.getServer().getMultiplayerSystem().reconcileMultiplayerWorld(player);
+        } catch (Throwable t) {
+        }
 
         // Suppress LUA SetMonsterBattleByGroup ForceAlert while nearby groups bootstrap
         // under the player's feet (ENTER_REGION false-fires, giving a hilichurl horn on login/reload).
@@ -87,6 +96,49 @@ public class HandlerEnterSceneDoneReq extends PacketHandler {
             Grasscutter.getLogger()
                     .warn("ArtifactTransmuter login Offer (EnterSceneDone) failed uid={}: {}", player.getUid(), t.toString());
         }
+
+        // ===== 进场景时主动刷新神像代理（不依赖客户端 EnterTransPoint 通知）=====
+        try {
+            int scId = player.getSceneId();
+            var me = player.getPosition();
+            java.util.List<Object[]> cands = new java.util.ArrayList<>();
+            int statueCnt = 0;
+            for (var e : emu.grasscutter.data.GameData.getScenePointEntryMap().values()) {
+                if (e == null || e.getPointData() == null) continue;
+                if (e.getSceneId() != scId) continue;
+                if (!emu.grasscutter.game.managers.StatueTalkQuests.isStatuePoint(e.getPointData()))
+                    continue;
+                statueCnt++;
+                var pd = e.getPointData();
+                var pos = pd.getTranPos() != null ? pd.getTranPos() : pd.getPos();
+                double d = 999999.0;
+                if (me != null && pos != null) {
+                    try {
+                        d = me.computeDistance(pos);
+                    } catch (Throwable ignored) {
+                    }
+                }
+                cands.add(new Object[] {pd.getId(), d});
+            }
+            cands.sort(
+                    (x, y) -> Double.compare((Double) x[1], (Double) y[1]));
+            int limit = Math.min(1, cands.size());
+            StringBuilder done = new StringBuilder();
+            for (int i = 0; i < limit; i++) {
+                int pid = (Integer) cands.get(i)[0];
+                try {
+                    if (player.getGoddessNpcEntityByPoint().containsKey(pid)) continue;
+                    // 真解锁 + 补雕像 + 铺代理（三者一起，否则要么不能传送、要么雕像消失）
+                    // 不自动解锁：只对“已解锁”的点刷新代理（没解锁就什么都不做）
+                    player.getProgressManager().refreshStatueTalkGate(scId, pid);
+                    done.append(pid).append(' ');
+                } catch (Throwable t) {
+                }
+            }
+        } catch (Throwable t) {
+        }
+        // TPS ammunition reserves, which the client expects before the Rsp.
+        emu.grasscutter.game.tps.TpsWeaponSystem.sendSceneAmmunition(player);
 
         // Rsp
         session.send(new PacketEnterSceneDoneRsp(player));

@@ -1,5 +1,6 @@
 package emu.grasscutter.server.packet.send;
 
+import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.quest.*;
 import emu.grasscutter.net.packet.*;
@@ -24,19 +25,34 @@ public class PacketPersonalLineAllDataRsp extends BasePacket {
                         .map(GameQuest::getSubQuestId)
                         .collect(Collectors.toSet());
 
-        // locked_personal_line_list and its fields are named by the 7.1 name translations. Lines
-        // not started and not unlocked with a key are listed as locked, as in the private repo.
+        var miaoUnlocked = new ArrayList<Integer>();
+        var miaoLocked = new ArrayList<Integer>();
+
+        // 关键：不管玩家解不解锁，只要没在进行中的传说任务，统统填 locked
+        // （客户端靠 locked 列表画卡片 + 快速体验入口）
         GameData.getPersonalLineDataMap().values().stream()
                 .filter(i -> !questList.contains(i.getStartQuestId()))
-                .filter(i -> unlockedLines == null || !unlockedLines.contains(i.getId()))
                 .forEach(
-                        i ->
-                                proto.addLockedPersonalLineList(
-                                        LockedPersonallineData.newBuilder()
-                                                .setPersonalLineId(i.getId())
-                                                .setLockReason(
-                                                        LockedPersonallineData.LockReason.LockReason_QUEST)
-                                                .build()));
+                        i -> {
+                            proto.addLockedPersonalLineList(
+                                    LockedPersonallineData.newBuilder()
+                                            .setPersonalLineId(i.getId())
+                                            .setLockReason(
+                                                    LockedPersonallineData.LockReason.LockReason_QUEST)
+                                            .build());
+                            if (unlockedLines != null && unlockedLines.contains(i.getId())) {
+                                miaoUnlocked.add(i.getId());
+                            } else {
+                                miaoLocked.add(i.getId());
+                            }
+                        });
+
+        // [锚点] 把发出去的列表打印出来
+        var miaoAll = new ArrayList<Integer>();
+        GameData.getPersonalLineDataMap().keySet().forEach(miaoAll::add);
+        Collections.sort(miaoAll);
+        Collections.sort(miaoUnlocked);
+        Collections.sort(miaoLocked);
 
         this.setData(proto);
     }

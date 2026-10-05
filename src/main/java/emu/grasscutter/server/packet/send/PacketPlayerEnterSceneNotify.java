@@ -9,12 +9,21 @@ import emu.grasscutter.game.world.data.TeleportProperties;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.EnterTypeOuterClass.EnterType;
 import emu.grasscutter.net.proto.PlayerEnterSceneNotifyOuterClass.PlayerEnterSceneNotify;
+import emu.grasscutter.server.born.BornIntroGate;
 import emu.grasscutter.utils.Utils;
 
 public class PacketPlayerEnterSceneNotify extends BasePacket {
 
     public PacketPlayerEnterSceneNotify(Player player) {
         super(PacketOpcodes.PlayerEnterSceneNotify);
+
+        // Fresh-born 7.1 emits the login scene-entry at the native intro boundary, before the
+        // expensive tail of Player.onLogin. When onLogin reaches its normal notify later, keep the
+        // original token/state intact and drop that duplicate packet.
+        if (BornIntroGate.shouldSuppressLoginSceneEntry(player.getSession())) {
+            this.setOpcode(-1);
+            return;
+        }
 
         player.setSceneLoadState(SceneLoadState.LOADING);
         player.setEnterSceneToken(Utils.randomRange(1000, 99999));
@@ -31,7 +40,7 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
                         .setTargetUid((player.getUid() - 30259) ^ 4145)
                         .setEnterSceneToken((player.getEnterSceneToken() ^ 57361) - 22665)
                         .setWorldLevel((player.getWorldLevel() ^ 31579) + 19873)
-
+                        .setEnterReason((EnterReason.Login.getValue() ^ 43962) + 40350)
                         .setSceneTransaction(
                                 clientSceneId
                                         + "-"
@@ -83,7 +92,6 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
 
         var proto =
                 PlayerEnterSceneNotify.newBuilder()
-
                         .setSceneId((clientSceneId - 49379) ^ 11523)
                         .setPos(teleportProperties.getTeleportTo().toProto())
                         .setSceneBeginTime((currentTime ^ 27843L) + 16749L)
@@ -91,7 +99,6 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
                         .setTargetUid((target.getUid() - 30259) ^ 4145)
                         .setEnterSceneToken((player.getEnterSceneToken() ^ 57361) - 22665)
                         .setWorldLevel((target.getWorld().getWorldLevel() ^ 31579) + 19873)
-
                         .setSceneTransaction(
                                 clientSceneId
                                         + "-"
@@ -100,6 +107,10 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
                                         + (int) (System.currentTimeMillis() / 1000)
                                         + "-"
                                         + 18402);
+
+        if (teleportProperties.getEnterReason() != null) {
+            proto.setEnterReason((teleportProperties.getEnterReason().getValue() ^ 43962) + 40350);
+        }
 
         if (teleportProperties.getDungeonId() != 0) {
             proto.setDungeonId((teleportProperties.getDungeonId() ^ 27544) - 17829);
@@ -120,14 +131,15 @@ public class PacketPlayerEnterSceneNotify extends BasePacket {
 
         var proto =
                 PlayerEnterSceneNotify.newBuilder()
-
                         .setSceneId((clientSceneId - 49379) ^ 11523)
                         .setPos(teleportProperties.getTeleportTo().toProto())
                         .setSceneBeginTime((currentTime ^ 27843L) + 16749L)
-                        .setType(other ? EnterType.EnterType_ENTER_OTHER_HOME : EnterType.EnterType_ENTER_SELF_HOME)
+                        .setType(
+                                other
+                                        ? EnterType.EnterType_ENTER_OTHER_HOME
+                                        : EnterType.EnterType_ENTER_SELF_HOME)
                         .setTargetUid((targetUid - 30259) ^ 4145)
                         .setEnterSceneToken((player.getEnterSceneToken() ^ 57361) - 22665)
-
                         .setSceneTransaction(
                                 clientSceneId
                                         + "-"

@@ -455,6 +455,13 @@ public final class ResourceLoader {
                 continue;
             }
 
+            // Quest abilities are dynamic too, but only a quest may grant them. Avatar_Columbina_MainQuest
+            // sets a team global value that hides Slot2/Slot5 for every member, so merging it made
+            // Columbina's whole team lose E and Q.
+            if (abilityData.abilityName.contains("Quest")) {
+                continue;
+            }
+
             if (abilityData.abilityName.startsWith("Avatar_" + avatarName)) {
                 if (!mergedAbilities.contains(abilityData.abilityName)) {
                     mergedAbilities.add(abilityData.abilityName);
@@ -1144,13 +1151,13 @@ public final class ResourceLoader {
     public static class OpenConfigData {
         public String $type;
 
-        @SerializedName(value = "abilityName", alternate = {"BEAFNCHOJGD"})
+        @SerializedName(value = "abilityName", alternate = {"BEAFNCHOJGD", "NCCKLDFFDOH"})
         public String abilityName;
 
-        @SerializedName(value = "varName", alternate = {"AAAENDNEBIG", "paramSpecial"})
+        @SerializedName(value = "varName", alternate = {"AAAENDNEBIG", "paramSpecial", "LDACNDBDKBA"})
         public String varName;
 
-        @SerializedName(value = "varValue", alternate = {"KCHPDCEBCNI", "paramDelta"})
+        @SerializedName(value = "varValue", alternate = {"KCHPDCEBCNI", "paramDelta", "IJFENBIJGLJ"})
         public com.google.gson.JsonElement varValue;
 
         @SerializedName(
@@ -1168,7 +1175,7 @@ public final class ResourceLoader {
                 alternate = {"IGEBKIHPOIF"})
         public int pointDelta;
 
-        @SerializedName(value = "talentParam", alternate = {"FJIKJIDMFNH"})
+        @SerializedName(value = "talentParam", alternate = {"FJIKJIDMFNH", "AAAENHAPNLB"})
         public String talentParam;
     }
 

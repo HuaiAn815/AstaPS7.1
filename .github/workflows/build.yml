@@ -27,8 +27,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          # The sources target 17, but virtual threads and other 21 APIs are compiled against the
-          # JDK's own classes rather than --release 17, so the toolchain has to be 21.
+          # AstaPS uses Java 21 APIs and emits Java 21 bytecode.
           java-version: "21"
 
       - name: Set up Gradle

@@ -280,6 +280,12 @@ public class ConfigContainer {
         public boolean enableScriptInBigWorld = true;
         public boolean enableConsole = true;
 
+        /**
+         * Runs the database half of logins off the thread that handles every player's packets, so
+         * one slow login does not stall everyone. Turn off to go back to the old inline login.
+         */
+        public boolean asyncLogin = true;
+
         /*
          * How often the world is ticked, in milliseconds.
          *
@@ -414,17 +420,6 @@ public class ConfigContainer {
         public boolean disableCutscenes = false;
 
         /**
-         * Marks every main quest finished on the client at login, as {@code /quest forcefinish all}
-         * does by hand.
-         *
-         * <p>The client decides on its own to replay the opening cutscene while it believes the
-         * prologue is unplayed, and no cutscene setting reaches that - the only lever the server has
-         * is telling it the quests are done. It also opens quest-gated region barriers, so this is
-         * the sandbox answer rather than the faithful one.
-         */
-        public boolean forceFinishMainQuestsOnLogin = false;
-
-        /**
          * Lists every official 5-star artifact piece in a shop. Buying one rolls it the way an
          * artifact domain would - a main stat out of the slot's real pool and substats out of the
          * excel affix table - only with the odds leaning towards crit and damage.
@@ -507,7 +502,6 @@ public class ConfigContainer {
         public static class Rates {
             public float adventureExp = 1.0f;
             public float mora = 1.0f;
-            public float leyLines = 1.0f;
         }
 
         /** Spiral Abyss. */
@@ -588,13 +582,6 @@ public class ConfigContainer {
             /* Protobuf field number the Lua payload is written to, flat at the top level.
              * 0 (recommended) uses `payload` on WindSeedType1Notify, 5 in 7.1 (7.0 had 6). */
             public int payloadField = 0;
-            /* Try several candidates in one login instead of one per restart. Each entry is
-             * "cmdId:payloadField"; the watermark is sent once under each. The client ignores a
-             * CmdId it does not know, so the wrong ones are inert - if the text appears, bisect
-             * this list to find which one landed. Empty means just use cmdId/payloadField above.
-             * Never put 8191 or 9250 in here: those are PlayerLoginRsp and GetPlayerTokenRsp, and
-             * a Lua payload sent under them breaks login rather than the watermark. */
-            public String[] sweep = {};
         }
 
         public static class BirthdayMailOptions {
@@ -704,7 +691,6 @@ public class ConfigContainer {
 
     public static class Files {
         public String indexFile = "./index.html";
-        public String errorFile = "./404.html";
     }
 
     /* Objects. */

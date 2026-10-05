@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 /** Handles requests related to region queries. */
 public final class RegionHandler implements Router {
     private static final Map<String, RegionData> regions = new ConcurrentHashMap<>();
+    /** Region name to the title shown for it in the server list. */
+    private static final Map<String, String> regionTitles = new ConcurrentHashMap<>();
     private static String regionListResponse;
     private static String regionListResponseCN;
     private static com.google.protobuf.ByteString regionConfigEncrypted;
@@ -109,6 +111,9 @@ public final class RegionHandler implements Router {
                                     .setClientSecretKey(ByteString.copyFrom(Crypto.DISPATCH_SEED))
                                     .setRegionCustomConfigEncrypted(buildRegionCustomConfigEncrypted())
                                     .build();
+                    regionTitles.put(
+                            region.Name,
+                            region.Title == null || region.Title.isEmpty() ? region.Name : region.Title);
                     regions.put(
                             region.Name,
                             new RegionData(
@@ -155,7 +160,7 @@ public final class RegionHandler implements Router {
                                 servers.add(
                                         RegionSimpleInfo.newBuilder()
                                                 .setName(name)
-                                                .setTitle(name)
+                                                .setTitle(regionTitles.getOrDefault(name, name))
                                                 .setType("DEV_PUBLIC")
                                                 .setDispatchUrl(dispatchDomain + "/query_cur_region/" + name)
                                                 .build()));
@@ -309,11 +314,21 @@ public final class RegionHandler implements Router {
                 regionData = Utils.base64Encode(effectiveQuery.toByteString().toByteArray());
             }
 
-            var clientVersion = versionName.replaceAll(Pattern.compile("[a-zA-Z]").pattern(), "");
+            // A missing or odd version used to throw here and reach the client as an HTTP 500. Such
+            // a request gets the plain region data, the same as a client too old to encrypt.
+            var clientVersion =
+                    versionName == null
+                            ? ""
+                            : versionName.replaceAll(Pattern.compile("[a-zA-Z]").pattern(), "");
             var versionCode = clientVersion.split("\\.");
-            var versionMajor = Integer.parseInt(versionCode[0]);
-            var versionMinor = Integer.parseInt(versionCode[1]);
-            var versionFix = Integer.parseInt(versionCode[2]);
+            int versionMajor = 0, versionMinor = 0, versionFix = 0;
+            try {
+                versionMajor = Integer.parseInt(versionCode[0]);
+                versionMinor = Integer.parseInt(versionCode[1]);
+                versionFix = Integer.parseInt(versionCode[2]);
+            } catch (RuntimeException ignored) {
+                versionMajor = 0;
+            }
 
             if (versionMajor >= 3
                 || (versionMajor == 2 && versionMinor == 7 && versionFix >= 50)

@@ -62,15 +62,19 @@ compileJava {
 
 compileTestJava.options.encoding = 'UTF-8'
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
 group = 'io.grasscutter'
 version = '7.1.0'
 
 java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
     withJavadocJar()
     withSourcesJar()
+}
+
+tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
+    options.release.set(21)
 }
 
 repositories {

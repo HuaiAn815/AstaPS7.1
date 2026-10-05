@@ -25,6 +25,7 @@ import emu.grasscutter.game.entity.*;
 import emu.grasscutter.game.inventory.*;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.*;
+import emu.grasscutter.game.tps.TpsWeaponSystem;
 import emu.grasscutter.net.proto.AvatarFetterInfoOuterClass.AvatarFetterInfo;
 import emu.grasscutter.net.proto.AvatarInfoOuterClass.AvatarInfo;
 import emu.grasscutter.net.proto.AvatarSkillInfoOuterClass.AvatarSkillInfo;
@@ -69,6 +70,9 @@ public class Avatar {
     @Transient @Getter private Set<String> extraAbilityEmbryos;
 
     private List<Integer> fetters;
+
+    // TPS weapons this avatar wears, by item id (each TPS weapon is unique per player).
+    private List<Integer> tpsWeaponIds;
 
     private Map<Integer, Integer> skillLevelMap = new Int2IntArrayMap(7); // Talent levels
 
@@ -417,7 +421,10 @@ public class Avatar {
         this.skillDepot
                 .getSkillsAndEnergySkill()
                 .forEach(
-                        skillId -> map.put(skillId, this.skillLevelMap.putIfAbsent(skillId, 1).intValue()));
+                        // putIfAbsent returns the old value, null for a skill the save has never
+                        // seen, so every avatar saved before a depot gained a skill (the attack
+                        // mode skill, for one) failed to load and its player could not log in.
+                        skillId -> map.put(skillId, this.skillLevelMap.computeIfAbsent(skillId, id -> 1).intValue()));
         return map;
     }
 
@@ -459,6 +466,13 @@ public class Avatar {
             // One below the lowest locked talent, or 6 if there are no locked talents.
             return lockedTalents.intStream().map(i -> i % 10).min().orElse(7) - 1;
         } else return 0;
+    }
+
+    public List<Integer> getTpsWeaponIds() {
+        if (this.tpsWeaponIds == null) {
+            this.tpsWeaponIds = new ArrayList<>();
+        }
+        return this.tpsWeaponIds;
     }
 
     public boolean equipItem(GameItem item, boolean shouldRecalc) {
@@ -710,6 +724,9 @@ public class Avatar {
                 }
             }
         }
+
+        // TPS weapons: their affix openConfigs carry the Avatar_TPS_* aim, shoot and reload abilities
+        TpsWeaponSystem.applyAffixes(this);
 
         // Add proud skills and unlock them if needed
         AvatarSkillDepotData skillDepot =
@@ -1199,6 +1216,7 @@ public class Avatar {
                                         skillId, AvatarSkillInfo.newBuilder().setMaxChargeCount(count).build()));
 
         this.getEquips().forEach((k, item) -> avatarInfo.addEquipGuidList(item.getGuid()));
+        avatarInfo.addAllTpsWeaponList(TpsWeaponSystem.getSceneWeaponInfos(this));
 
         avatarInfo.putPropMap(
                 PlayerProperty.PROP_LEVEL.getId(),
@@ -1473,11 +1491,23 @@ public class Avatar {
 
     @PostLoad
     private void onLoad() {
-        AvatarStatePersist.stash(this, this.currentHp, this.currentEnergy, this.nyxValue);
+        // 存档里的 currentHp 是权威值。构造期 recalc 已经把 CUR_HP 写成过
+        // “属性表还没加载完时算出的临时上限”（例如 5311），如果直接 stash 这个临时值，
+        // 后续 recalc 会把临时值当成“玩家当前血”恢复回去，存档血就永远丢了。
+        // 这里先把存档血写回战斗属性，再 stash，保证恢复链拿到的是存档血。
+        float miaoSavedHp = this.currentHp;
+        if (miaoSavedHp > 1.0f) {
+            this.setFightProperty(FightProperty.FIGHT_PROP_CUR_HP, miaoSavedHp);
+        }
+        AvatarStatePersist.stash(this, miaoSavedHp, this.currentEnergy, this.nyxValue);
     }
 
     @PrePersist
     private void prePersist() {
+        float miaoCurProp = this.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
+        float miaoMax = this.getFightProperty(FightProperty.FIGHT_PROP_MAX_HP);
+        if (Math.abs(miaoCurProp - this.currentHp) > 1.0f) {
+        }
         this.currentHp = this.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP);
         try {
             AvatarSkillDepotData depot = this.getSkillDepot();
