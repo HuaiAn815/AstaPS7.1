@@ -1,5 +1,6 @@
 package emu.grasscutter.server.scheduler;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 import lombok.Getter;
 
@@ -13,9 +14,9 @@ public final class AsyncServerTask implements Runnable {
     @Nullable private final Runnable callback;
 
     /* Has the task already been started? */
-    private boolean started = false;
+    private final AtomicBoolean started = new AtomicBoolean();
     /* Has the task finished execution? */
-    private boolean finished = false;
+    private volatile boolean finished = false;
     /* The result produced in the async task. */
     @Nullable private Object result = null;
 
@@ -46,7 +47,7 @@ public final class AsyncServerTask implements Runnable {
      * @return True if the task has been started, false otherwise.
      */
     public boolean hasStarted() {
-        return this.started;
+        return this.started.get();
     }
 
     /**
@@ -61,14 +62,12 @@ public final class AsyncServerTask implements Runnable {
     /** Runs the task. */
     @Override
     public void run() {
-        // Declare the task as started.
-        this.started = true;
-
-        // Run the runnable.
-        this.task.run();
-
-        // Declare the task as finished.
-        this.finished = true;
+        if (!this.started.compareAndSet(false, true)) return;
+        try {
+            this.task.run();
+        } finally {
+            this.finished = true;
+        }
     }
 
     /** Runs the callback. */

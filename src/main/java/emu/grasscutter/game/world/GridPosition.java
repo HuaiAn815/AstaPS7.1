@@ -103,9 +103,9 @@ public final class GridPosition implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = x ^ (x >>> 32);
-        result = 31 * result + (z ^ (z >>> 32));
-        result = 31 * result + (width ^ (width >>> 32));
+        int result = Integer.hashCode(x);
+        result = 31 * result + Integer.hashCode(z);
+        result = 31 * result + Integer.hashCode(width);
         return result;
     }
 
