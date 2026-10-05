@@ -1400,10 +1400,18 @@ public class Player implements PlayerHook, FieldFetch {
 
     @PostLoad
     private void onLoad() {
+        this.initializeTeamManager();
         SceneUnlockSetNormalizer.compact(this);
         this.getCodex().setPlayer(this);
         this.getProgressManager().setPlayer(this);
-        this.getTeamManager().setPlayer(this);
+    }
+
+    private void initializeTeamManager() {
+        if (this.teamManager == null) {
+            this.teamManager = new TeamManager(this);
+        }
+        // The saved manager's owner is transient and must be restored before team operations.
+        this.teamManager.setPlayer(this);
     }
 
     public List<Integer> getTpsLoadout() {
@@ -1425,10 +1433,7 @@ public class Player implements PlayerHook, FieldFetch {
     }
 
     public void loadFromDatabase() {
-
-        if (this.getTeamManager() == null) {
-            this.teamManager = new TeamManager(this);
-        }
+        this.initializeTeamManager();
         if (this.getCodex() == null) {
             this.codex = new PlayerCodex(this);
         }
@@ -1483,6 +1488,7 @@ public class Player implements PlayerHook, FieldFetch {
     }
 
     public void onLogin() {
+        this.initializeTeamManager();
         // A trial avatar saved into a team (e.g. logging out inside a trial dungeon) has no avatar
         // to build an entity from.
         this.getTeamManager().removeUnownedAvatarsFromTeams();
