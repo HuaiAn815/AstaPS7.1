@@ -26,7 +26,7 @@ public final class ServerTaskScheduler {
      */
     public void runTasks() {
         // Skip if there are no tasks.
-        if (this.tasks.size() == 0) return;
+        if (this.tasks.isEmpty() && this.asyncTasks.isEmpty()) return;
 
         // Run all tasks.
         for (ServerTask task : this.tasks.values()) {

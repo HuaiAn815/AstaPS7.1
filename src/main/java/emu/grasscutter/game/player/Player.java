@@ -553,11 +553,11 @@ public class Player implements PlayerHook, FieldFetch {
     }
 
     public Set<Integer> getUnlockedSceneAreas(int sceneId) {
-        return this.unlockedSceneAreas.computeIfAbsent(sceneId, i -> new CopyOnWriteArraySet<>());
+        return this.unlockedSceneAreas.computeIfAbsent(sceneId, i -> new CompactIntSet());
     }
 
     public Set<Integer> getUnlockedScenePoints(int sceneId) {
-        return this.unlockedScenePoints.computeIfAbsent(sceneId, i -> new CopyOnWriteArraySet<>());
+        return this.unlockedScenePoints.computeIfAbsent(sceneId, i -> new CompactIntSet());
     }
 
     public Set<Integer> getForceLockedScenePoints(int sceneId) {
@@ -1400,6 +1400,7 @@ public class Player implements PlayerHook, FieldFetch {
 
     @PostLoad
     private void onLoad() {
+        SceneUnlockSetNormalizer.compact(this);
         this.getCodex().setPlayer(this);
         this.getProgressManager().setPlayer(this);
         this.getTeamManager().setPlayer(this);
