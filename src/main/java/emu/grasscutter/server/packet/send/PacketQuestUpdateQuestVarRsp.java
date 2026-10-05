@@ -18,6 +18,7 @@ public class PacketQuestUpdateQuestVarRsp extends BasePacket {
                 QuestUpdateQuestVarRspOuterClass.QuestUpdateQuestVarRsp.newBuilder()
                         .setQuestId(req.getQuestId())
                         .setParentQuestId(req.getParentQuestId())
+                        .setParentQuestVarSeq(req.getParentQuestVarSeq())
                         .setRetcode(retcode.getNumber())
                         .build();
         this.setData(rsp);

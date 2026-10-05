@@ -1,0 +1,12 @@
+[
+  { "id": 1001, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_24" },
+  { "id": 1003, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_27" },
+  { "id": 1016, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_36" },
+  { "id": 1017, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_35" },
+  { "id": 1021, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_68" },
+  { "id": 1053, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_84" },
+  { "id": 1095, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_502" },
+  { "id": 1100, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_504" },
+  { "id": 1101, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_505" },
+  { "id": 1172, "sceneId": 3, "groupId": 133003901, "triggerName": "ENTER_REGION_901002" }
+]

@@ -299,8 +299,13 @@ public class GameQuest {
 
     // Return true if it did the rewind
     public boolean rewind(boolean notifyDelete) {
+        var data = this.getQuestData();
+        if (data == null) return false;
         getMainQuest().getChildQuests().values().stream()
-                .filter(p -> p.getQuestData().getOrder() > this.getQuestData().getOrder())
+                .filter(
+                        p ->
+                                p.getQuestData() != null
+                                        && p.getQuestData().getOrder() > data.getOrder())
                 .forEach(
                         q -> {
                             q.clearProgress(notifyDelete);
@@ -319,8 +324,16 @@ public class GameQuest {
         // Check if this quest is active.
         if (this.state != QuestState.QUEST_STATE_UNFINISHED) return List.of();
 
-        return this.getQuestData().getFinishCond().stream()
-                .filter(cond -> cond.getType() == QuestContent.QUEST_CONTENT_ENTER_DUNGEON)
+        var data = this.getQuestData();
+        if (data == null || data.getFinishCond() == null) return List.of();
+
+        return data.getFinishCond().stream()
+                .filter(
+                        cond ->
+                                cond != null
+                                        && cond.getType()
+                                                == QuestContent.QUEST_CONTENT_ENTER_DUNGEON)
+                .filter(cond -> cond.getParam() != null && cond.getParam().length >= 2)
                 .map(
                         condition -> {
                             var params = condition.getParam();

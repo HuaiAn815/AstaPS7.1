@@ -632,10 +632,15 @@ public final class ResourceLoader {
                     path -> {
                         try {
                             val mainQuest = JsonUtils.loadToClass(path, MainQuestData.class);
-                            GameData.getMainQuestDataMap().put(mainQuest.getId(), mainQuest);
-
+                            if (mainQuest == null) {
+                                Grasscutter.getLogger().warn("Quest file {} was empty.", path);
+                                return;
+                            }
                             mainQuest.onLoad();
-                        } catch (IOException ignored) {
+                            GameData.getMainQuestDataMap().put(mainQuest.getId(), mainQuest);
+                        } catch (Exception e) {
+                            Grasscutter.getLogger()
+                                    .error("Unable to load quest data from {}.", path, e);
                         }
                     });
         } catch (IOException e) {
@@ -676,8 +681,9 @@ public final class ResourceLoader {
                                             .put(
                                                     path.getFileName().toString(),
                                                     JsonUtils.loadToClass(path, ScriptSceneData.class));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                } catch (Exception e) {
+                                    Grasscutter.getLogger()
+                                            .error("Unable to load ScriptSceneData from {}.", path, e);
                                 }
                             });
             Grasscutter.getLogger()
@@ -860,7 +866,6 @@ public final class ResourceLoader {
         val pattern = Pattern.compile("Q(.+?)\\ShareConfig.lua");
 
         try {
-            var bindings = ScriptLoader.getEngine().createBindings();
             try (var stream =
                     Files.newDirectoryStream(getResourcePath("Scripts/Quest/Share/"), "Q*ShareConfig.lua")) {
             stream.forEach(
@@ -872,6 +877,7 @@ public final class ResourceLoader {
                         if (cs == null) return;
 
                         try {
+                            var bindings = ScriptLoader.getEngine().createBindings();
                             ScriptLoader.eval(cs, bindings);
 
                             var teleportDataMap =

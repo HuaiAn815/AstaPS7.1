@@ -162,7 +162,7 @@ public class PlayerProgress {
     }
 
     public int addToCurrentProgress(String progressId, int count) {
-        return questProgressCountMap.merge(progressId, count, Integer::sum);
+        return questProgressCountMap.merge(progressId, count, Math::addExact);
     }
 
     public int resetCurrentProgress(String progressId) {

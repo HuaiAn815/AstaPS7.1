@@ -779,54 +779,67 @@ public class Scene {
             return;
         }
 
-        if (!isPaused) {
-            this.getScheduler().runTasks();
-        }
-
-        if (this.getScriptManager().isInit()) {
-
-            this.checkGroups();
-        } else {
-
-            this.checkSpawns();
-        }
-
-        this.scriptManager.checkRegions();
-
-        if (challenge != null) {
-            challenge.onCheckTimeOut();
-        }
-
+        if (!isPaused) stage("the scheduler", () -> this.getScheduler().runTasks());
+        stage(
+                "loading groups",
+                () -> {
+                    if (this.getScriptManager().isInit()) this.checkGroups();
+                    else if (this.getScriptManager().isInitAttempted()) this.checkSpawns();
+                });
+        stage("checking regions", () -> this.scriptManager.checkRegions());
+        if (challenge != null) stage("the challenge timer", () -> challenge.onCheckTimeOut());
         var sceneTime = getSceneTimeSeconds();
 
         var entities = Map.copyOf(this.getEntities());
         entities.forEach(
-                (eid, e) -> {
-                    if (!e.isAlive()) {
-                        this.getEntities().remove(eid);
-                    } else e.onTick(sceneTime);
-                });
-
-        blossomManager.onTick();
-
+                (eid, e) ->
+                        stage(
+                                "an entity's tick",
+                                () -> {
+                                    if (!e.isAlive()) this.getEntities().remove(eid);
+                                    else e.onTick(sceneTime);
+                                }));
+        stage("the blossoms", () -> blossomManager.onTick());
         // Remote Player may not carry this hook; settle delayed Q BoL clear from the scene tick.
         for (Player player : this.getPlayers()) {
-            ArlecchinoBurstBoL.onTick(player);
+            stage("a player's delayed burst", () -> ArlecchinoBurstBoL.onTick(player));
         }
 
-        if (!getPlayers().isEmpty()) {
-            var towerManager = getPlayers().get(0).getTowerManager();
-            if (towerManager != null && towerManager.isInProgress()) {
-                towerManager.onTick();
-            }
-        }
-
-        this.checkNpcGroup();
-
-        this.finishLoading();
-        this.checkPlayerRespawn();
+        stage(
+                "the tower",
+                () -> {
+                    var host = this.players.isEmpty() ? null : this.players.get(0);
+                    var towerManager = host != null ? host.getTowerManager() : null;
+                    if (towerManager != null && towerManager.isInProgress()) towerManager.onTick();
+                });
+        stage("the npc groups", this::checkNpcGroup);
+        stage("finishing loading", this::finishLoading);
+        stage("respawning players", this::checkPlayerRespawn);
         if (this.tickCount % 50 == 0) this.reportFrozenState();
-        if (this.tickCount++ % 10 == 0) this.broadcastPacket(new PacketSceneTimeNotify(this));
+        if (this.tickCount++ % 10 == 0)
+            stage("the time notify", () -> this.broadcastPacket(new PacketSceneTimeNotify(this)));
+    }
+
+    private final Set<String> reportedStages = ConcurrentHashMap.newKeySet();
+
+    private boolean stage(String name, Runnable body) {
+        try {
+            body.run();
+            return true;
+        } catch (Exception e) {
+            if (this.reportedStages.add(name)) {
+                Grasscutter.getLogger()
+                        .error(
+                                "Scene {} threw during {}; the rest of the tick still ran.",
+                                this.getId(),
+                                name,
+                                e);
+            } else {
+                Grasscutter.getLogger()
+                        .debug("Scene {} threw during {} again.", this.getId(), name, e);
+            }
+            return false;
+        }
     }
 
     /**
@@ -1307,40 +1320,61 @@ public class Scene {
             return;
         }
 
+        var prepared = new ArrayList<SceneGroup>();
         for (var group : groups) {
             if (this.loadedGroups.contains(group)) continue;
 
-            this.getScriptManager().loadGroupFromScript(group);
-            if (!this.scriptManager.getLoadedGroupSetPerBlock().containsKey(group.block_id))
-                this.onLoadBlock(scriptManager.getBlocks().get(group.block_id), players);
-            this.scriptManager.getLoadedGroupSetPerBlock().get(group.block_id).add(group);
+            if (stage(
+                    "loading group " + group.id,
+                    () -> {
+                        this.getScriptManager().loadGroupFromScript(group);
+                        if (!this.scriptManager
+                                .getLoadedGroupSetPerBlock()
+                                .containsKey(group.block_id))
+                            this.onLoadBlock(
+                                    scriptManager.getBlocks().get(group.block_id), players);
+                        this.scriptManager
+                                .getLoadedGroupSetPerBlock()
+                                .get(group.block_id)
+                                .add(group);
+                    })) prepared.add(group);
         }
 
         var entities = new ArrayList<GameEntity>();
-        for (var group : groups) {
+        var activated = new ArrayList<SceneGroup>();
+        for (var group : prepared) {
             if (this.loadedGroups.contains(group)) continue;
 
             if (group.init_config == null) {
                 continue;
             }
 
-            var groupInstance = this.getScriptManager().getGroupInstanceById(group.id);
-            var cachedInstance = this.getScriptManager().getCachedGroupInstanceById(group.id);
-            if (cachedInstance != null) {
-                cachedInstance.setLuaGroup(group);
-                groupInstance = cachedInstance;
-            }
-
-            this.getScriptManager()
-                    .refreshGroup(groupInstance, 0, false);
-
-            this.loadedGroups.add(group);
+            stage(
+                    "initializing group " + group.id,
+                    () -> {
+                        var groupInstance = this.getScriptManager().getGroupInstanceById(group.id);
+                        var cachedInstance =
+                                this.getScriptManager().getCachedGroupInstanceById(group.id);
+                        if (cachedInstance != null) {
+                            cachedInstance.setLuaGroup(group);
+                            groupInstance = cachedInstance;
+                        }
+                        if (this.getScriptManager().refreshGroup(groupInstance, 0, false) > 0) {
+                            this.loadedGroups.add(group);
+                            activated.add(group);
+                        }
+                    });
         }
 
         this.scriptManager.meetEntities(entities);
-        groups.forEach(
-                g -> scriptManager.callEvent(new ScriptArgs(g.id, EventType.EVENT_GROUP_LOAD, g.id)));
-
+        activated.forEach(
+                g ->
+                        stage(
+                                "group load event " + g.id,
+                                () ->
+                                        scriptManager.callEvent(
+                                                new ScriptArgs(
+                                                        g.id, EventType.EVENT_GROUP_LOAD, g.id))));
         Grasscutter.getLogger().trace("Scene {} loaded {} group(s)", this.getId(), groups.size());
     }
 

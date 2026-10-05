@@ -41,9 +41,11 @@ public class HandlerEnterTransPointRegionNotify extends PacketHandler {
                             tags);
 
             var player = session.getPlayer();
-            // Locked statues: auto-unlock on enter — no Talk/quest playthrough required for F
-            // or map unlock. Works whether questing is on or off.
-            if (player != null && sceneId > 0 && pointId > 0) {
+            // Questing-off mode keeps Asta's proximity unlock convenience.
+            if (player != null
+                    && !emu.grasscutter.game.quest.QuestManager.isQuestingActive()
+                    && sceneId > 0
+                    && pointId > 0) {
                 try {
                     var entry =
                             emu.grasscutter.data.GameData.getScenePointEntryById(sceneId, pointId);
