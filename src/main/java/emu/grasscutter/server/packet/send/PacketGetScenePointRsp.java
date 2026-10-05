@@ -3,6 +3,7 @@ package emu.grasscutter.server.packet.send;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.GetScenePointRspOuterClass.GetScenePointRsp;
 import java.util.LinkedHashSet;
@@ -64,7 +65,7 @@ public class PacketGetScenePointRsp extends BasePacket {
 
         // Map fog areas: only what the player has unlocked (via statues / waypoints).
         var areas = player.getUnlockedSceneAreas(sceneId);
-        if (areas.isEmpty() && sceneId == 3) {
+        if (areas.isEmpty() && sceneId == 3 && !PrologueIntro.isActive(player)) {
             p.addUnlockAreaList(1);
         } else {
             for (int areaId : areas) {

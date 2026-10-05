@@ -4,6 +4,7 @@ import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 
 import emu.grasscutter.game.ability.EscoffierSkillCookHelper;
 import emu.grasscutter.game.player.EntryNotice;
+import emu.grasscutter.game.quest.PrologueIntro;
 import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.PostEnterSceneReqOuterClass.PostEnterSceneReq;
@@ -26,7 +27,7 @@ public class HandlerPostEnterSceneReq extends PacketHandler {
         boolean freshPlayerBootstrap = BornIntroGate.isFreshPlayerBootstrap(session);
 
         // Native-selection and automatic births converge here. Let PostEnterSceneRsp reach the
-        // client before Quest 351 starts so its actors see a ready playable scene.
+        // client before full questing starts so its server actors see a ready playable scene.
         if (freshPlayerBootstrap) {
             session.send(new PacketPostEnterSceneRsp(player));
             BornIntroGate.finishOnSceneReady(session);
@@ -55,7 +56,9 @@ public class HandlerPostEnterSceneReq extends PacketHandler {
 
         // Fresh 7.1 starts the opening from AQ351/35104. Do not add the independent legacy
         // first-login cutscene on top of that bootstrap.
-        if (!freshPlayerBootstrap) this.playOpeningCutscene(player);
+        if (!freshPlayerBootstrap && !PrologueIntro.wentThrough(player)) {
+            this.playOpeningCutscene(player);
+        }
     }
 
     /** Fired here rather than at login: a cutscene sent before the scene is up is discarded. */

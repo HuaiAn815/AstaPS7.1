@@ -274,6 +274,20 @@ public final class QuestManager extends BasePlayerManager {
 
     /** Starts a main quest whose opening can never be met on its own, unless it already began. */
     public void startMainQuestIfUnlinked(int mainQuestId) {
+        if (!GAME_OPTIONS.questing.enabled && PrologueIntro.isIntroMainQuest(mainQuestId)) {
+            synchronized (this.player) {
+                if (PrologueIntro.allowMainQuest(this.player, mainQuestId)) {
+                    this.startUnlinkedMainQuest(mainQuestId);
+                }
+            }
+            return;
+        }
+        if (!PrologueIntro.allowMainQuest(this.player, mainQuestId)) return;
+
+        this.startUnlinkedMainQuest(mainQuestId);
+    }
+
+    private void startUnlinkedMainQuest(int mainQuestId) {
         if (this.getMainQuestById(mainQuestId) != null || !opensUnlinked(mainQuestId)) return;
 
         Grasscutter.getLogger().debug("Starting main quest {} for uid {}", mainQuestId, player.getUid());
@@ -292,6 +306,8 @@ public final class QuestManager extends BasePlayerManager {
         List<GameMainQuest> activeQuests = getActiveMainQuests();
         List<GameQuest> activeSubs = new ArrayList<>(activeQuests.size());
         for (GameMainQuest quest : activeQuests) {
+            if (PrologueIntro.isActive(this.player)
+                    && PrologueIntro.isIntroMainQuest(quest.getParentQuestId())) continue;
             List<Position> rewindPos = quest.rewind(); // <pos, rotation>
             var activeQuest = quest.getActiveQuests();
             if (rewindPos != null) {
@@ -515,6 +531,29 @@ public final class QuestManager extends BasePlayerManager {
         return quest;
     }
 
+    public GameQuest addQuestSilently(int questId) {
+        var questConfig = GameData.getQuestDataMap().get(questId);
+        if (questConfig == null) return null;
+
+        var mainQuest = this.getMainQuestById(questConfig.getMainId());
+        if (mainQuest == null) {
+            var mainData = GameData.getMainQuestDataMap().get(questConfig.getMainId());
+            if (mainData == null || mainData.getSubQuests() == null) return null;
+            boolean containsQuest = false;
+            for (var sub : mainData.getSubQuests()) {
+                if (sub == null) return null;
+                if (sub.getSubId() == questId) containsQuest = true;
+                var childData = GameData.getQuestDataMap().get(sub.getSubId());
+                if (childData != null
+                        && (childData.getFinishCond() == null || childData.getFailCond() == null)) return null;
+            }
+            if (!containsQuest) return null;
+            mainQuest = new GameMainQuest(this.getPlayer(), questConfig.getMainId());
+            this.getMainQuests().put(mainQuest.getParentQuestId(), mainQuest);
+        }
+        return mainQuest.getChildQuests().get(questId);
+    }
+
     public void startMainQuest(int mainQuestId) {
         var mainQuestData = GameData.getMainQuestDataMap().get(mainQuestId);
 
@@ -566,6 +605,9 @@ public final class QuestManager extends BasePlayerManager {
                     if (this.wasSubQuestStarted(questData)) {
                         return;
                     }
+                    if (!PrologueIntro.allowAccept(owner, questData)) {
+                        return;
+                    }
                     val acceptCond = questData.getAcceptCond();
                     acceptProgressLists.putIfAbsent(questData.getId(), new int[acceptCond.size()]);
                     for (int i = 0; i < acceptCond.size(); i++) {
@@ -606,8 +648,17 @@ public final class QuestManager extends BasePlayerManager {
                     }
 
                     if (shouldAccept) {
-                        GameQuest quest = owner.getQuestManager().addQuest(questData);
-                        Grasscutter.getLogger().debug("Added quest {}", questData.getSubId());
+                        if (!GAME_OPTIONS.questing.enabled
+                                && PrologueIntro.isIntroMainQuest(questData.getMainId())) {
+                            synchronized (owner) {
+                                if (!PrologueIntro.allowAccept(owner, questData)) return;
+                                owner.getQuestManager().addQuest(questData);
+                                Grasscutter.getLogger().debug("Added quest {}", questData.getSubId());
+                            }
+                        } else {
+                            owner.getQuestManager().addQuest(questData);
+                            Grasscutter.getLogger().debug("Added quest {}", questData.getSubId());
+                        }
                     }
                 });
     }
