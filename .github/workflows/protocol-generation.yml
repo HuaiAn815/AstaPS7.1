@@ -45,6 +45,11 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      # gradlew is committed without the execute bit in the upstream tree.
+      - name: Make gradlew executable
+        if: runner.os != 'Windows'
+        run: chmod +x ./gradlew
+
       # Compile the production jar, run the focused protocol regression test, and separately compile
       # only regenerated protocol sources with -Xlint:all -Werror. Repository-wide validation remains
       # in the normal Build workflow.
