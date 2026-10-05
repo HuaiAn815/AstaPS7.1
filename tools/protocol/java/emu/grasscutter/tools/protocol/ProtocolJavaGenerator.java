@@ -135,17 +135,17 @@ public final class ProtocolJavaGenerator {
 
         var result = FileDescriptorSet.newBuilder();
         for (var file : filesByName.values()) {
-            result.addFile(applyPlayProtocolPatches(file));
+            result.addFile(applyRecoveredProtocolPatches(file));
         }
         return result.build();
     }
 
     /**
-     * The canonical descriptor dump predates semantic recovery of several TPS fields on play/rino.
-     * Their wire slots already exist under obfuscated names. Validate each legacy shape before
-     * replacing only the field descriptor, preserving every other recovered field unchanged.
+     * The canonical descriptor dump predates semantic recovery of several TPS fields. Their wire
+     * slots already exist under obfuscated names. Validate each legacy shape before replacing only
+     * the field descriptor, preserving every other recovered field unchanged.
      */
-    private static FileDescriptorProto applyPlayProtocolPatches(FileDescriptorProto file) {
+    private static FileDescriptorProto applyRecoveredProtocolPatches(FileDescriptorProto file) {
         return switch (file.getName()) {
             case "AvatarInfo.proto" ->
                     replaceMessageField(
