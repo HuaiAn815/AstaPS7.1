@@ -1,5 +1,6 @@
 package emu.grasscutter.game.player;
 
+import emu.grasscutter.Grasscutter;
 import static emu.grasscutter.config.Configuration.GAME_OPTIONS;
 import static emu.grasscutter.scripts.constants.EventType.EVENT_UNLOCK_TRANS_POINT;
 
@@ -9,6 +10,7 @@ import emu.grasscutter.data.excels.OpenStateData;
 import emu.grasscutter.data.excels.OpenStateData.OpenStateCondType;
 import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.quest.PrologueIntro;
+import emu.grasscutter.game.quest.QuestManager;
 import emu.grasscutter.game.quest.enums.*;
 import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.scripts.data.ScriptArgs;
@@ -99,7 +101,7 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
         }
 
         // Add statue quests if necessary.
-        if (!PrologueIntro.isActive(this.player)) {
+        if (!QuestManager.isQuestingActive() && !PrologueIntro.isActive(this.player)) {
             this.addStatueQuestsOnLogin();
         }
 
@@ -151,7 +153,7 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
         if (!GAME_OPTIONS.questing.enabled) {
             this.unlockQuestingOffFeatures();
         }
-        if (this.player.hasSentLoginPackets()) {
+        if (!QuestManager.isQuestingActive() && this.player.hasSentLoginPackets()) {
             this.addStatueQuestsOnLogin();
         }
         this.player.getUnlockedSceneAreas(3).add(1);
@@ -290,6 +292,7 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
      ******************************************************************************************************************
      *****************************************************************************************************************/
     private void addStatueQuestsOnLogin() {
+        if (QuestManager.isQuestingActive()) return;
         // Get all currently existing subquests for the "unlock all statues" main quest.
         var statueMainQuest = GameData.getMainQuestDataMap().get(303);
         if (statueMainQuest == null || statueMainQuest.getSubQuests() == null) {
@@ -387,6 +390,7 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
      */
     public java.util.List<emu.grasscutter.net.proto.QuestOuterClass.Quest>
             buildForgedStatueTalkQuests() {
+        if (QuestManager.isQuestingActive()) return java.util.List.of();
         var out = new java.util.ArrayList<emu.grasscutter.net.proto.QuestOuterClass.Quest>();
         var seen = new java.util.HashSet<Integer>();
 
@@ -414,6 +418,7 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
 
     /** Re-push Talk gate for one unlocked statue (EnterTrans / after unlock). */
     public void refreshStatueTalkGate(int sceneId, int pointId) {
+        if (QuestManager.isQuestingActive()) return;
         var entry = GameData.getScenePointEntryById(sceneId, pointId);
         if (entry == null || entry.getPointData() == null) return;
         if (!emu.grasscutter.game.managers.StatueTalkQuests.isStatuePoint(entry.getPointData())) {
@@ -1096,8 +1101,13 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
 
     public void unlockSceneArea(int sceneId, int areaId) {
         // Add the area to the list of unlocked areas in its scene.
-        this.player.getUnlockedSceneAreas(sceneId).add(areaId);
-
+        boolean isNew = this.player.getUnlockedSceneAreas(sceneId).add(areaId);
+        if (isNew) {
+            this.player
+                    .getQuestManager()
+                    .queueEvent(QuestContent.QUEST_CONTENT_UNLOCK_AREA, sceneId, areaId);
+            this.player.save();
+        }
         // Send packet.
         this.player.sendPacket(new PacketSceneAreaUnlockNotify(sceneId, areaId));
         try {
@@ -1137,6 +1147,12 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
             this.player.save();
             try {
                 for (int unlockedAreaId : newly) {
+                    this.player
+                            .getQuestManager()
+                            .queueEvent(
+                                    QuestContent.QUEST_CONTENT_UNLOCK_AREA,
+                                    sceneId,
+                                    unlockedAreaId);
                     InvestigationHandbookHelper.trigger(
                             this.player,
                             emu.grasscutter.game.props.WatcherTriggerType.TRIGGER_UNLOCK_AREA,
@@ -1214,7 +1230,17 @@ public final class PlayerProgressManager extends BasePlayerDataManager {
 
     /** Quest progress */
     public void addQuestProgress(int id, int count) {
-        var newCount = player.getPlayerProgress().addToCurrentProgress(String.valueOf(id), count);
+        final int newCount;
+        try {
+            newCount = player.getPlayerProgress().addToCurrentProgress(String.valueOf(id), count);
+        } catch (ArithmeticException e) {
+            Grasscutter.getLogger()
+                    .debug(
+                            "Ignoring overflowing quest progress {} for uid {}.",
+                            id,
+                            player.getUid());
+            return;
+        }
         player.save();
         player
                 .getQuestManager()

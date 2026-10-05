@@ -14,7 +14,7 @@ public class HandlerUnlockTransPointReq extends PacketHandler {
         boolean isStatue =
                 emu.grasscutter.game.managers.StatueTalkQuests.isStatuePoint(
                         entry != null ? entry.getPointData() : null);
-        if (isStatue) {
+        if (isStatue && !emu.grasscutter.game.quest.QuestManager.isQuestingActive()) {
             // 真解锁 + 把雕像 gadget 补回去 + 铺回血代理
             session.getPlayer()
                     .getProgressManager()

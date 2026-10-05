@@ -99,6 +99,7 @@ public class SceneScriptManager {
         // TEMPORARY
         if (this.getScene().getId() < 10
                 && !Grasscutter.getConfig().server.game.enableScriptInBigWorld) {
+            this.initAttempted = true;
             return;
         }
 
@@ -523,31 +524,28 @@ public class SceneScriptManager {
     }
 
     private void init() {
-        if (this.destroyed) {
-            this.initAttempted = true;
-            return;
-        }
-        var event = new SceneMetaLoadEvent(getScene());
-        event.call();
+        try {
+            if (this.destroyed) return;
+            var event = new SceneMetaLoadEvent(getScene());
+            event.call();
 
-        if (event.isOverride()) {
-            // Group grids should not be cached to disk when a scene
-            // group override is in effect. Otherwise, when the server
-            // next runs without that override, the cached content
-            // will not make sense.
-            noCacheGroupGridsToDisk = true;
-        }
-
-        if (!this.destroyed) {
-            var meta = ScriptLoader.getSceneMeta(getScene().getId());
-            if (meta != null) {
-                this.meta = meta;
-
-                // TEMP
-                this.isInit = true;
+            if (event.isOverride()) {
+                // An overridden scene must not persist grids for later unmodified runs.
+                noCacheGroupGridsToDisk = true;
             }
+            if (!this.destroyed) {
+                var meta = ScriptLoader.getSceneMeta(getScene().getId());
+                if (meta != null) {
+                    this.meta = meta;
+                    this.isInit = true;
+                }
+            }
+        } catch (Exception e) {
+            Grasscutter.getLogger()
+                    .error("Scene {} script initialization failed.", getScene().getId(), e);
+        } finally {
+            this.initAttempted = true;
         }
-        this.initAttempted = true;
     }
 
     public List<Grid> getGroupGrids() {

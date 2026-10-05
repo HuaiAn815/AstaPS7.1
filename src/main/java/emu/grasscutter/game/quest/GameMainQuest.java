@@ -58,8 +58,15 @@ public class GameMainQuest {
     }
 
     private void addAllChildQuests() {
+        var mainQuestData = GameData.getMainQuestDataMap().get(this.parentQuestId);
+        if (mainQuestData == null || mainQuestData.getSubQuests() == null) {
+            Grasscutter.getLogger().warn("Main quest {} has no resource data.", this.parentQuestId);
+            return;
+        }
+
         List<Integer> subQuestIds =
-                Arrays.stream(GameData.getMainQuestDataMap().get(this.parentQuestId).getSubQuests())
+                Arrays.stream(mainQuestData.getSubQuests())
+                        .filter(Objects::nonNull)
                         .map(SubQuestData::getSubId)
                         .toList();
         for (var subQuestId : subQuestIds) {
@@ -72,12 +79,13 @@ public class GameMainQuest {
                 continue;
             }
 
-            this.childQuests.put(subQuestId, new GameQuest(this, questConfig));
+            this.childQuests.putIfAbsent(subQuestId, new GameQuest(this, questConfig));
         }
     }
 
     public Collection<GameQuest> getActiveQuests() {
         return childQuests.values().stream()
+                .filter(q -> q != null && q.getQuestData() != null)
                 .filter(q -> q.getState().getValue() == QuestState.QUEST_STATE_UNFINISHED.getValue())
                 .toList();
     }
@@ -85,6 +93,9 @@ public class GameMainQuest {
     public void setOwner(Player player) {
         if (player.getUid() != this.getOwnerUid()) return;
         this.owner = player;
+        this.questManager = player.getQuestManager();
+        if (this.childQuests == null) this.childQuests = new HashMap<>();
+        this.addAllChildQuests();
     }
 
     public int getQuestVar(int i) {
@@ -130,6 +141,7 @@ public class GameMainQuest {
     }
 
     public void triggerQuestVarAction(int index, int value) {
+        this.save();
         var questManager = this.getQuestManager();
         questManager.queueEvent(QuestCond.QUEST_COND_QUEST_VAR_EQUAL, index, value);
         questManager.queueEvent(QuestCond.QUEST_COND_QUEST_VAR_GREATER, index, value);
@@ -148,9 +160,10 @@ public class GameMainQuest {
 
     public GameQuest getChildQuestByOrder(int order) {
         return this.getChildQuests().values().stream()
+                .filter(p -> p != null && p.getQuestData() != null)
                 .filter(p -> p.getQuestData().getOrder() == order)
-                .toList()
-                .get(0);
+                .findFirst()
+                .orElse(null);
     }
 
     public void finish() {
@@ -176,6 +189,9 @@ public class GameMainQuest {
 
         // Add rewards
         MainQuestData mainQuestData = GameData.getMainQuestDataMap().get(this.getParentQuestId());
+        if (mainQuestData == null) {
+            return;
+        }
         if (mainQuestData.getRewardIdList() != null) {
             for (int rewardId : mainQuestData.getRewardIdList()) {
                 RewardData rewardData = GameData.getRewardDataMap().get(rewardId);
@@ -293,7 +309,9 @@ public class GameMainQuest {
         if (avatarData == null) return false;
 
         String avatarPos = avatarData.getPos();
-        QuestData.Guide guide = GameData.getQuestDataMap().get(subId).getGuide();
+        QuestData questData = GameData.getQuestDataMap().get(subId);
+        if (questData == null) return false;
+        QuestData.Guide guide = questData.getGuide();
         if (guide == null) return false;
 
         int sceneId = guide.getGuideScene();
@@ -370,7 +388,9 @@ public class GameMainQuest {
 
     public void checkProgress() {
         for (var quest : getChildQuests().values()) {
-            if (quest.getState() == QuestState.QUEST_STATE_UNFINISHED) {
+            if (quest != null
+                    && quest.getQuestData() != null
+                    && quest.getState() == QuestState.QUEST_STATE_UNFINISHED) {
                 questManager.checkQuestAlreadyFulfilled(quest);
             }
         }
@@ -380,7 +400,9 @@ public class GameMainQuest {
         try {
             List<GameQuest> subQuestsWithCond =
                     getChildQuests().values().stream()
+                            .filter(p -> p != null && p.getQuestData() != null)
                             .filter(p -> p.getState() == QuestState.QUEST_STATE_UNFINISHED)
+                            .filter(p -> p.getQuestData().getFailCond() != null)
                             .filter(
                                     p ->
                                             p.getQuestData().getFailCond().stream()
@@ -422,11 +444,13 @@ public class GameMainQuest {
         try {
             List<GameQuest> subQuestsWithCond =
                     getChildQuests().values().stream()
+                            .filter(p -> p != null && p.getQuestData() != null)
                             // There are subQuests with no acceptCond, but can be finished (example: 35104)
                             .filter(
                                     p ->
                                             p.getState() == QuestState.QUEST_STATE_UNFINISHED
                                                     && p.getQuestData().getAcceptCond() != null)
+                            .filter(p -> p.getQuestData().getFinishCond() != null)
                             .filter(
                                     p ->
                                             p.getQuestData().getFinishCond().stream()

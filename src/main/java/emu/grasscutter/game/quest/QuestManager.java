@@ -299,7 +299,10 @@ public final class QuestManager extends BasePlayerManager {
             // The sweep is what fills a fresh quest log at login; see questing.triggerAllOnLogin.
             if (GAME_OPTIONS.questing.triggerAllOnLogin) {
                 this.enableQuests();
+            } else {
+                this.tryAcceptStaticQuests();
             }
+            this.startSuggestedUnlinkedQuests();
             this.sendGivingRecords();
         }
 
@@ -386,6 +389,78 @@ public final class QuestManager extends BasePlayerManager {
                         });
         this.triggerEvent(QuestCond.QUEST_COND_NONE, null, 0);
         this.triggerEvent(QuestCond.QUEST_COND_PLAYER_LEVEL_EQUAL_GREATER, null, 1);
+        this.tryAcceptStaticQuests();
+    }
+
+    /** Re-evaluates conditions whose values are already available in the saved player state. */
+    private void tryAcceptStaticQuests() {
+        var questSystem = getPlayer().getServer().getQuestSystem();
+        var accepted = new ArrayList<QuestData>();
+        for (var questData : GameData.getQuestDataMap().values()) {
+            if (questData == null || wasSubQuestStarted(questData)) continue;
+            try {
+                var mainQuest = getMainQuestById(questData.getMainId());
+                if (mainQuest == null
+                        || mainQuest.getState() == ParentQuestState.PARENT_QUEST_STATE_FINISHED)
+                    continue;
+                var acceptCond = questData.getAcceptCond();
+                if (acceptCond == null
+                        || acceptCond.isEmpty()
+                        || questData.getAcceptCondComb() == LogicType.LOGIC_NOT) continue;
+
+                var progress = new int[acceptCond.size()];
+                boolean allKnown = true;
+                for (int i = 0; i < acceptCond.size(); i++) {
+                    var condition = acceptCond.get(i);
+                    if (!isStaticAcceptCondition(condition.getType())) {
+                        allKnown = false;
+                        break;
+                    }
+                    progress[i] =
+                            questSystem.triggerCondition(getPlayer(), questData, condition, "")
+                                    ? 1
+                                    : 0;
+                }
+                if (allKnown && LogicType.calculate(questData.getAcceptCondComb(), progress)) {
+                    accepted.add(questData);
+                }
+            } catch (RuntimeException e) {
+                Grasscutter.getLogger()
+                        .error(
+                                "Unable to recover quest {} from its acceptance conditions.",
+                                questData.getId(),
+                                e);
+            }
+        }
+        accepted.forEach(this::addQuest);
+    }
+
+    private static boolean isStaticAcceptCondition(QuestCond type) {
+        return switch (type) {
+            case QUEST_COND_NONE,
+                            QUEST_COND_STATE_EQUAL,
+                            QUEST_COND_STATE_NOT_EQUAL,
+                            QUEST_COND_PACK_HAVE_ITEM,
+                            QUEST_COND_ITEM_NUM_LESS_THAN,
+                            QUEST_COND_OPEN_STATE_EQUAL,
+                            QUEST_COND_PLAYER_LEVEL_EQUAL_GREATER,
+                            QUEST_COND_PERSONAL_LINE_UNLOCK,
+                            QUEST_COND_HISTORY_GOT_ANY_ITEM ->
+                    true;
+            default -> false;
+        };
+    }
+
+    /** Starts follow-up unlinked main quests after a parent was already completed. */
+    private void startSuggestedUnlinkedQuests() {
+        for (var mainQuest : List.copyOf(getMainQuests().values())) {
+            if (mainQuest.getState() != ParentQuestState.PARENT_QUEST_STATE_FINISHED) continue;
+            var data = GameData.getMainQuestDataMap().get(mainQuest.getParentQuestId());
+            if (data == null || data.getSuggestTrackMainQuestList() == null) continue;
+            for (int next : data.getSuggestTrackMainQuestList()) {
+                startMainQuestIfUnlinked(next);
+            }
+        }
     }
 
     /**
@@ -488,7 +563,9 @@ public final class QuestManager extends BasePlayerManager {
     public void forEachActiveQuest(Consumer<GameQuest> callback) {
         for (var mainQuest : getMainQuests().values()) {
             for (var quest : mainQuest.getChildQuests().values()) {
-                if (quest.getState() != QuestState.QUEST_STATE_FINISHED) {
+                if (quest != null
+                        && quest.getQuestData() != null
+                        && quest.getState() != QuestState.QUEST_STATE_FINISHED) {
                     callback.accept(quest);
                 }
             }
@@ -513,6 +590,10 @@ public final class QuestManager extends BasePlayerManager {
     }
 
     public GameQuest addQuest(@Nonnull QuestData questConfig) {
+        if (questConfig == null
+                || GameData.getMainQuestDataMap().get(questConfig.getMainId()) == null) {
+            return null;
+        }
         // Main quest
         var mainQuest = this.getMainQuestById(questConfig.getMainId());
 
@@ -523,6 +604,7 @@ public final class QuestManager extends BasePlayerManager {
 
         // Sub quest
         var quest = mainQuest.getChildQuestById(questConfig.getSubId());
+        if (quest == null) return null;
         // Forcefully start
         quest.start();
         // Check conditions.
@@ -592,7 +674,19 @@ public final class QuestManager extends BasePlayerManager {
 
     public void triggerEvent(QuestCond condType, String paramStr, int... params) {
         Grasscutter.getLogger().trace("Trigger Event {}, {}, {}", condType, paramStr, params);
-        var potentialQuests = GameData.getQuestDataByConditions(condType, params[0], paramStr);
+        var potentialQuests =
+                condType == QuestCond.QUEST_COND_PLAYER_LEVEL_EQUAL_GREATER
+                        ? GameData.getQuestDataMap().values().stream()
+                                .filter(
+                                        q ->
+                                                q.getAcceptCond() != null
+                                                        && q.getAcceptCond().stream()
+                                                                .anyMatch(
+                                                                        c ->
+                                                                                c.getType()
+                                                                                        == condType))
+                                .toList()
+                        : GameData.getQuestDataByConditions(condType, params[0], paramStr);
         if (potentialQuests == null) {
             return;
         }
@@ -612,7 +706,8 @@ public final class QuestManager extends BasePlayerManager {
                     acceptProgressLists.putIfAbsent(questData.getId(), new int[acceptCond.size()]);
                     for (int i = 0; i < acceptCond.size(); i++) {
                         val condition = acceptCond.get(i);
-                        if (condition.getType() == condType) {
+                        if (condition.getType() == condType
+                                || isStaticAcceptCondition(condition.getType())) {
                             boolean result =
                                     questSystem.triggerCondition(owner, questData, condition, paramStr, params);
                             acceptProgressLists.get(questData.getId())[i] = result ? 1 : 0;
@@ -664,6 +759,10 @@ public final class QuestManager extends BasePlayerManager {
     }
 
     public boolean wasSubQuestStarted(QuestData questData) {
+        var mainQuest = getMainQuestById(questData.getMainId());
+        if (mainQuest != null
+                && mainQuest.getState() == ParentQuestState.PARENT_QUEST_STATE_FINISHED)
+            return true;
         var quest = getQuestById(questData.getId());
         if (quest == null) return false;
 
@@ -690,6 +789,7 @@ public final class QuestManager extends BasePlayerManager {
      * @param quest The ID of the quest.
      */
     public void checkQuestAlreadyFulfilled(GameQuest quest) {
+        if (quest == null || quest.getQuestData() == null) return;
         Grasscutter.getThreadPool()
                 .submit(
                         () -> {
@@ -697,11 +797,12 @@ public final class QuestManager extends BasePlayerManager {
                                 switch (condition.getType()) {
                                     case QUEST_CONTENT_OBTAIN_ITEM, QUEST_CONTENT_ITEM_LESS_THAN -> {
                                         // check if we already own enough of the item
-                                        var item = getPlayer().getInventory().getItemByGuid(condition.getParam()[0]);
                                         queueEvent(
                                                 condition.getType(),
                                                 condition.getParam()[0],
-                                                item != null ? item.getCount() : 0);
+                                                getPlayer()
+                                                        .getInventory()
+                                                        .getItemCountById(condition.getParam()[0]));
                                     }
                                     case QUEST_CONTENT_UNLOCK_TRANS_POINT -> {
                                         var scenePoints =
@@ -721,6 +822,17 @@ public final class QuestManager extends BasePlayerManager {
                                     }
                                     case QUEST_CONTENT_PLAYER_LEVEL_UP -> queueEvent(
                                             condition.getType(), player.getLevel());
+                                    case QUEST_CONTENT_ADD_QUEST_PROGRESS ->
+                                            queueEvent(
+                                                    condition.getType(),
+                                                    condition.getParam()[0],
+                                                    getPlayer()
+                                                            .getPlayerProgress()
+                                                            .getCurrentProgress(
+                                                                    String.valueOf(
+                                                                            condition
+                                                                                    .getParam()[
+                                                                                    0])));
                                 }
                             }
                         });
@@ -740,25 +852,29 @@ public final class QuestManager extends BasePlayerManager {
         List<GameMainQuest> quests = DatabaseHelper.getAllQuests(getPlayer());
 
         for (GameMainQuest mainQuest : quests) {
-            boolean cancelAdd = false;
             mainQuest.setOwner(this.getPlayer());
 
+            if (mainQuest.getChildQuests() == null) {
+                continue;
+            }
             for (GameQuest quest : mainQuest.getChildQuests().values()) {
+                quest.setMainQuest(mainQuest);
                 QuestData questConfig = GameData.getQuestDataMap().get(quest.getSubQuestId());
 
                 if (questConfig == null) {
-                    mainQuest.delete();
-                    cancelAdd = true;
-                    break;
+                    Grasscutter.getLogger()
+                            .warn(
+                                    "Skipping missing quest resource {} in parent {} for uid {}.",
+                                    quest.getSubQuestId(),
+                                    mainQuest.getParentQuestId(),
+                                    getPlayer().getUid());
+                    continue;
                 }
 
-                quest.setMainQuest(mainQuest);
                 quest.setConfig(questConfig);
             }
 
-            if (!cancelAdd) {
-                this.getMainQuests().put(mainQuest.getParentQuestId(), mainQuest);
-            }
+            this.getMainQuests().put(mainQuest.getParentQuestId(), mainQuest);
         }
     }
 

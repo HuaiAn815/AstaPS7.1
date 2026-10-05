@@ -1,6 +1,5 @@
 package emu.grasscutter.server.packet.recv;
 
-import emu.grasscutter.game.quest.enums.QuestContent;
 import emu.grasscutter.net.packet.*;
 import emu.grasscutter.net.proto.AddQuestContentProgressBatchReq._AddQuestContentProgressBatchReq;
 import emu.grasscutter.server.game.GameSession;
@@ -18,13 +17,12 @@ public class HandlerAddQuestContentProgressBatchReq extends PacketHandler {
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
         var req = _AddQuestContentProgressBatchReq.parseFrom(payload);
-        var questManager = session.getPlayer().getQuestManager();
-
         for (var info : req.getProgressInfoListList()) {
-            var type = QuestContent.getContentTriggerByValue(info.getContentType());
-            if (type != null) {
-                questManager.queueEvent(type, info.getParam());
-            }
+            QuestContentProgressHandler.handle(
+                    session.getPlayer(),
+                    info.getContentType(),
+                    info.getParam(),
+                    Integer.toUnsignedLong(info.getAddProgress()));
         }
     }
 }

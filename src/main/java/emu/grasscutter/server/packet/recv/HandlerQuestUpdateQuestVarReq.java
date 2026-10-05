@@ -7,13 +7,12 @@ import emu.grasscutter.net.proto.RetcodeOuterClass.Retcode;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.packet.send.PacketQuestUpdateQuestVarRsp;
 
+import java.util.Arrays;
+
 @Opcodes(PacketOpcodes.QuestUpdateQuestVarReq)
 public class HandlerQuestUpdateQuestVarReq extends PacketHandler {
-
     @Override
     public void handle(GameSession session, byte[] header, byte[] payload) throws Exception {
-        // Client sends packets. One with the value, and one with the index and the new value to
-        // set/inc/dec
         var req = QuestUpdateQuestVarReq.parseFrom(payload);
         var questManager = session.getPlayer().getQuestManager();
         var subQuest = questManager.getQuestById(req.getQuestId());
@@ -21,8 +20,11 @@ public class HandlerQuestUpdateQuestVarReq extends PacketHandler {
         if (mainQuest == null && subQuest != null) {
             mainQuest = subQuest.getMainQuest();
         }
-
-        if (mainQuest == null) {
+        if (mainQuest == null
+                || (req.getQuestId() > 0 && subQuest == null)
+                || (subQuest != null && subQuest.getMainQuestId() != mainQuest.getParentQuestId())
+                || (req.getParentQuestId() > 0
+                        && req.getParentQuestId() != mainQuest.getParentQuestId())) {
             session.send(new PacketQuestUpdateQuestVarRsp(req, Retcode.RET_QUEST_NOT_EXIST));
             Grasscutter.getLogger()
                     .debug(
@@ -31,8 +33,33 @@ public class HandlerQuestUpdateQuestVarReq extends PacketHandler {
                             req.getParentQuestId());
             return;
         }
+        // Validate the ordered batch before changing saved quest state.
+        var nextVars = Arrays.copyOf(mainQuest.getQuestVars(), mainQuest.getQuestVars().length);
+        for (var op : req.getQuestVarOpListList()) {
+            int index = op.getIndex();
+            if (index < 0 || index >= nextVars.length) {
+                session.send(
+                        new PacketQuestUpdateQuestVarRsp(req, Retcode.RET_QUEST_CONTENT_ERROR));
+                return;
+            }
 
-        // 7.0 proto only carries parent quest ids; acknowledge sync without mutating vars here.
+            long next = op.getIsAdd() ? (long) nextVars[index] + op.getValue() : op.getValue();
+            if (next < Integer.MIN_VALUE || next > Integer.MAX_VALUE) {
+                session.send(
+                        new PacketQuestUpdateQuestVarRsp(req, Retcode.RET_QUEST_CONTENT_ERROR));
+                return;
+            }
+            nextVars[index] = (int) next;
+        }
+
+        for (var op : req.getQuestVarOpListList()) {
+            if (op.getIsAdd()) {
+                mainQuest.incQuestVar(op.getIndex(), op.getValue());
+            } else {
+                mainQuest.setQuestVar(op.getIndex(), op.getValue());
+            }
+        }
+        if (!req.getQuestVarOpListList().isEmpty()) mainQuest.save();
         session.send(new PacketQuestUpdateQuestVarRsp(req));
     }
 }

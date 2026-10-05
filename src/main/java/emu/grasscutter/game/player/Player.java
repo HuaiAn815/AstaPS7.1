@@ -1456,7 +1456,7 @@ public class Player implements PlayerHook, FieldFetch {
         awaitLoad("avatars", avatarsLoad);
         awaitLoad("inventory", inventoryLoad);
         // Intro recovery must finish the saved quests, not race their asynchronous load.
-        if (PrologueIntro.wentThrough(this)) {
+        if (QuestManager.isQuestingActive() || PrologueIntro.wentThrough(this)) {
             awaitLoad("quests", questsLoad);
         }
 
