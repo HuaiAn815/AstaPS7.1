@@ -51,6 +51,7 @@ public final class PrologueIntro {
     }
 
     public static void onLogin(Player player) {
+        prepareForQuesting(player);
         synchronized (player) {
             switch (player.getPrologueIntroStage()) {
                 case STAGE_PENDING -> {
@@ -64,8 +65,19 @@ public final class PrologueIntro {
         }
     }
 
+    /** Transfers an unfinished standalone opening to the complete quest lifecycle. */
+    public static boolean prepareForQuesting(Player player) {
+        if (!GAME_OPTIONS.questing.enabled) return false;
+        synchronized (player) {
+            if (!isActive(player)) return false;
+            player.setPrologueIntroStage(STAGE_NONE);
+            player.save();
+            return true;
+        }
+    }
+
     public static void onQuestFinished(GameQuest quest) {
-        if (quest.getSubQuestId() != FIRST_QUEST) return;
+        if (GAME_OPTIONS.questing.enabled || quest.getSubQuestId() != FIRST_QUEST) return;
         var player = quest.getOwner();
         synchronized (player) {
             if (player.getPrologueIntroStage() == STAGE_RUNNING) {
@@ -76,7 +88,9 @@ public final class PrologueIntro {
 
     public static boolean onClientPlotFinished(Player player, int plotId) {
         synchronized (player) {
-            if (plotId != FIRST_QUEST || player.getPrologueIntroStage() != STAGE_RUNNING)
+            if (GAME_OPTIONS.questing.enabled
+                    || plotId != FIRST_QUEST
+                    || player.getPrologueIntroStage() != STAGE_RUNNING)
                 return false;
             player.sendPacket(new PacketDelQuestNotify(FIRST_QUEST));
             conclude(player, "the opening scene finished");

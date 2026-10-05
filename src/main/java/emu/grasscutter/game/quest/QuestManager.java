@@ -295,7 +295,11 @@ public final class QuestManager extends BasePlayerManager {
     }
 
     public void onLogin() {
+        boolean transferredIntro = PrologueIntro.prepareForQuesting(this.player);
         if (this.isQuestingEnabled()) {
+            if (transferredIntro && this.getMainQuestById(FIRST_MAIN_QUEST) == null) {
+                this.onPlayerBorn();
+            }
             // The sweep is what fills a fresh quest log at login; see questing.triggerAllOnLogin.
             if (GAME_OPTIONS.questing.triggerAllOnLogin) {
                 this.enableQuests();
@@ -400,13 +404,16 @@ public final class QuestManager extends BasePlayerManager {
             if (questData == null || wasSubQuestStarted(questData)) continue;
             try {
                 var mainQuest = getMainQuestById(questData.getMainId());
-                if (mainQuest == null
-                        || mainQuest.getState() == ParentQuestState.PARENT_QUEST_STATE_FINISHED)
+                if (mainQuest != null
+                        && mainQuest.getState() == ParentQuestState.PARENT_QUEST_STATE_FINISHED)
                     continue;
                 var acceptCond = questData.getAcceptCond();
                 if (acceptCond == null
                         || acceptCond.isEmpty()
                         || questData.getAcceptCondComb() == LogicType.LOGIC_NOT) continue;
+                if (!PrologueIntro.allowAccept(getPlayer(), questData)) continue;
+                // Recover a lost handoff without opening unrelated, level-only questlines.
+                if (mainQuest == null && !hasCompletedPrerequisite(questData)) continue;
 
                 var progress = new int[acceptCond.size()];
                 boolean allKnown = true;
@@ -433,6 +440,21 @@ public final class QuestManager extends BasePlayerManager {
             }
         }
         accepted.forEach(this::addQuest);
+    }
+
+    private boolean hasCompletedPrerequisite(QuestData questData) {
+        for (var condition : questData.getAcceptCond()) {
+            if (condition.getType() != QuestCond.QUEST_COND_STATE_EQUAL) continue;
+            var params = condition.getParam();
+            if (params == null
+                    || params.length < 2
+                    || params[0] <= 0
+                    || params[1] != QuestState.QUEST_STATE_FINISHED.getValue()) continue;
+            var prerequisite = getQuestById(params[0]);
+            if (prerequisite != null && prerequisite.getState() == QuestState.QUEST_STATE_FINISHED)
+                return true;
+        }
+        return false;
     }
 
     private static boolean isStaticAcceptCondition(QuestCond type) {

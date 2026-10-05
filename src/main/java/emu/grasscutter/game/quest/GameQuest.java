@@ -64,25 +64,67 @@ public class GameQuest {
         this.startGameDay = getOwner().getWorld().getTotalGameTimeDays();
         this.state = QuestState.QUEST_STATE_UNFINISHED;
 
+        // Saved region keys are valid only after their runtime trigger data is rebuilt.
+        this.triggerData = new HashMap<>();
+        this.triggers = new HashMap<>();
+
         val triggerCond =
                 questData.getFinishCond().stream()
                         .filter(p -> p.getType() == QuestContent.QUEST_CONTENT_TRIGGER_FIRE)
                         .toList();
         if (triggerCond.size() > 0) {
             for (val cond : triggerCond) {
-                var newTrigger = GameData.getTriggerExcelConfigDataMap().get(cond.getParam()[0]);
-                if (newTrigger != null) {
-                    if (this.triggerData == null) {
-                        this.triggerData = new HashMap<>();
+                int triggerId =
+                        cond.getParam() != null && cond.getParam().length > 0 ? cond.getParam()[0] : 0;
+                var newTrigger = GameData.getTriggerExcelConfigDataMap().get(triggerId);
+                if (newTrigger == null) {
+                    Grasscutter.getLogger()
+                            .warn(
+                                    "Unable to load quest {} trigger {}: trigger resource is unavailable.",
+                                    getSubQuestId(),
+                                    triggerId);
+                    continue;
+                }
+                try {
+                    var group = SceneGroup.of(newTrigger.getGroupId()).load(newTrigger.getSceneId());
+                    if (group.getScript() == null || group.triggers == null || group.regions == null) {
+                        Grasscutter.getLogger()
+                                .warn(
+                                        "Unable to load quest {} trigger {} ({}) in scene {}, group {}:"
+                                                + " group script is unavailable or incomplete.",
+                                        getSubQuestId(),
+                                        triggerId,
+                                        newTrigger.getTriggerName(),
+                                        newTrigger.getSceneId(),
+                                        newTrigger.getGroupId());
+                        continue;
                     }
-
+                    var scene = getOwner().getWorld().getSceneById(newTrigger.getSceneId());
+                    if (scene == null) {
+                        Grasscutter.getLogger()
+                                .warn(
+                                        "Unable to load quest {} trigger {} ({}) in scene {}, group {}:"
+                                                + " scene is unavailable.",
+                                        getSubQuestId(),
+                                        triggerId,
+                                        newTrigger.getTriggerName(),
+                                        newTrigger.getSceneId(),
+                                        newTrigger.getGroupId());
+                        continue;
+                    }
+                    scene.loadTriggerFromGroup(group, newTrigger.getTriggerName());
                     triggerData.put(newTrigger.getTriggerName(), newTrigger);
                     triggers.put(newTrigger.getTriggerName(), false);
-                    var group = SceneGroup.of(newTrigger.getGroupId()).load(newTrigger.getSceneId());
-                    this.getOwner()
-                            .getWorld()
-                            .getSceneById(newTrigger.getSceneId())
-                            .loadTriggerFromGroup(group, newTrigger.getTriggerName());
+                } catch (RuntimeException e) {
+                    Grasscutter.getLogger()
+                            .error(
+                                    "Unable to load quest {} trigger {} ({}) in scene {}, group {}.",
+                                    getSubQuestId(),
+                                    triggerId,
+                                    newTrigger.getTriggerName(),
+                                    newTrigger.getSceneId(),
+                                    newTrigger.getGroupId(),
+                                    e);
                 }
             }
         }
@@ -159,6 +201,8 @@ public class GameQuest {
     public boolean clearProgress(boolean notifyDelete) {
         // TODO improve
         var oldState = state;
+        this.triggerData = new HashMap<>();
+        this.triggers = new HashMap<>();
         if (questData.getAcceptCond() != null && questData.getAcceptCond().size() != 0) {
             this.getMainQuest()
                     .getQuestManager()
