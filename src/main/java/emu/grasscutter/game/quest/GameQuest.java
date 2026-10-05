@@ -65,8 +65,8 @@ public class GameQuest {
         this.state = QuestState.QUEST_STATE_UNFINISHED;
 
         // Saved region keys are valid only after their runtime trigger data is rebuilt.
-        this.triggerData = new HashMap<>();
         this.triggers = new HashMap<>();
+        this.triggerData = new HashMap<>();
 
         val triggerCond =
                 questData.getFinishCond().stream()
@@ -201,8 +201,8 @@ public class GameQuest {
     public boolean clearProgress(boolean notifyDelete) {
         // TODO improve
         var oldState = state;
-        this.triggerData = new HashMap<>();
         this.triggers = new HashMap<>();
+        this.triggerData = new HashMap<>();
         if (questData.getAcceptCond() != null && questData.getAcceptCond().size() != 0) {
             this.getMainQuest()
                     .getQuestManager()

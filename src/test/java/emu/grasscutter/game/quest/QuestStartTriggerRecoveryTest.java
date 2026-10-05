@@ -275,7 +275,7 @@ public final class QuestStartTriggerRecoveryTest {
         seedSavedRegionKeys();
         world.scene = null;
 
-        assertTrue(assertDoesNotThrow(() -> quest.rewind(false)));
+        assertDoesNotThrow(() -> assertTrue(quest.rewind(false)));
         assertStartupCompleted(2);
 
         assertEquals(QuestState.QUEST_STATE_UNSTARTED, main.savedStates.get(0));
