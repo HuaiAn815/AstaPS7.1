@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,6 +159,95 @@ public final class PrologueIntroTest {
         assertEquals(PrologueIntro.STAGE_NONE, player.getPrologueIntroStage());
         assertTrue(PrologueIntro.allowMainQuest(player, 353));
         assertEquals(0, player.saves);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {PrologueIntro.STAGE_PENDING, PrologueIntro.STAGE_RUNNING})
+    public void fullQuestingLoginPreservesTheUnfinishedOpening(int stage) {
+        GAME_OPTIONS.questing.enabled = true;
+        player.setPrologueIntroStage(stage);
+        player.getQuestManager()
+                .getQuestById(PrologueIntro.FIRST_QUEST)
+                .setState(QuestState.QUEST_STATE_UNFINISHED);
+        player.getQuestManager().getQuestById(35105).setState(QuestState.QUEST_STATE_FINISHED);
+
+        PrologueIntro.onLogin(player);
+
+        assertEquals(PrologueIntro.STAGE_NONE, player.getPrologueIntroStage());
+        assertEquals(
+                QuestState.QUEST_STATE_UNFINISHED,
+                player.getQuestManager().getQuestById(PrologueIntro.FIRST_QUEST).getState());
+        assertEquals(
+                QuestState.QUEST_STATE_FINISHED,
+                player.getQuestManager().getQuestById(35105).getState());
+        assertEquals(
+                QuestState.QUEST_STATE_UNSTARTED,
+                player.getQuestManager().getQuestById(35205).getState());
+        for (int mainId : List.of(351, 352)) {
+            var main = player.getQuestManager().getMainQuestById(mainId);
+            assertFalse(main.isFinished());
+            assertEquals(ParentQuestState.PARENT_QUEST_STATE_NONE, main.getState());
+        }
+        assertEquals(1, player.saves);
+        assertTrue(player.packets.isEmpty());
+
+        PrologueIntro.prepareForQuesting(player);
+        PrologueIntro.onLogin(player);
+        assertEquals(1, player.saves);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {PrologueIntro.STAGE_PENDING, PrologueIntro.STAGE_RUNNING})
+    public void fullQuestingLeavesPlotAndQuestCompletionOnTheNormalPath(int stage) {
+        GAME_OPTIONS.questing.enabled = true;
+        player.setPrologueIntroStage(stage);
+        player.sentLoginPackets = true;
+        var quest = player.getQuestManager().getQuestById(PrologueIntro.FIRST_QUEST);
+        quest.setState(QuestState.QUEST_STATE_FINISHED);
+
+        assertFalse(PrologueIntro.onClientPlotFinished(player, PrologueIntro.FIRST_QUEST));
+        PrologueIntro.onQuestFinished(quest);
+
+        assertEquals(stage, player.getPrologueIntroStage());
+        assertEquals(QuestState.QUEST_STATE_FINISHED, quest.getState());
+        assertEquals(
+                QuestState.QUEST_STATE_UNSTARTED,
+                player.getQuestManager().getQuestById(35105).getState());
+        assertEquals(
+                QuestState.QUEST_STATE_UNSTARTED,
+                player.getQuestManager().getQuestById(35205).getState());
+        assertFalse(player.getQuestManager().getMainQuestById(351).isFinished());
+        assertFalse(player.getQuestManager().getMainQuestById(352).isFinished());
+        assertEquals(0, player.saves);
+        assertTrue(player.packets.isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {PrologueIntro.STAGE_NONE, PrologueIntro.STAGE_DONE})
+    public void fullQuestingPreparationPreservesInactiveStages(int stage) {
+        GAME_OPTIONS.questing.enabled = true;
+        player.setPrologueIntroStage(stage);
+
+        assertFalse(PrologueIntro.prepareForQuesting(player));
+        assertFalse(PrologueIntro.prepareForQuesting(player));
+
+        assertEquals(stage, player.getPrologueIntroStage());
+        assertEquals(0, player.saves);
+        assertTrue(player.packets.isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {PrologueIntro.STAGE_PENDING, PrologueIntro.STAGE_RUNNING})
+    public void fullQuestingPreparationReportsOnlyTheFirstTransfer(int stage) {
+        GAME_OPTIONS.questing.enabled = true;
+        player.setPrologueIntroStage(stage);
+
+        assertTrue(PrologueIntro.prepareForQuesting(player));
+        assertFalse(PrologueIntro.prepareForQuesting(player));
+
+        assertEquals(PrologueIntro.STAGE_NONE, player.getPrologueIntroStage());
+        assertEquals(1, player.saves);
+        assertTrue(player.packets.isEmpty());
     }
 
     @Test
