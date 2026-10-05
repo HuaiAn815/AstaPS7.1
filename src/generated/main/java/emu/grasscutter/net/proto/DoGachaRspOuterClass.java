@@ -25,7 +25,7 @@ public final class DoGachaRspOuterClass {
     int getTenCostItemNum();
 
     /**
-     * <code>uint32 left_gacha_times = 50001;</code>
+     * <code>uint32 left_gacha_times = 5;</code>
      * @return The leftGachaTimes.
      */
     int getLeftGachaTimes();
@@ -37,7 +37,7 @@ public final class DoGachaRspOuterClass {
     int getGachaTimes();
 
     /**
-     * <code>uint32 gacha_times_limit = 50002;</code>
+     * <code>uint32 gacha_times_limit = 3;</code>
      * @return The gachaTimesLimit.
      */
     int getGachaTimesLimit();
@@ -79,7 +79,7 @@ public final class DoGachaRspOuterClass {
     int getCostItemNum();
 
     /**
-     * <code>uint32 ten_cost_item_id = 50006;</code>
+     * <code>uint32 ten_cost_item_id = 9;</code>
      * @return The tenCostItemId.
      */
     int getTenCostItemId();
@@ -145,10 +145,10 @@ public final class DoGachaRspOuterClass {
     boolean getIsUnderGeneralRestrict();
 
     /**
-     * <code>bool is_epitomized = 50012;</code>
-     * @return The isEpitomized.
+     * <code>bool is_capturing_radiance = 286;</code>
+     * @return The isCapturingRadiance.
      */
-    boolean getIsEpitomized();
+    boolean getIsCapturingRadiance();
 
     /**
      * <code>uint32 daily_gacha_times = 1464;</code>
@@ -213,9 +213,19 @@ public final class DoGachaRspOuterClass {
               newGachaRandom_ = input.readUInt32();
               break;
             }
+            case 24: {
+
+              gachaTimesLimit_ = input.readUInt32();
+              break;
+            }
             case 32: {
 
               retcode_ = input.readInt32();
+              break;
+            }
+            case 40: {
+
+              leftGachaTimes_ = input.readUInt32();
               break;
             }
             case 48: {
@@ -231,6 +241,11 @@ public final class DoGachaRspOuterClass {
             case 64: {
 
               wishProgress_ = input.readUInt32();
+              break;
+            }
+            case 72: {
+
+              tenCostItemId_ = input.readUInt32();
               break;
             }
             case 80: {
@@ -267,6 +282,11 @@ public final class DoGachaRspOuterClass {
               wishMaxProgress_ = input.readUInt32();
               break;
             }
+            case 2288: {
+
+              isCapturingRadiance_ = input.readBool();
+              break;
+            }
             case 11712: {
 
               dailyGachaTimes_ = input.readUInt32();
@@ -277,21 +297,6 @@ public final class DoGachaRspOuterClass {
               curScheduleDailyGachaTimes_ = input.readUInt32();
               break;
             }
-            case 400008: {
-
-              leftGachaTimes_ = input.readUInt32();
-              break;
-            }
-            case 400016: {
-
-              gachaTimesLimit_ = input.readUInt32();
-              break;
-            }
-            case 400048: {
-
-              tenCostItemId_ = input.readUInt32();
-              break;
-            }
             case 400080: {
 
               isUnderMinorsRestrict_ = input.readBool();
@@ -300,11 +305,6 @@ public final class DoGachaRspOuterClass {
             case 400088: {
 
               isUnderGeneralRestrict_ = input.readBool();
-              break;
-            }
-            case 400096: {
-
-              isEpitomized_ = input.readBool();
               break;
             }
             default: {
@@ -353,10 +353,10 @@ public final class DoGachaRspOuterClass {
       return tenCostItemNum_;
     }
 
-    public static final int LEFT_GACHA_TIMES_FIELD_NUMBER = 50001;
+    public static final int LEFT_GACHA_TIMES_FIELD_NUMBER = 5;
     private int leftGachaTimes_;
     /**
-     * <code>uint32 left_gacha_times = 50001;</code>
+     * <code>uint32 left_gacha_times = 5;</code>
      * @return The leftGachaTimes.
      */
     @java.lang.Override
@@ -375,10 +375,10 @@ public final class DoGachaRspOuterClass {
       return gachaTimes_;
     }
 
-    public static final int GACHA_TIMES_LIMIT_FIELD_NUMBER = 50002;
+    public static final int GACHA_TIMES_LIMIT_FIELD_NUMBER = 3;
     private int gachaTimesLimit_;
     /**
-     * <code>uint32 gacha_times_limit = 50002;</code>
+     * <code>uint32 gacha_times_limit = 3;</code>
      * @return The gachaTimesLimit.
      */
     @java.lang.Override
@@ -452,10 +452,10 @@ public final class DoGachaRspOuterClass {
       return costItemNum_;
     }
 
-    public static final int TEN_COST_ITEM_ID_FIELD_NUMBER = 50006;
+    public static final int TEN_COST_ITEM_ID_FIELD_NUMBER = 9;
     private int tenCostItemId_;
     /**
-     * <code>uint32 ten_cost_item_id = 50006;</code>
+     * <code>uint32 ten_cost_item_id = 9;</code>
      * @return The tenCostItemId.
      */
     @java.lang.Override
@@ -569,15 +569,15 @@ public final class DoGachaRspOuterClass {
       return isUnderGeneralRestrict_;
     }
 
-    public static final int IS_EPITOMIZED_FIELD_NUMBER = 50012;
-    private boolean isEpitomized_;
+    public static final int IS_CAPTURING_RADIANCE_FIELD_NUMBER = 286;
+    private boolean isCapturingRadiance_;
     /**
-     * <code>bool is_epitomized = 50012;</code>
-     * @return The isEpitomized.
+     * <code>bool is_capturing_radiance = 286;</code>
+     * @return The isCapturingRadiance.
      */
     @java.lang.Override
-    public boolean getIsEpitomized() {
-      return isEpitomized_;
+    public boolean getIsCapturingRadiance() {
+      return isCapturingRadiance_;
     }
 
     public static final int DAILY_GACHA_TIMES_FIELD_NUMBER = 1464;
@@ -611,8 +611,14 @@ public final class DoGachaRspOuterClass {
       if (newGachaRandom_ != 0) {
         output.writeUInt32(2, newGachaRandom_);
       }
+      if (gachaTimesLimit_ != 0) {
+        output.writeUInt32(3, gachaTimesLimit_);
+      }
       if (retcode_ != 0) {
         output.writeInt32(4, retcode_);
+      }
+      if (leftGachaTimes_ != 0) {
+        output.writeUInt32(5, leftGachaTimes_);
       }
       if (gachaScheduleId_ != 0) {
         output.writeUInt32(6, gachaScheduleId_);
@@ -622,6 +628,9 @@ public final class DoGachaRspOuterClass {
       }
       if (wishProgress_ != 0) {
         output.writeUInt32(8, wishProgress_);
+      }
+      if (tenCostItemId_ != 0) {
+        output.writeUInt32(9, tenCostItemId_);
       }
       if (tenCostItemNum_ != 0) {
         output.writeUInt32(10, tenCostItemNum_);
@@ -641,29 +650,20 @@ public final class DoGachaRspOuterClass {
       if (wishMaxProgress_ != 0) {
         output.writeUInt32(15, wishMaxProgress_);
       }
+      if (isCapturingRadiance_ != false) {
+        output.writeBool(286, isCapturingRadiance_);
+      }
       if (dailyGachaTimes_ != 0) {
         output.writeUInt32(1464, dailyGachaTimes_);
       }
       if (curScheduleDailyGachaTimes_ != 0) {
         output.writeUInt32(1794, curScheduleDailyGachaTimes_);
       }
-      if (leftGachaTimes_ != 0) {
-        output.writeUInt32(50001, leftGachaTimes_);
-      }
-      if (gachaTimesLimit_ != 0) {
-        output.writeUInt32(50002, gachaTimesLimit_);
-      }
-      if (tenCostItemId_ != 0) {
-        output.writeUInt32(50006, tenCostItemId_);
-      }
       if (isUnderMinorsRestrict_ != false) {
         output.writeBool(50010, isUnderMinorsRestrict_);
       }
       if (isUnderGeneralRestrict_ != false) {
         output.writeBool(50011, isUnderGeneralRestrict_);
-      }
-      if (isEpitomized_ != false) {
-        output.writeBool(50012, isEpitomized_);
       }
       unknownFields.writeTo(output);
     }
@@ -682,9 +682,17 @@ public final class DoGachaRspOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(2, newGachaRandom_);
       }
+      if (gachaTimesLimit_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, gachaTimesLimit_);
+      }
       if (retcode_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(4, retcode_);
+      }
+      if (leftGachaTimes_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, leftGachaTimes_);
       }
       if (gachaScheduleId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -697,6 +705,10 @@ public final class DoGachaRspOuterClass {
       if (wishProgress_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(8, wishProgress_);
+      }
+      if (tenCostItemId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(9, tenCostItemId_);
       }
       if (tenCostItemNum_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -722,6 +734,10 @@ public final class DoGachaRspOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(15, wishMaxProgress_);
       }
+      if (isCapturingRadiance_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(286, isCapturingRadiance_);
+      }
       if (dailyGachaTimes_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1464, dailyGachaTimes_);
@@ -730,18 +746,6 @@ public final class DoGachaRspOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1794, curScheduleDailyGachaTimes_);
       }
-      if (leftGachaTimes_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(50001, leftGachaTimes_);
-      }
-      if (gachaTimesLimit_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(50002, gachaTimesLimit_);
-      }
-      if (tenCostItemId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(50006, tenCostItemId_);
-      }
       if (isUnderMinorsRestrict_ != false) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(50010, isUnderMinorsRestrict_);
@@ -749,10 +753,6 @@ public final class DoGachaRspOuterClass {
       if (isUnderGeneralRestrict_ != false) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(50011, isUnderGeneralRestrict_);
-      }
-      if (isEpitomized_ != false) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(50012, isEpitomized_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -805,8 +805,8 @@ public final class DoGachaRspOuterClass {
           != other.getIsUnderMinorsRestrict()) return false;
       if (getIsUnderGeneralRestrict()
           != other.getIsUnderGeneralRestrict()) return false;
-      if (getIsEpitomized()
-          != other.getIsEpitomized()) return false;
+      if (getIsCapturingRadiance()
+          != other.getIsCapturingRadiance()) return false;
       if (getDailyGachaTimes()
           != other.getDailyGachaTimes()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -860,9 +860,9 @@ public final class DoGachaRspOuterClass {
       hash = (37 * hash) + IS_UNDER_GENERAL_RESTRICT_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getIsUnderGeneralRestrict());
-      hash = (37 * hash) + IS_EPITOMIZED_FIELD_NUMBER;
+      hash = (37 * hash) + IS_CAPTURING_RADIANCE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getIsEpitomized());
+          getIsCapturingRadiance());
       hash = (37 * hash) + DAILY_GACHA_TIMES_FIELD_NUMBER;
       hash = (53 * hash) + getDailyGachaTimes();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -1039,7 +1039,7 @@ public final class DoGachaRspOuterClass {
 
         isUnderGeneralRestrict_ = false;
 
-        isEpitomized_ = false;
+        isCapturingRadiance_ = false;
 
         dailyGachaTimes_ = 0;
 
@@ -1096,7 +1096,7 @@ public final class DoGachaRspOuterClass {
         result.curScheduleDailyGachaTimes_ = curScheduleDailyGachaTimes_;
         result.isUnderMinorsRestrict_ = isUnderMinorsRestrict_;
         result.isUnderGeneralRestrict_ = isUnderGeneralRestrict_;
-        result.isEpitomized_ = isEpitomized_;
+        result.isCapturingRadiance_ = isCapturingRadiance_;
         result.dailyGachaTimes_ = dailyGachaTimes_;
         onBuilt();
         return result;
@@ -1223,8 +1223,8 @@ public final class DoGachaRspOuterClass {
         if (other.getIsUnderGeneralRestrict() != false) {
           setIsUnderGeneralRestrict(other.getIsUnderGeneralRestrict());
         }
-        if (other.getIsEpitomized() != false) {
-          setIsEpitomized(other.getIsEpitomized());
+        if (other.getIsCapturingRadiance() != false) {
+          setIsCapturingRadiance(other.getIsCapturingRadiance());
         }
         if (other.getDailyGachaTimes() != 0) {
           setDailyGachaTimes(other.getDailyGachaTimes());
@@ -1292,7 +1292,7 @@ public final class DoGachaRspOuterClass {
 
       private int leftGachaTimes_ ;
       /**
-       * <code>uint32 left_gacha_times = 50001;</code>
+       * <code>uint32 left_gacha_times = 5;</code>
        * @return The leftGachaTimes.
        */
       @java.lang.Override
@@ -1300,7 +1300,7 @@ public final class DoGachaRspOuterClass {
         return leftGachaTimes_;
       }
       /**
-       * <code>uint32 left_gacha_times = 50001;</code>
+       * <code>uint32 left_gacha_times = 5;</code>
        * @param value The leftGachaTimes to set.
        * @return This builder for chaining.
        */
@@ -1311,7 +1311,7 @@ public final class DoGachaRspOuterClass {
         return this;
       }
       /**
-       * <code>uint32 left_gacha_times = 50001;</code>
+       * <code>uint32 left_gacha_times = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearLeftGachaTimes() {
@@ -1354,7 +1354,7 @@ public final class DoGachaRspOuterClass {
 
       private int gachaTimesLimit_ ;
       /**
-       * <code>uint32 gacha_times_limit = 50002;</code>
+       * <code>uint32 gacha_times_limit = 3;</code>
        * @return The gachaTimesLimit.
        */
       @java.lang.Override
@@ -1362,7 +1362,7 @@ public final class DoGachaRspOuterClass {
         return gachaTimesLimit_;
       }
       /**
-       * <code>uint32 gacha_times_limit = 50002;</code>
+       * <code>uint32 gacha_times_limit = 3;</code>
        * @param value The gachaTimesLimit to set.
        * @return This builder for chaining.
        */
@@ -1373,7 +1373,7 @@ public final class DoGachaRspOuterClass {
         return this;
       }
       /**
-       * <code>uint32 gacha_times_limit = 50002;</code>
+       * <code>uint32 gacha_times_limit = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearGachaTimesLimit() {
@@ -1571,7 +1571,7 @@ public final class DoGachaRspOuterClass {
 
       private int tenCostItemId_ ;
       /**
-       * <code>uint32 ten_cost_item_id = 50006;</code>
+       * <code>uint32 ten_cost_item_id = 9;</code>
        * @return The tenCostItemId.
        */
       @java.lang.Override
@@ -1579,7 +1579,7 @@ public final class DoGachaRspOuterClass {
         return tenCostItemId_;
       }
       /**
-       * <code>uint32 ten_cost_item_id = 50006;</code>
+       * <code>uint32 ten_cost_item_id = 9;</code>
        * @param value The tenCostItemId to set.
        * @return This builder for chaining.
        */
@@ -1590,7 +1590,7 @@ public final class DoGachaRspOuterClass {
         return this;
       }
       /**
-       * <code>uint32 ten_cost_item_id = 50006;</code>
+       * <code>uint32 ten_cost_item_id = 9;</code>
        * @return This builder for chaining.
        */
       public Builder clearTenCostItemId() {
@@ -2026,33 +2026,33 @@ public final class DoGachaRspOuterClass {
         return this;
       }
 
-      private boolean isEpitomized_ ;
+      private boolean isCapturingRadiance_ ;
       /**
-       * <code>bool is_epitomized = 50012;</code>
-       * @return The isEpitomized.
+       * <code>bool is_capturing_radiance = 286;</code>
+       * @return The isCapturingRadiance.
        */
       @java.lang.Override
-      public boolean getIsEpitomized() {
-        return isEpitomized_;
+      public boolean getIsCapturingRadiance() {
+        return isCapturingRadiance_;
       }
       /**
-       * <code>bool is_epitomized = 50012;</code>
-       * @param value The isEpitomized to set.
+       * <code>bool is_capturing_radiance = 286;</code>
+       * @param value The isCapturingRadiance to set.
        * @return This builder for chaining.
        */
-      public Builder setIsEpitomized(boolean value) {
+      public Builder setIsCapturingRadiance(boolean value) {
         
-        isEpitomized_ = value;
+        isCapturingRadiance_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool is_epitomized = 50012;</code>
+       * <code>bool is_capturing_radiance = 286;</code>
        * @return This builder for chaining.
        */
-      public Builder clearIsEpitomized() {
+      public Builder clearIsCapturingRadiance() {
         
-        isEpitomized_ = false;
+        isCapturingRadiance_ = false;
         onChanged();
         return this;
       }
@@ -2154,23 +2154,23 @@ public final class DoGachaRspOuterClass {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\020DoGachaRsp.proto\032\017GachaItem.proto\"\254\004\n\n" +
-      "DoGachaRsp\022\031\n\021ten_cost_item_num\030\n \001(\r\022\032\n" +
-      "\020left_gacha_times\030\321\206\003 \001(\r\022\023\n\013gacha_times" +
-      "\030\013 \001(\r\022\033\n\021gacha_times_limit\030\322\206\003 \001(\r\022\017\n\007r" +
-      "etcode\030\004 \001(\005\022\024\n\014cost_item_id\030\016 \001(\r\022\022\n\nga" +
-      "cha_type\030\001 \001(\r\022\031\n\021gacha_schedule_id\030\006 \001(" +
-      "\r\022\025\n\rwish_progress\030\010 \001(\r\022\025\n\rcost_item_nu" +
-      "m\030\007 \001(\r\022\032\n\020ten_cost_item_id\030\326\206\003 \001(\r\022\024\n\014w" +
-      "ish_item_id\030\014 \001(\r\022#\n\017gacha_item_list\030\r \003" +
-      "(\0132\n.GachaItem\022\031\n\021wish_max_progress\030\017 \001(" +
-      "\r\022\030\n\020new_gacha_random\030\002 \001(\r\022\'\n\036cur_sched" +
-      "ule_daily_gacha_times\030\202\016 \001(\r\022\"\n\030is_under" +
-      "_minors_restrict\030\332\206\003 \001(\010\022#\n\031is_under_gen" +
-      "eral_restrict\030\333\206\003 \001(\010\022\027\n\ris_epitomized\030\334" +
-      "\206\003 \001(\010\022\032\n\021daily_gacha_times\030\270\013 \001(\rB1\n\031em" +
-      "u.grasscutter.net.protoB\024DoGachaRspOuter" +
-      "Classb\006proto3"
+      "\n\020DoGachaRsp.proto\032\017GachaItem.proto\"\255\004\n\n" +
+      "DoGachaRsp\022\031\n\021ten_cost_item_num\030\n \001(\r\022\030\n" +
+      "\020left_gacha_times\030\005 \001(\r\022\023\n\013gacha_times\030\013" +
+      " \001(\r\022\031\n\021gacha_times_limit\030\003 \001(\r\022\017\n\007retco" +
+      "de\030\004 \001(\005\022\024\n\014cost_item_id\030\016 \001(\r\022\022\n\ngacha_" +
+      "type\030\001 \001(\r\022\031\n\021gacha_schedule_id\030\006 \001(\r\022\025\n" +
+      "\rwish_progress\030\010 \001(\r\022\025\n\rcost_item_num\030\007 " +
+      "\001(\r\022\030\n\020ten_cost_item_id\030\t \001(\r\022\024\n\014wish_it" +
+      "em_id\030\014 \001(\r\022#\n\017gacha_item_list\030\r \003(\0132\n.G" +
+      "achaItem\022\031\n\021wish_max_progress\030\017 \001(\r\022\030\n\020n" +
+      "ew_gacha_random\030\002 \001(\r\022\'\n\036cur_schedule_da" +
+      "ily_gacha_times\030\202\016 \001(\r\022\"\n\030is_under_minor" +
+      "s_restrict\030\332\206\003 \001(\010\022#\n\031is_under_general_r" +
+      "estrict\030\333\206\003 \001(\010\022\036\n\025is_capturing_radiance" +
+      "\030\236\002 \001(\010\022\032\n\021daily_gacha_times\030\270\013 \001(\rB1\n\031e" +
+      "mu.grasscutter.net.protoB\024DoGachaRspOute" +
+      "rClassb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -2182,7 +2182,7 @@ public final class DoGachaRspOuterClass {
     internal_static_DoGachaRsp_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_DoGachaRsp_descriptor,
-        new java.lang.String[] { "TenCostItemNum", "LeftGachaTimes", "GachaTimes", "GachaTimesLimit", "Retcode", "CostItemId", "GachaType", "GachaScheduleId", "WishProgress", "CostItemNum", "TenCostItemId", "WishItemId", "GachaItemList", "WishMaxProgress", "NewGachaRandom", "CurScheduleDailyGachaTimes", "IsUnderMinorsRestrict", "IsUnderGeneralRestrict", "IsEpitomized", "DailyGachaTimes", });
+        new java.lang.String[] { "TenCostItemNum", "LeftGachaTimes", "GachaTimes", "GachaTimesLimit", "Retcode", "CostItemId", "GachaType", "GachaScheduleId", "WishProgress", "CostItemNum", "TenCostItemId", "WishItemId", "GachaItemList", "WishMaxProgress", "NewGachaRandom", "CurScheduleDailyGachaTimes", "IsUnderMinorsRestrict", "IsUnderGeneralRestrict", "IsCapturingRadiance", "DailyGachaTimes", });
     emu.grasscutter.net.proto.GachaItemOuterClass.getDescriptor();
   }
 

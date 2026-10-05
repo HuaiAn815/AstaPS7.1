@@ -35,6 +35,7 @@ import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.common.ItemParamData;
 import emu.grasscutter.data.common.ItemUseData;
 import emu.grasscutter.data.excels.BattlePassRewardData;
+import emu.grasscutter.data.excels.BattlePassScheduleData;
 import emu.grasscutter.data.excels.ItemData;
 import emu.grasscutter.data.excels.RewardData;
 import emu.grasscutter.game.battlepass.BattlePassManager;
@@ -252,7 +253,7 @@ public final class BattlePassCompatHelper {
         LocalDateTime localDateTime = LocalDateTime.of(localDate2.getYear(), localDate2.getMonthValue(), localDate2.getDayOfMonth(), 23, 59, 59);
         int n8 = (int)localDateTime.atZone(ZoneId.systemDefault()).toEpochSecond();
         BattlePassProductOuterClass.BattlePassProduct battlePassProduct = BattlePassProductOuterClass.BattlePassProduct.newBuilder().setNormalProductId("201").setExtraProductId("202").setUpgradeProductId("203").build();
-        BattlePassScheduleOuterClass.BattlePassSchedule.Builder builder = BattlePassScheduleOuterClass.BattlePassSchedule.newBuilder().setScheduleId(6700).setLevel(n4).setPoint(n5).setCurCyclePoints(n6).setBeginTime(n2).setEndTime(n3).setIsViewed(true).setPaidPlatformFlags(bl ? 3 : 0).setProductInfo(battlePassProduct).setUnlockStatus(bl ? BattlePassUnlockStatusOuterClass.BattlePassUnlockStatus.BattlePassUnlockStatus_BATTLE_PASS_UNLOCK_PAID : BattlePassUnlockStatusOuterClass.BattlePassUnlockStatus.BattlePassUnlockStatus_BATTLE_PASS_UNLOCK_FREE).setCurCycle(BattlePassCycleOuterClass.BattlePassCycle.newBuilder().setBeginTime(n2).setEndTime(n8).setCycleIdx(1).build());
+        BattlePassScheduleOuterClass.BattlePassSchedule.Builder builder = BattlePassScheduleOuterClass.BattlePassSchedule.newBuilder().setScheduleId(BattlePassScheduleData.currentId()).setLevel(n4).setPoint(n5).setCurCyclePoints(n6).setBeginTime(n2).setEndTime(n3).setIsViewed(true).setPaidPlatformFlags(bl ? 3 : 0).setProductInfo(battlePassProduct).setUnlockStatus(bl ? BattlePassUnlockStatusOuterClass.BattlePassUnlockStatus.BattlePassUnlockStatus_BATTLE_PASS_UNLOCK_PAID : BattlePassUnlockStatusOuterClass.BattlePassUnlockStatus.BattlePassUnlockStatus_BATTLE_PASS_UNLOCK_FREE).setCurCycle(BattlePassCycleOuterClass.BattlePassCycle.newBuilder().setBeginTime(n2).setEndTime(n8).setCycleIdx(1).build());
         for (int i = 1; i <= 5; ++i) {
             builder.addRewardPlanOptionList(BattlePassRewardPlanOption._BattlePassRewardPlanOption.newBuilder().setBattlePassPlan(n7).setFBHFDJJIDBD(i).setENGHPDCKACD(false).build());
         }

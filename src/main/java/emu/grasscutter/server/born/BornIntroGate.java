@@ -105,6 +105,12 @@ public final class BornIntroGate {
         return stateFor(session) != null;
     }
 
+    /** Allows birth confirmation retries only on the connection running the native intro. */
+    public static boolean isNativeIntroForSession(GameSession session) {
+        State state = stateFor(session);
+        return state != null && state.mode == Mode.NATIVE_INTRO && state.originSession == session;
+    }
+
     /** Compatibility alias used by existing call sites such as HomeWorld. */
     public static boolean isAwaiting(GameSession session) {
         return isFreshPlayerBootstrap(session);

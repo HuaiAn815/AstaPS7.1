@@ -115,11 +115,11 @@ public final class GiveCommand implements CommandHandler {
         // automatically be 6
         for (AvatarData avatarData : GameData.getAvatarDataMap().values()) {
             int id = avatarData.getId();
-            // Plenty of rows ship no useType at all, and dereferencing it killed the whole
-            // command on the first one - so /give all and /give avatars handed out nothing.
-            boolean isTestAvatar = "AVATAR_TEST".equals(avatarData.getUseType());
-            if (id < 10000002 || id >= 10000901) continue; // Exclude test avatars in id range
-            if (isTestAvatar) continue; // Exclude test avatars by type
+            if (!"AVATAR_FORMAL".equals(avatarData.getUseType())) continue;
+            if (!GameData.getFetterDataEntries().containsKey(id)) continue;
+            if (avatarData.getCandSkillDepotIds() != null
+                    && !avatarData.getCandSkillDepotIds().isEmpty()
+                    && id != player.getMainCharacterId()) continue;
             // owned ones are refused by addAvatar, so update them the way a single /give does
             Avatar owned = player.getAvatars().getAvatarById(id);
             if (owned != null) {

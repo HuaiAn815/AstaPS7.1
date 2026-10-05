@@ -359,7 +359,7 @@ public abstract class GameEntity {
         return heal(amount, false);
     }
 
-    public float heal(float amount, boolean mute) {
+    public synchronized float heal(float amount, boolean mute) {
         ClorindeBoLUtil.beforeHeal(this);
         try {
         if (this.getFightProperties() == null) {

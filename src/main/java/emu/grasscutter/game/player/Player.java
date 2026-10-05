@@ -1480,9 +1480,8 @@ public class Player implements PlayerHook, FieldFetch {
         // to build an entity from.
         this.getTeamManager().removeUnownedAvatarsFromTeams();
 
-        if (this.getSceneTags().isEmpty() || this.getSceneTags() == null) {
-            this.applyStartingSceneTags();
-        }
+        // Older saves can have tags while still missing defaults added by newer resources.
+        this.applyStartingSceneTags();
 
         // A TPS dungeon is not saved: logging back into one finds no dungeon running, an empty
         // scene and a client that never finishes loading. Start in Teyvat instead.

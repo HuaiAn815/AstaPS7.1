@@ -148,6 +148,8 @@ public final class AbilityManager extends BasePlayerManager {
     private boolean abilityInvulnerable = false;
     private int burstCasterId;
     private int burstSkillId;
+    private long burstRequestedAt;
+    private static final long BURST_START_WINDOW_MS = 5000L;
 
     private long arlecchinoChargedAttackTime = 0L;
     private long arlecchinoESkillTime = 0L;
@@ -160,6 +162,7 @@ public final class AbilityManager extends BasePlayerManager {
     public void removePendingEnergyClear() {
         this.burstCasterId = 0;
         this.burstSkillId = 0;
+        this.burstRequestedAt = 0L;
     }
 
     public boolean isAbilityInvulnerable() {
@@ -179,6 +182,10 @@ public final class AbilityManager extends BasePlayerManager {
         }
 
         if (this.burstCasterId == 0) return;
+        if (System.currentTimeMillis() - this.burstRequestedAt > BURST_START_WINDOW_MS) {
+            this.removePendingEnergyClear();
+            return;
+        }
 
         boolean skillInvincibility = modifier.state == AbilityModifier.State.Invincible;
         if (modifier.onAdded != null) {
@@ -580,6 +587,11 @@ public final class AbilityManager extends BasePlayerManager {
             ability = entity.getInstancedAbilities().get(head.getInstancedAbilityId() - 1);
         }
 
+        if (ability == null
+            && invoke.getArgumentType() == AbilityInvokeArgument.AbilityInvokeArgument_ABILITY_ACTION_GENERATE_ELEM_BALL) {
+            ability = this.findOwnerElemBallAbility(entity, head.getLocalId());
+        }
+
         if (ability == null) {
             Grasscutter.getLogger().trace(
                 "[InvokeMiss] ability not found: entity={} abilId={} modId={} listSize={}",
@@ -622,6 +634,37 @@ public final class AbilityManager extends BasePlayerManager {
             ability.getData().abilityName,
             ability.getData().localIdToAction.keySet(),
             ability.getData().localIdToMixin.keySet());
+    }
+
+    private Ability findOwnerElemBallAbility(GameEntity entity, int localId) {
+        var scene = this.player.getScene();
+        if (scene == null) return null;
+        GameEntity owner = entity;
+        for (int hops = 0; hops < 8 && owner instanceof EntityClientGadget gadget; hops++) {
+            owner = scene.getEntityById(gadget.getOwnerEntityId());
+        }
+        if (!(owner instanceof EntityAvatar avatar)
+                || avatar.getAvatar() == null
+                || avatar.getAvatar().getAvatarData() == null) return null;
+
+        var icon = avatar.getAvatar().getAvatarData().getIconName();
+        if (icon == null || icon.isEmpty()) return null;
+        var prefix = "Avatar_" + icon.substring(icon.lastIndexOf('_') + 1) + "_";
+        var data = findElemBallAbilityData(GameData.getAbilityDataMap().values(), prefix, localId);
+        return data != null ? new Ability(data, avatar, this.player) : null;
+    }
+
+    static AbilityData findElemBallAbilityData(Collection<AbilityData> abilities, String prefix, int localId) {
+        AbilityData match = null;
+        for (var data : abilities) {
+            if (data.abilityName == null || !data.abilityName.startsWith(prefix)) continue;
+            data.initialize();
+            var action = data.localIdToAction.get(localId);
+            if (action == null || action.type != AbilityModifierAction.Type.GenerateElemBall) continue;
+            if (match != null) return null;
+            match = data;
+        }
+        return match;
     }
 
     public void onSkillStart(Player player, int skillId, int casterId) {
@@ -669,6 +712,7 @@ public final class AbilityManager extends BasePlayerManager {
 
         this.burstSkillId = skillId;
         this.burstCasterId = casterId;
+        this.burstRequestedAt = System.currentTimeMillis();
         try {
             BurstInvulnHelper.arm(this);
         } catch (Throwable ignored) {
@@ -1057,9 +1101,11 @@ public final class AbilityManager extends BasePlayerManager {
             if (fromParentName && hasOrchestration && modifierData.onAdded != null) {
                 final var finalAbility = instancedAbility;
                 final var finalEntity = entity;
-                for (var a : modifierData.onAdded) {
-                    executeAction(finalAbility, a, invoke.getAbilityData(), finalEntity);
-                }
+                runServerOwned(() -> {
+                    for (var a : modifierData.onAdded) {
+                        if (a != null) executeActionNow(finalAbility, a, invoke.getAbilityData(), finalEntity);
+                    }
+                });
             } else if (modifierData.onAdded != null) {
                 // A modifier whose onAdded neither attaches nor applies another modifier used to run
                 // nothing at all here, so anything the server alone is meant to do - spawning an
