@@ -26,7 +26,7 @@ public final class PacketOpcodes {
     public static final int GetFriendShowAvatarInfoReq = 0;
     public static final int GetFriendShowNameCardInfoReq = 29743;
     public static final int GetHomeLevelUpRewardReq = 2113;
-    public static final int GetProfilePictureDataReq = 0; // 7.1 CmdId unknown (7.0: 2896)
+    public static final int GetProfilePictureDataReq = 27037; // [MIAO] 7.1 开更换界面
     public static final int GetUgcBriefInfoReq = 0;
     public static final int HomeChangeEditModeReq = 29665;
     public static final int HomeChangeModuleReq = 9972;
@@ -2979,7 +2979,8 @@ public final class PacketOpcodes {
     public static final int ExecuteGadgetLuaRsp = 1263; // 7.1 CmdId unknown (7.0: 1)
     public static final int ForgeStartRsp = 24460; // 7.1 CmdId unknown (7.0: 1)
     public static final int GetHomeLevelUpRewardRsp = 21591; // 7.1 CmdId unknown (7.0: 1)
-    public static final int GetProfilePictureDataRsp = 7323; // 7.1 CmdId unknown (7.0: 20816)
+    public static final int GetProfilePictureDataRsp = 7323;
+    public static final int GetHeadFrameDataReq = 4179; // [MIAO] 7.1 头像框页签
     public static final int GmTalkReq = 0; // 7.1 CmdId unknown (7.0: 1)
     public static final int HomeAvatarSummonEventRsp = 27614; // 7.1 CmdId unknown (7.0: 1)
     public static final int HomeAvatarSummonFinishRsp = 8835; // 7.1 CmdId unknown (7.0: 1)

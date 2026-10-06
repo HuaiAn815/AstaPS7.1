@@ -82,6 +82,7 @@ public class Player implements PlayerHook, FieldFetch {
     @Getter private String nickname;
     @Getter private String signature;
     @Getter private int headImage;
+    @Getter private int profileFrameId = 100011;
     @Getter private Map<Integer, Set<Integer>> sceneTags;
     @Getter private int nameCardId = 210001;
     @Getter private Position position;
@@ -349,7 +350,7 @@ public class Player implements PlayerHook, FieldFetch {
         this.applyProperties();
         this.applyStartingSceneTags();
         this.getFlyCloakList().add(140001);
-        this.getNameCardList().add(210001);
+        for (int __nc = 210001; __nc <= 210100; __nc++) { this.getNameCardList().add(__nc); }
         setPhlogistonValue(100);
         for(int t=0; t < 20; t++){
             this.getTraceEffectList().add(215001+t);
@@ -494,6 +495,12 @@ public class Player implements PlayerHook, FieldFetch {
 
     public void setHeadImage(int picture) {
         this.headImage = picture;
+        this.updateProfile();
+        this.save();
+    }
+
+    public void setProfileFrameId(int frameId) {
+        this.profileFrameId = frameId;
         this.updateProfile();
         this.save();
     }
@@ -1105,9 +1112,9 @@ public class Player implements PlayerHook, FieldFetch {
             .setNickname(this.getNickname())
             .setPlayerLevel(this.getLevel())
             .setMpSettingType(this.getMpSetting())
-            .setNameCardId(this.getNameCardId())
+            .setNameCardId(this.getNameCardId() == 0 || this.getNameCardId() == 210001 ? 210003 : this.getNameCardId())
             .setSignature(this.getSignature())
-            .setProfilePicture(ProfilePictureHelper.toProto(this.getHeadImage()));
+            .setProfilePicture(ProfilePictureHelper.toProto(this.getHeadImage()).toBuilder().setProfileFrameId(this.getProfileFrameId()).build());
 
         if (this.getWorld() != null) {
             onlineInfo.setCurPlayerNumInWorld(getWorld().getPlayerCount());
@@ -1157,13 +1164,13 @@ public class Player implements PlayerHook, FieldFetch {
 
         return SocialDetail.newBuilder()
             .setUid(this.getUid())
-            .setProfilePicture(ProfilePictureHelper.toProto(this.getHeadImage()))
+            .setProfilePicture(ProfilePictureHelper.toProto(this.getHeadImage()).toBuilder().setProfileFrameId(this.getProfileFrameId()).build())
             .setNickname(this.getNickname())
             .setSignature(this.getSignature())
             .setLevel(this.getLevel())
             .setBirthday(this.getBirthday().getFilledProtoWhenNotEmpty())
             .setWorldLevel(this.getWorldLevel())
-            .setNameCardId(this.getNameCardId())
+            .setNameCardId(this.getNameCardId() == 0 || this.getNameCardId() == 210001 ? 210003 : this.getNameCardId())
             .setIsShowAvatar(this.isShowAvatars())
             .setIsShowConstellationNum(showConstellation)
             .addAllShowAvatarInfoList(socialShowAvatarInfoList)
