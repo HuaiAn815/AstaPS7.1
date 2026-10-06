@@ -1240,6 +1240,10 @@ public class Avatar {
             avatarInfo.setExpeditionStateValue(expeditionInfo.getState());
         }
 
+        // 7.x extra level (90->95->100): send the effective max level / extra tier so the
+        // character screen shows the breakthrough; without this the client never enables it.
+        emu.grasscutter.game.avatar.AvatarExtraLevelHelper.applyAvatarInfoExtraLevel(avatarInfo, this);
+
         return avatarInfo.build();
     }
 
