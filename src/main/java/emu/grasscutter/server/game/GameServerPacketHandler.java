@@ -209,6 +209,13 @@ public final class GameServerPacketHandler {
                             session.getPlayer(), opcode, payload, header)) {
                 return;
             }
+            // Extra level (90->95->100): also feed unknown opcodes to the sniffer, so a
+            // cap-breakthrough request that is not yet named still upgrades the avatar.
+            if (session.getPlayer() != null
+                    && emu.grasscutter.game.avatar.AvatarExtraLevelHelper.tryHandleUnregisteredPacket(
+                            session.getPlayer(), opcode, payload)) {
+                return;
+            }
             String hex = "";
             if (payload != null && payload.length > 0 && payload.length <= 128) {
                 StringBuilder sb = new StringBuilder(payload.length * 2);
