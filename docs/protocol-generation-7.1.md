@@ -2,7 +2,7 @@
 
 The base 7.1 protocol schema is stored as `protocol/7.1/protocol.desc` with its file list in `protocol/7.1/files.txt`. The descriptor set was captured from the previously checked-in 7.1 generated Java descriptors. Its SHA-256 is `ea552a609a51006f1237a932c8af786472de3efeba97ded4ccbb1b09e561f6a7`, and it contains 2059 protocol files.
 
-`protocol/7.1/compat` contains protocol files recovered after that descriptor set was captured, plus legacy protocol files required by those additions but absent from the base descriptor set. These schemas are recovered from the `descriptorData` embedded in the corresponding generated Java classes, so their field numbers, wire types, dependencies, and enum values remain pinned to the previous 7.1 implementation.
+`protocol/7.1/compat` contains protocol files recovered after that descriptor set was captured, plus legacy protocol files required by those additions but absent from the base descriptor set. The original supplemental schemas were recovered from the `descriptorData` embedded in the corresponding generated Java classes. Native wire corrections can also replace stale base descriptors through matching file names.
 
 `TpsEquipChangeNotify.proto` imports `SceneWeaponInfo.proto`, which already exists inside the base descriptor set. `protocol/7.1/compat-imports` provides a build-only empty `SceneWeaponInfo` declaration so protoc can parse the recovered source. Protoc writes the recovered source files to a supplemental descriptor set without `--include_imports`, so this import stub never enters the combined descriptor set.
 
@@ -13,5 +13,7 @@ The base 7.1 protocol schema is stored as `protocol/7.1/protocol.desc` with its 
 `lintGeneratedProtocolJava` compiles only regenerated protocol sources with `-Xlint:all -Werror`. This keeps generated-code warning regressions separate from handwritten warning debt.
 
 `ProtocolGenerationTest` checks a protobuf round trip, base descriptor dependencies, recovered TPS descriptors, and the six restored TPS field numbers. The protocol-generation workflow runs this test and the generated-source lint gate on Linux and Windows.
+
+The recovered `WeaponUpgradeReq.proto` and `CalcWeaponUpgradeReturnItemsReq.proto` override the stale request descriptors. The 7.1 upgrade request uses opcode 21801 with target GUID field 5, consumed weapon GUIDs field 15 and materials field 8; the preview uses opcode 7145 with fields 1, 14 and 10 respectively. `compat-imports/ItemParam.proto` is only an import stub; the canonical descriptor retains item ID field 1 and count field 2. `WeaponUpgradeRequestTest` uses native wire fixtures and the real request handlers to check decoding, material consumption, levels and refunds.
 
 The checked-in generated Java dump is legacy material and is not a protocol source of truth. Future protocol recovery should update the canonical descriptor set or the recovered `.proto` additions and regenerate Java instead of editing generated Java by hand.
