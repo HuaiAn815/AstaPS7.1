@@ -31,8 +31,8 @@ import emu.grasscutter.server.game.GameServerPacketHandler;
 import emu.grasscutter.server.game.GameSession;
 import emu.grasscutter.server.game.GameSession.SessionState;
 
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -86,7 +86,7 @@ final class WeaponUpgradeRequestTest {
         previousPromotes = new Int2ObjectOpenHashMap<>(GameData.getWeaponPromoteDataMap());
         refundMaterials =
                 (Int2IntMap) field(InventorySystem.class, "weaponRefundMaterials").get(null);
-        previousRefunds = new Int2IntOpenHashMap(refundMaterials);
+        previousRefunds = new Int2IntArrayMap(refundMaterials);
         GameData.getItemDataMap().clear();
         GameData.getWeaponLevelDataMap().clear();
         GameData.getWeaponPromoteDataMap().clear();
