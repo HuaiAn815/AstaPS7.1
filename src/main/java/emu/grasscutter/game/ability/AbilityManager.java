@@ -468,21 +468,22 @@ public final class AbilityManager extends BasePlayerManager {
 
         if (key == null) return;
 
-        // Client Q cinematic often CLEARs Cur_HPDebts before EvtDoSkillSucc - refuse + pre-arm.
+        // A global reset alone does not identify a burst; it also occurs during normal sync.
         if (isArlecchinoBoLFloatKey(key)
                 && entity instanceof EntityAvatar av
                 && av.getAvatar() != null
-                && av.getAvatar().getAvatarId() == 10000096
-                && !ArlecchinoBurstBoL.allowAuthoritativeClear(av.getId())) {
-            float cur = av.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP_DEBTS);
-            if (cur > 0.5f) {
-                if (!ArlecchinoBurstBoL.isConsumeBlocked(av)) {
-                    ArlecchinoBurstBoL.onBurstCast(av);
+                && av.getAvatar().getAvatarId() == 10000096) {
+            synchronized (av) {
+                float cur = av.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP_DEBTS);
+                if (cur > 0.5f) {
+                    if (!ArlecchinoBurstBoL.isConsumeBlocked(av)) {
+                        ArlecchinoBurstBoL.tryPreArmFromAbility(
+                                resolveInvocationAbility(entity, invoke), av);
+                    }
+                    av.getGlobalAbilityValues().put(key, cur);
+                    ArlecchinoBoLSync.repinUiBar(av);
+                    return;
                 }
-                ArlecchinoBurstBoL.repinClientBoL(av);
-                Grasscutter.getLogger()
-                        .info("[BoL] skip ClearGlobalFloat {} (pre-arm/repin debt={})", key, cur);
-                return;
             }
         }
 
@@ -494,6 +495,17 @@ public final class AbilityManager extends BasePlayerManager {
         return "Cur_HPDebts".equals(key)
                 || "_HPDebts".equals(key)
                 || "_ABILITY_Cur_HPDebts".equals(key);
+    }
+
+    private static Ability resolveInvocationAbility(GameEntity entity, AbilityInvokeEntry invoke) {
+        var head = invoke.getHead();
+        var modifier = entity.getInstancedModifiers().get(head.getInstancedModifierId());
+        if (modifier != null && modifier.getAbility() != null) {
+            return modifier.getAbility();
+        }
+        int index = head.getInstancedAbilityId() - 1;
+        var abilities = entity.getInstancedAbilities();
+        return index >= 0 && index < abilities.size() ? abilities.get(index) : null;
     }
 
     /**
@@ -1248,28 +1260,23 @@ public final class AbilityManager extends BasePlayerManager {
         // Official reclaim is ExtraAttack_AddHpDebts_* via ActionAddHPDebts only.
         // A second grant here previously double-stacked 65%/130% and capped BoL instantly.
 
-        // Client predicts Q wipe via META_GLOBAL_FLOAT (Cur_HPDebts to 0) ~2s before SkillSucc.
-        // That is what blanks the BoL bar mid-cinematic while the server still holds BoL.
+        // Preserve authoritative Bond on predicted resets, but only a burst source may arm Q.
         if (isArlecchinoBoLFloatKey(key)
                 && entity instanceof EntityAvatar av
                 && av.getAvatar() != null
-                && av.getAvatar().getAvatarId() == 10000096
-                && !ArlecchinoBurstBoL.allowAuthoritativeClear(av.getId())) {
-            float cur = av.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP_DEBTS);
-            if (cur > 0.5f && value <= Math.max(0.5f, cur * 0.15f)) {
-                if (!ArlecchinoBurstBoL.isConsumeBlocked(av)) {
-                    ArlecchinoBurstBoL.onBurstCast(av);
-                    Grasscutter.getLogger()
-                            .info(
-                                    "[BoL] pre-arm from client GlobalFloat {}={} (server debt={})",
-                                    key,
-                                    value,
-                                    cur);
+                && av.getAvatar().getAvatarId() == 10000096) {
+            synchronized (av) {
+                float cur = av.getFightProperty(FightProperty.FIGHT_PROP_CUR_HP_DEBTS);
+                if (cur > 0.5f && value <= Math.max(0.5f, cur * 0.15f)) {
+                    if (!ArlecchinoBurstBoL.isConsumeBlocked(av)) {
+                        ArlecchinoBurstBoL.tryPreArmFromAbility(
+                                resolveInvocationAbility(entity, invoke), av);
+                    }
+                    entity.getGlobalAbilityValues().put(key, cur);
+                    entity.onAbilityValueUpdate();
+                    ArlecchinoBoLSync.repinUiBar(av);
+                    return;
                 }
-                entity.getGlobalAbilityValues().put(key, cur);
-                entity.onAbilityValueUpdate();
-                ArlecchinoBurstBoL.repinClientBoL(av);
-                return;
             }
         }
 
