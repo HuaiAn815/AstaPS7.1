@@ -1307,7 +1307,7 @@ public final class PacketOpcodes {
     public static final int HomeSetBlueprintSlotOptionReq = 7407;
     public static final int StartCoopPointReq = 3213;
     public static final int AvatarEquipChangeNotify = 24582;
-    public static final int WeaponUpgradeReq = 0; // 7.1 CmdId unknown (7.0: 8563)
+    public static final int WeaponUpgradeReq = 21801;
     public static final int PlayerMatchStopNotify = 20667;
     public static final int BrickBreakerSelectSkillReq = 21401;
     // public static final int BGDAILADEFA = 7083;
@@ -1783,7 +1783,7 @@ public final class PacketOpcodes {
     // public static final int GCGDSCardNumChangeNotify = 26135;
     public static final int PlantFlowerEditFlowerCombinationReq = 27553;
     public static final int RogueDiaryCoinAddNotify = 26917;
-    public static final int CalcWeaponUpgradeReturnItemsReq = 0; // 7.1 CmdId unknown (7.0: 22074)
+    public static final int CalcWeaponUpgradeReturnItemsReq = 7145;
     // public static final int NOIOOPAGMPE = 4280;
     public static final int ItemCdGroupTimeNotify = 25967;
     public static final int AvatarRenameInfoNotify = 209;
